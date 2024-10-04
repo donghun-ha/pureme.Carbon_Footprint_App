@@ -1,4 +1,4 @@
-package com.example.team_project2_pure_me
+package com.team_project2_pure_me.app
 
 import io.flutter.embedding.android.FlutterActivity
 
