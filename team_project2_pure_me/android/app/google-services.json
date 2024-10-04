@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "427178670404",
+    "project_id": "pureme-ba8fe",
+    "storage_bucket": "pureme-ba8fe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:427178670404:android:3edf75131b7ac5206bbf11",
+        "android_client_info": {
+          "package_name": "com.team_project2_pure_me.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4rfHk9OrO44e2kldKIEihn5P5NRgr17w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

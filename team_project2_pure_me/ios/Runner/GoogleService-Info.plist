@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyD5_CT198DdzQ0-u1xhklhX3NSJWEAw4RI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>427178670404</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.teamProject2PureMe</string>
+	<key>PROJECT_ID</key>
+	<string>pureme-ba8fe</string>
+	<key>STORAGE_BUCKET</key>
+	<string>pureme-ba8fe.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:427178670404:ios:950a1edf6832ef466bbf11</string>
+</dict>
+</plist>
