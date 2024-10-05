@@ -6,8 +6,9 @@ class FeedHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 남의거 사진만 
-      // 뭘 어떻게 가져오면 될까나
+      // 사용되는 변수 : feedList -> GridView에 들어갈 imageName들
+      // 사용되는 함수 : fetchFeedList() -> build 함수의 return Scafold 전에 시행하여 
+      // feedList를 바꿔줘야 함.
     );
   }
 }
