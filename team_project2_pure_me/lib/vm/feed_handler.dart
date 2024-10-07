@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/model/reply.dart';
@@ -6,6 +7,8 @@ import 'package:team_project2_pure_me/vm/calc_handler.dart';
 
 class FeedHandler extends CalcHandler {
   var feedList = <Feed>[].obs;
+  final CollectionReference _feed =
+      FirebaseFirestore.instance.collection('post');
 
   /// feedHome화면에서 쓸 feedList
   List<Reply> replyList = <Reply>[].obs;
@@ -18,7 +21,7 @@ class FeedHandler extends CalcHandler {
       content: '', // 내용
       feedImageName: '', // 잠시대기
       writeTime: DateTime(0), // ??
-      feedState: 0 // 기본값
+      feedState: '게시' // 기본값
       );
 
   /// feedDetail화면에서 쓸 Feed
@@ -27,6 +30,22 @@ class FeedHandler extends CalcHandler {
 
   String? insertImageName;
 
+  @override
+  void onInit() {
+    super.onInit();
+    _feed.orderBy('writetime', descending: true).snapshots().listen(
+      (event) {
+        feedList.value = event.docs
+            .map(
+              (doc) => Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
+            )
+            .toList();
+      },
+    );
+  }
+
+//
+//
   fetchFeedList() async {
     String curEMail = curUser.value.eMail;
 
@@ -35,11 +54,6 @@ class FeedHandler extends CalcHandler {
     // feedList.clear();
     //feedList.addAll(iterable);
     // 등으로 넣을 수 있을것 같은데, 자세한건 확인후 추가바람.
-
-    feedList.clear();
-    feedList.add(curFeed);
-    feedList.add(curFeed);
-    feedList.add(curFeed);
   }
 
   fetchFeedDetail() {
@@ -66,7 +80,7 @@ class FeedHandler extends CalcHandler {
     /// 를 이용해 데이터베이스에도 같이 업데이트한다
   }
 
-  fetchReply() {
+  fetchReply(String id) {
     // fetchFeedList() 와 비슷하게
     /// firebase의 reply에서 reply을 가져온 다움
     /// Reply.fromMap 등을 이용해서 List<Reply>의 형태로 정리한 후
@@ -93,7 +107,7 @@ class FeedHandler extends CalcHandler {
         content: content,
         feedImageName: insertImageName!,
         writeTime: DateTime.now(),
-        feedState: 0);
+        feedState: '게시');
 
     ///를 firebase에 추가하고
     ///추가한 다음에 insertImageName을 null로 변경할 것.

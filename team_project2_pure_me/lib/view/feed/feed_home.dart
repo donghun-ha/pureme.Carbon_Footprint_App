@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/view/feed/feed_detail.dart';
 import 'package:team_project2_pure_me/vm/feed_handler.dart';
 
@@ -58,15 +59,20 @@ class FeedHome extends StatelessWidget {
                                     mainAxisSpacing: 10,
                                   ), // 화면 구성
                                   itemBuilder: (context, index) {
+                                    Feed feed = feedHandler.feedList[index];
                                     return GestureDetector(
                                       onTap: () => Get.to(
                                         () => FeedDetail(),
-                                        arguments: feedHandler.feedList[index],
+                                        arguments: feed,
                                       ),
                                       child: Card(
                                         color: const Color(0xFFB1B1B1),
-                                        child: Image.asset(
-                                            'images/earth.png'), // 이미지 변경
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          child:
+                                              Image.network(feed.feedImageName),
+                                        ), // 이미지 변경
                                       ),
                                     );
                                   },

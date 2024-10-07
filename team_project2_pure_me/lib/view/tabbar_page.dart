@@ -26,6 +26,7 @@ class TabbarPage extends StatelessWidget {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: TabBarView(
+            physics: const NeverScrollableScrollPhysics(),
             controller: tabHandler.tabController,
             children: [
               // page
