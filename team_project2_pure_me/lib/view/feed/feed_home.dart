@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/view/feed/feed_detail.dart';
 import 'package:team_project2_pure_me/vm/feed_handler.dart';
-import 'package:team_project2_pure_me/vm/vmhandler.dart';
 
 class FeedHome extends StatelessWidget {
   FeedHome({super.key});

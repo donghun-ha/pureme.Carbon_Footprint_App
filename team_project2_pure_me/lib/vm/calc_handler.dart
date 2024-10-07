@@ -1,8 +1,10 @@
+import 'package:get/get.dart';
+import 'package:team_project2_pure_me/vm/user_handler.dart';
 
 class CalcHandler extends UserHandler {
   double curTotalCarbon = 0; // 현재 TotalCarborn의 양을 나타내는 변수
 
-  List transDropdown = <String>['버스', '지하철'].obs;
+  var transDropdown = <String>['버스', '지하철'].obs;
   String? curtransDropValue;
 
   fetchTotalCarbon() {

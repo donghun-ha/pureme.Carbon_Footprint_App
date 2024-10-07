@@ -31,8 +31,8 @@ class TabbarPage extends StatelessWidget {
               // page
               const Home(),
               FeedHome(),
-              const RankPage(),
-              const UserInfoHome(),
+              RankPage(),
+              UserInfoHome(),
             ],
           ),
           bottomNavigationBar: BottomNavigationBar(
