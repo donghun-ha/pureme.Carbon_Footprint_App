@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'user_info_config.dart';
 
 class UserInfoHome extends StatelessWidget {
-  UserInfoHome({super. key}) ;
+  UserInfoHome({super.key});
 
   // 더미 데이터
   final String profileImage = 'images/earth.png';
@@ -13,144 +15,147 @@ class UserInfoHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // 배경 이미지
-          Container(
-            decoration: const BoxDecoration(
-              image: const DecorationImage(
-                image: AssetImage('images/main_background.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          // 컨텐츠
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: const Offset(0, 3),
                       ),
-                      child: Column(
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Stack(
                         children: [
-                          Stack(
-                            children: [
-                              Container(
-                                height: 200,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFE9FCE7),
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    topRight: Radius.circular(20),
+                          Container(
+                            height: 200,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFE9FCE7),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 65,
+                                    backgroundImage: AssetImage(profileImage),
                                   ),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 65,
-                                        backgroundImage: NetworkImage(profileImage),
-                                      ),
-                                      const SizedBox(width: 22),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                  const SizedBox(width: 22),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
                                           children: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.end,
-                                              children: [
-                                                Image.asset('images/settings.png', width: 24, height: 24),
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  'Level $level',
-                                                  style: const TextStyle(fontSize: 18),
-                                                ),
-                                                const SizedBox(width: 8),
-                                                Image.asset('images/sprout.png', width: 24, height: 24),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Text(
-                                              nickName,
-                                              style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                                            ),
-                                            Text(
-                                              email,
-                                              style: const TextStyle(fontSize: 16),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Get.to(() => const UserInfoConfig());
+                                              },
+                                              child: Image.asset('images/settings.png', width: 24, height: 24),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Level $level',
+                                              style: const TextStyle(fontSize: 18),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Image.asset('images/sprout.png', width: 24, height: 24),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          nickName,
+                                          style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          email,
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
-                              Positioned(
-                                right: 16,
-                                bottom: 10,
-                                child: ElevatedButton.icon(
-                                  onPressed: () {
-                                    // 글쓰기 기능 구현
-                                  },
-                                  icon: Image.asset('images/post.png', width: 24, height: 24),
-                                  label: const Text('게시글 작성'),
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.black, backgroundColor: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: const EdgeInsets.all(16),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1, crossAxisSpacing: 10, mainAxisSpacing: 10),
-                            itemCount: posts.length,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                decoration:
-                                    BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10), image:
-                                        const DecorationImage(image:
-                                            AssetImage('images/earth.png'), fit:
-                                            BoxFit.cover)),
-                                child:
-                                    Center(child:
-                                        Text(posts[index], style:
-                                            const TextStyle(color:
-                                                Colors.white, fontWeight:
-                                                FontWeight.bold))),
-                              );
-                            },
+                          Positioned(
+                            right: 16,
+                            bottom: 10,
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                // 글쓰기 기능 구현
+                              },
+                              icon: Image.asset('images/post.png', width: 24, height: 24),
+                              label: const Text('게시글 작성'),
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.black,
+                                backgroundColor: Colors.white,
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(16),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10
+                        ),
+                        itemCount: posts.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10),
+                              image: const DecorationImage(
+                                image: AssetImage('images/earth.png'),
+                                fit: BoxFit.cover
+                              )
+                            ),
+                            child: Center(
+                              child: Text(
+                                posts[index],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold
+                                )
+                              )
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

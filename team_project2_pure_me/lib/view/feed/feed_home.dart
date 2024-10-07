@@ -60,7 +60,7 @@ class FeedHome extends StatelessWidget {
                                   itemBuilder: (context, index) {
                                     return GestureDetector(
                                       onTap: () => Get.to(
-                                        () => FeedDetail(),
+                                        () => const FeedDetail(),
                                         arguments: feedHandler.feedList[index],
                                       ),
                                       child: Card(

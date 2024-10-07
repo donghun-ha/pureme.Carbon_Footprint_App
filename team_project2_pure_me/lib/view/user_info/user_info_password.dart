@@ -106,11 +106,11 @@ class UserInfoPassword extends StatelessWidget {
                                   );
                                 }
                               },
-                              child: const Text('비밀번호 변경'),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white, backgroundColor: Colors.green,
                                 minimumSize: const Size(double.infinity, 50),
                               ),
+                              child: const Text('비밀번호 변경'),
                             ),
                           ),
                         ],

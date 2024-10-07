@@ -92,7 +92,7 @@ class CalcHome extends StatelessWidget {
                                               ),
                                             ),
                                             onPressed: () =>
-                                                Get.to(() => CalcTrans()),
+                                                Get.to(() => const CalcTrans()),
                                             child: const Text(
                                               '교통 정보 입력',
                                               style: TextStyle(
@@ -150,7 +150,7 @@ class CalcHome extends StatelessWidget {
                                               ),
                                             ),
                                             onPressed: () =>
-                                                Get.to(() => CalcElec()),
+                                                Get.to(() => const CalcElec()),
                                             child: const Text(
                                               '전기 사용량 입력',
                                               style: TextStyle(
@@ -208,7 +208,7 @@ class CalcHome extends StatelessWidget {
                                               ),
                                             ),
                                             onPressed: () =>
-                                                Get.to(() => CalcFood()),
+                                                Get.to(() => const CalcFood()),
                                             child: const Text(
                                               '식습관 정보 입력',
                                               style: TextStyle(
@@ -266,7 +266,7 @@ class CalcHome extends StatelessWidget {
                                               ),
                                             ),
                                             onPressed: () =>
-                                                Get.to(() => CalcRecycle()),
+                                                Get.to(() => const CalcRecycle()),
                                             child: const Text(
                                               '재활용 소비량 입력',
                                               style: TextStyle(

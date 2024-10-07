@@ -12,128 +12,105 @@ class RankPage extends StatelessWidget {
     final RankHandler rankHandler = Get.find<RankHandler>();
 
     return Scaffold(
-      body: Stack(
-        children: [
-          // 배경 이미지
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('images/main_background_plain.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          // 컨텐츠
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    // 앱바 대체
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.arrow_back, color: Colors.black),
-                          onPressed: () => Get.back(),
-                        ),
-                        Text('랭킹', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    // 랭킹 리스트
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+
+                // 랭킹 리스트
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: const Offset(0, 3),
                       ),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              color: Color(0xFF4CAF50), // 진한 초록색 배경
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                topRight: Radius.circular(20),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset('images/ranking.png', width: 24, height: 24),
-                                SizedBox(width: 8),
-                                Text(
-                                  '이번달 환경지킴이 랭킹',
-                                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Obx(() => ListView.separated(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: rankHandler.rankList.length > 9 ? 9 : rankHandler.rankList.length,
-                            separatorBuilder: (context, index) => Divider(),
-                            itemBuilder: (context, index) {
-                              final user = rankHandler.rankList[index];
-                              return ListTile(
-                                leading: CircleAvatar(
-                                  child: Text('${index + 1}'),
-                                  backgroundColor: _getColor(index),
-                                ),
-                                title: Text(user.nickName),
-                                subtitle: Text('Point: ${user.point}'),
-                                trailing: Text('${(user.point / 10).toStringAsFixed(2)}KG', 
-                                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
-                              );
-                            },
-                          )),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    // 내 랭킹 정보
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Padding(
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
                         padding: const EdgeInsets.all(16.0),
-                        child: Obx(() => Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF4CAF50), // 진한 초록색 배경
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('내 랭킹: ${rankHandler.myrank.value}위', 
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text('내 포인트: ${rankHandler.rankList.isNotEmpty ? rankHandler.rankList[rankHandler.myrank.value - 1].point : 0}점', 
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            Image.asset('images/ranking.png', width: 24, height: 24),
+                            const SizedBox(width: 8),
+                            const Text(
+                              '이번달 환경지킴이 랭킹',
+                              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
                           ],
-                        )),
+                        ),
                       ),
-                    ),
-                  ],
+                      Obx(() => ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: rankHandler.rankList.length > 9 ? 9 : rankHandler.rankList.length,
+                        separatorBuilder: (context, index) => const Divider(),
+                        itemBuilder: (context, index) {
+                          final user = rankHandler.rankList[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: _getColor(index),
+                              child: Text('${index + 1}'),
+                            ),
+                            title: Text(user.nickName),
+                            subtitle: Text('Point: ${user.point}'),
+                            trailing: Text('${(user.point / 10).toStringAsFixed(2)}KG', 
+                              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                          );
+                        },
+                      )),
+                    ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 20),
+                // 내 랭킹 정보
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Obx(() => Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('내 랭킹: ${rankHandler.myrank.value}위', 
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        Text('내 포인트: ${rankHandler.rankList.isNotEmpty ? rankHandler.rankList[rankHandler.myrank.value - 1].point : 0}점', 
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      ],
+                    )),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

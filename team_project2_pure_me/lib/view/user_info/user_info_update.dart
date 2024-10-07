@@ -113,8 +113,8 @@ class UserInfoUpdate extends StatelessWidget {
                                           Image.asset('images/sprout.png', width: 24, height: 24),const SizedBox(height: 10), 
                                         ],
                                       ),
-                                      Text(style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),'$nickName'),
-                                      Text(style: const TextStyle(fontSize: 20, fontWeight: FontWeight.normal),'$email'),
+                                      Text(style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),nickName),
+                                      Text(style: const TextStyle(fontSize: 20, fontWeight: FontWeight.normal),email),
                                     ],
                                   ),
                                 ),
@@ -156,11 +156,11 @@ class UserInfoUpdate extends StatelessWidget {
                                   const SnackBar(content: Text('회원 정보가 수정되었습니다. (개발 중)')),
                                 );
                               }, 
-                              child: const Text('수정 완료'), 
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white, backgroundColor: Colors.green,
                                 minimumSize: const Size(double.infinity, 50),  
-                              ),  
+                              ), 
+                              child: const Text('수정 완료'),  
                             ), 
                           ),const SizedBox(height: 25) 
                         ],

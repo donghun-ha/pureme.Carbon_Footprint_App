@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'user_info_update.dart';
+import 'user_info_password.dart';
 
 class UserInfoConfig extends StatelessWidget {
-  const UserInfoConfig({super. key}) ;
+  const UserInfoConfig({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -60,13 +62,13 @@ class UserInfoConfig extends StatelessWidget {
                           ListTile(
                             leading: Image.asset('images/post.png', width: 24, height: 24),
                             title: const Text('회원정보 수정'),
-                            onTap: () => Get.toNamed('/user_info_update'),
+                            onTap: () => Get.to(() => UserInfoUpdate()),
                           ),
                           const Divider(),
                           ListTile(
                             leading: Image.asset('images/settings.png', width: 24, height: 24),
                             title: const Text('비밀번호 변경'),
-                            onTap: () => Get.toNamed('/user_info_password'),
+                            onTap: () => Get.to(() => UserInfoPassword()),
                           ),
                           const Divider(),
                           ListTile(
@@ -77,7 +79,8 @@ class UserInfoConfig extends StatelessWidget {
                               // 예: Get.offAllNamed('/login');
                             },
                           ), 
-                          const Divider(), const SizedBox(height: 50)
+                          const Divider(), 
+                          const SizedBox(height: 50)
                         ],
                       ),
                     ), 
