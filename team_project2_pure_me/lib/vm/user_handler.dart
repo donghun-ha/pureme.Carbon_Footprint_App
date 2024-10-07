@@ -1,17 +1,18 @@
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/lev.dart';
 import 'package:team_project2_pure_me/model/user.dart';
+import 'package:team_project2_pure_me/vm/db_handler.dart';
 
-class UserController extends GetxController {
+class UserHandler extends DbHandler {
   final Rx<User> curUser = User(
-    eMail: '1234@gmail.com', 
-    nickName: 'TjPureMe', 
-    password: '1234', 
-    phone: '010-1234-5678', 
-    createDate: DateTime.now(), 
-    point: 0, 
-    profileImage: 'sample.png'
-  ).obs;
+          eMail: '1234@gmail.com',
+          nickName: 'TjPureMe',
+          password: '1234',
+          phone: '010-1234-5678',
+          createDate: DateTime.now(),
+          point: 0,
+          profileImage: 'sample.png')
+      .obs;
 
   final RxList<Lev> levList = <Lev>[].obs;
   final RxInt curLev = 0.obs;
@@ -46,7 +47,8 @@ class UserController extends GetxController {
     }
   }
 
-  Future<bool> signIn(String eMail, String password, String passwordVerify, String nickName, String phone) async {
+  Future<bool> signIn(String eMail, String password, String passwordVerify,
+      String nickName, String phone) async {
     if (password != passwordVerify) return false;
 
     try {
@@ -72,9 +74,18 @@ class UserController extends GetxController {
       // Simulating API call
       await Future.delayed(Duration(seconds: 1));
       levList.assignAll([
-        Lev(levName: 'Beginner', levImageName: 'beginner.png', requiredPoint: 0),
-        Lev(levName: 'Intermediate', levImageName: 'intermediate.png', requiredPoint: 100),
-        Lev(levName: 'Advanced', levImageName: 'advanced.png', requiredPoint: 200),
+        Lev(
+            levName: 'Beginner',
+            levImageName: 'beginner.png',
+            requiredPoint: 0),
+        Lev(
+            levName: 'Intermediate',
+            levImageName: 'intermediate.png',
+            requiredPoint: 100),
+        Lev(
+            levName: 'Advanced',
+            levImageName: 'advanced.png',
+            requiredPoint: 200),
       ]);
       changeCurLev();
     } catch (e) {
@@ -106,7 +117,8 @@ class UserController extends GetxController {
     }
   }
 
-  Future<void> userUpdateAll(String profileImage, String nickName, String eMail, String phone) async {
+  Future<void> userUpdateAll(
+      String profileImage, String nickName, String eMail, String phone) async {
     try {
       // Simulating API call
       await Future.delayed(Duration(seconds: 1));

@@ -1,10 +1,11 @@
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:team_project2_pure_me/vm/db_handler.dart';
+import 'package:team_project2_pure_me/vm/manage_handler.dart';
 
-class RankHandler extends GetxController {
+class RankHandler extends ManageHandler {
   final DbHandler _dbHandler = Get.find<DbHandler>();
-  
+
   RxList<User> rankList = <User>[].obs;
   RxInt myrank = 0.obs;
 
@@ -29,7 +30,7 @@ class RankHandler extends GetxController {
     try {
       // 현재 사용자의 ID를 가져옴
       String currentUserId = _dbHandler.getCurrentUserId();
-      
+
       // 현재 사용자의 랭크를 계산
       int rank = await _dbHandler.getUserRank(currentUserId);
       myrank.value = rank;
