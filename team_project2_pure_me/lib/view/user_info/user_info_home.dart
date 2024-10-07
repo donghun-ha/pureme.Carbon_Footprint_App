@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'user_info_config.dart';
 
 class UserInfoHome extends StatelessWidget {
   UserInfoHome({super.key});
@@ -53,40 +55,38 @@ class UserInfoHome extends StatelessWidget {
                                 children: [
                                   CircleAvatar(
                                     radius: 65,
-                                    backgroundImage: NetworkImage(profileImage),
+                                    backgroundImage: AssetImage(profileImage),
                                   ),
                                   const SizedBox(width: 22),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
+                                          mainAxisAlignment: MainAxisAlignment.end,
                                           children: [
-                                            Image.asset('images/settings.png',
-                                                width: 24, height: 24),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Get.to(() => const UserInfoConfig());
+                                              },
+                                              child: Image.asset('images/settings.png', width: 24, height: 24),
+                                            ),
                                           ],
                                         ),
                                         Row(
                                           children: [
                                             Text(
                                               'Level $level',
-                                              style:
-                                                  const TextStyle(fontSize: 18),
+                                              style: const TextStyle(fontSize: 18),
                                             ),
                                             const SizedBox(width: 8),
-                                            Image.asset('images/sprout.png',
-                                                width: 24, height: 24),
+                                            Image.asset('images/sprout.png', width: 24, height: 24),
                                           ],
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
                                           nickName,
-                                          style: const TextStyle(
-                                              fontSize: 25,
-                                              fontWeight: FontWeight.bold),
+                                          style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                                         ),
                                         Text(
                                           email,
@@ -106,8 +106,7 @@ class UserInfoHome extends StatelessWidget {
                               onPressed: () {
                                 // 글쓰기 기능 구현
                               },
-                              icon: Image.asset('images/post.png',
-                                  width: 24, height: 24),
+                              icon: Image.asset('images/post.png', width: 24, height: 24),
                               label: const Text('게시글 작성'),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.black,
@@ -121,26 +120,32 @@ class UserInfoHome extends StatelessWidget {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         padding: const EdgeInsets.all(16),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 1,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10
+                        ),
                         itemCount: posts.length,
                         itemBuilder: (context, index) {
                           return Container(
                             decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(10),
-                                image: const DecorationImage(
-                                    image: AssetImage('images/earth.png'),
-                                    fit: BoxFit.cover)),
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10),
+                              image: const DecorationImage(
+                                image: AssetImage('images/earth.png'),
+                                fit: BoxFit.cover
+                              )
+                            ),
                             child: Center(
-                                child: Text(posts[index],
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold))),
+                              child: Text(
+                                posts[index],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold
+                                )
+                              )
+                            ),
                           );
                         },
                       ),

@@ -28,9 +28,9 @@ class Home extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        Card(
+                        const Card(
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -40,13 +40,13 @@ class Home extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Text('총 탄소 0KG을'), // 탄소량 출력
+                        const Text('총 탄소 0KG을'), // 탄소량 출력
                         const Text('줄이는 히어로 활동을 하셨습니다!'),
                         Image.asset(
                           'images/earth.png',
                           width: 100,
                         ),
-                        Text('0KG'), // 탄소량 출력
+                        const Text('0KG'), // 탄소량 출력
                         const Text('총 탄소량 감소'),
                         IntrinsicHeight(
                           child: Row(
@@ -96,8 +96,8 @@ class Home extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 16, 0, 16),
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(16, 16, 0, 16),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -128,7 +128,7 @@ class Home extends StatelessWidget {
                               ),
                             ),
                             onPressed: () {
-                              Get.to(() => CalcHome());
+                              Get.to(() => const CalcHome());
                             },
                             child: Row(
                               children: [
