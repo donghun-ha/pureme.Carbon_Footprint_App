@@ -5,7 +5,7 @@ class UserInfoHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       // 자기 게시글의 사진들만 List로 가져오는 함수
     );
   }

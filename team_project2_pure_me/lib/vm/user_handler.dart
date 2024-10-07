@@ -1,11 +1,9 @@
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/lev.dart';
 import 'package:team_project2_pure_me/model/user.dart';
-import 'package:team_project2_pure_me/vm/db_handler.dart';
 
-class UserHandelr extends DbHandler {
-
-  User curUser = User(
+class UserController extends GetxController {
+  final Rx<User> curUser = User(
     eMail: '1234@gmail.com', 
     nickName: 'TjPureMe', 
     password: '1234', 
@@ -13,96 +11,135 @@ class UserHandelr extends DbHandler {
     createDate: DateTime.now(), 
     point: 0, 
     profileImage: 'sample.png'
-    ); // fetch해오기 위한 User class
+  ).obs;
 
-    List<Lev> levList = <Lev>[].obs;
-    int curLev = 0; // point를 통해 계산한 레벨을 저장할 변수
+  final RxList<Lev> levList = <Lev>[].obs;
+  final RxInt curLev = 0.obs;
+  final RxBool eMailUnique = false.obs;
+  final Rx<String?> profileImageName = Rx<String?>(null);
 
-    bool eMailUnique = false; // 회원가입시 이메일 확인을 위한 변수
-
-    String? profileImageName;  /// 회원정보 수정시 이미지 이름을 바꿔야할때 필요한 변수
-
-  bool loginVerify(String eMail, String password){
-    /// ---------------------------------------------------구현해야 할 기능
-
-    /// eMail과 password를 받아서 MySql에서 count함수로 일치하는걸 찾아내서
-    /// 만약 일치하는게 없으면 false를 return 하고,
-    /// 일치하는게 있다면 
-    ///   curUser의 eMail ~ profileImage등 모든 argument에 해당 값들을 넣어주고 
-    ///   update()를 실행시킨다음
-    ///   true를 return한다.
-    
-    return eMail == '1234@gmail.com' && password == '1234'; // 로직 구현 후 이 부분은 삭제바람
+  Future<bool> loginVerify(String eMail, String password) async {
+    try {
+      // Simulating API call
+      await Future.delayed(Duration(seconds: 1));
+      if (eMail == '1234@gmail.com' && password == '1234') {
+        curUser.update((val) {
+          val?.eMail = eMail;
+          val?.password = password;
+        });
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print('Error in loginVerify: $e');
+      return false;
+    }
   }
 
-  eMailVerify(String eMail){
-    /// ---------------------------------------------------구현해야 할 기능
-
-    /// eMail을 받아서 MySql에서 count함수로 일치하는걸 찾아내서
-    /// 만약 일치하는게 "있"으면 false를 eMailUnique에 넣어주고,
-    /// 일치하는게 "없"다면 true를 eMailUnique에 넣어주고 
-    /// 업데이트한다 
-    
-    eMailUnique != '1234@gamil.com'; // 로직 구현 후 이 부분은 삭제바람 
-    update(); // 로직 구현 후 이 부분은 삭제바람
+  Future<void> eMailVerify(String eMail) async {
+    try {
+      // Simulating API call
+      await Future.delayed(Duration(seconds: 1));
+      eMailUnique.value = eMail != '1234@gmail.com';
+    } catch (e) {
+      print('Error in eMailVerify: $e');
+    }
   }
 
-  signIn(String eMail, String password, String passwordVerify, String nickName, String phone){
+  Future<bool> signIn(String eMail, String password, String passwordVerify, String nickName, String phone) async {
+    if (password != passwordVerify) return false;
 
-    /// password와 passwordverify가 다르면 false를 return하고
-    /// 값이 같다면
-
-    User(
-      eMail: eMail, 
-      nickName: nickName, 
-      password: password, 
-      phone: phone, 
-      createDate: DateTime.now(), 
-      point: 0, 
-    );
-    // 를 MySql에 집어넣고 true를 return한다.
-
-    return true; // 로직 구현 후 이 부분은 삭제바람
+    try {
+      // Simulating API call
+      await Future.delayed(Duration(seconds: 1));
+      curUser.update((val) {
+        val?.eMail = eMail;
+        val?.nickName = nickName;
+        val?.password = password;
+        val?.phone = phone;
+        val?.createDate = DateTime.now();
+        val?.point = 0;
+      });
+      return true;
+    } catch (e) {
+      print('Error in signIn: $e');
+      return false;
+    }
   }
 
-  fetchUserLev(){
-    /// firebase의 레벨table을 참조해서 유저의 레벨을 fetch해오는 함수
-    /// LevList에 lev들을 저장한다.
+  Future<void> fetchUserLev() async {
+    try {
+      // Simulating API call
+      await Future.delayed(Duration(seconds: 1));
+      levList.assignAll([
+        Lev(levName: 'Beginner', levImageName: 'beginner.png', requiredPoint: 0),
+        Lev(levName: 'Intermediate', levImageName: 'intermediate.png', requiredPoint: 100),
+        Lev(levName: 'Advanced', levImageName: 'advanced.png', requiredPoint: 200),
+      ]);
+      changeCurLev();
+    } catch (e) {
+      print('Error in fetchUserLev: $e');
+    }
   }
 
-  changeCurLev(){
-    // curLev를 바꿔준다 LevList에 맞게 바꿔준 뒤 update()하는 로직을 짠다.
+  void changeCurLev() {
+    for (int i = 0; i < levList.length; i++) {
+      if (curUser.value.point >= levList[i].requiredPoint) {
+        curLev.value = i + 1;
+      } else {
+        break;
+      }
+    }
   }
 
-
-
-  userUpdate(String nickName, String eMail, String phone){
-    // 데이터베이스에 curUser를 업데이트하고 아래를 실행시킨다.
-    curUser.nickName = nickName;
-    curUser.eMail = eMail;
-    curUser.phone = phone;
-    update();
-
-
+  Future<void> userUpdate(String nickName, String eMail, String phone) async {
+    try {
+      // Simulating API call
+      await Future.delayed(Duration(seconds: 1));
+      curUser.update((val) {
+        val?.nickName = nickName;
+        val?.eMail = eMail;
+        val?.phone = phone;
+      });
+    } catch (e) {
+      print('Error in userUpdate: $e');
+    }
   }
 
-  userUpdateAll(String profileImage,String nickName, String eMail, String phone){
-    // 데이터베이스에 curUser를 업데이트하고 아래를 실행시킨다.
-    curUser.profileImage = profileImage;
-    curUser.nickName = nickName;
-    curUser.eMail = eMail;
-    curUser.phone = phone;
+  Future<void> userUpdateAll(String profileImage, String nickName, String eMail, String phone) async {
+    try {
+      // Simulating API call
+      await Future.delayed(Duration(seconds: 1));
+      curUser.update((val) {
+        val?.profileImage = profileImage;
+        val?.nickName = nickName;
+        val?.eMail = eMail;
+        val?.phone = phone;
+      });
+    } catch (e) {
+      print('Error in userUpdateAll: $e');
+    }
   }
 
-  userImagePicker(){
-    // user를 위한 ImagePicker, 
-    // userimageName을 업데이트한다
+  Future<void> userImagePicker() async {
+    // Implement image picker logic here
+    // After picking the image, update profileImageName
+    // For example:
+    // final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+    // if (pickedFile != null) {
+    //   profileImageName.value = pickedFile.path.split('/').last;
+    // }
   }
 
-  userUpdatePwd(String password){
-    /// 비밀번호를 받아서 데이터베이스에 변경만 시킨다.
+  Future<void> userUpdatePwd(String password) async {
+    try {
+      // Simulating API call
+      await Future.delayed(Duration(seconds: 1));
+      curUser.update((val) {
+        val?.password = password;
+      });
+    } catch (e) {
+      print('Error in userUpdatePwd: $e');
+    }
   }
-
-
-
 }
