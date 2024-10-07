@@ -5,7 +5,7 @@ class ManageHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       // 함수 불필요
     );
   }

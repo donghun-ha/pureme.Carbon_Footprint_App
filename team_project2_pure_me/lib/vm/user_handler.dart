@@ -22,7 +22,7 @@ class UserHandler extends DbHandler {
   Future<bool> loginVerify(String eMail, String password) async {
     try {
       // Simulating API call
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       if (eMail == '1234@gmail.com' && password == '1234') {
         curUser.update((val) {
           val?.eMail = eMail;
@@ -40,7 +40,7 @@ class UserHandler extends DbHandler {
   Future<void> eMailVerify(String eMail) async {
     try {
       // Simulating API call
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       eMailUnique.value = eMail != '1234@gmail.com';
     } catch (e) {
       print('Error in eMailVerify: $e');
@@ -53,7 +53,7 @@ class UserHandler extends DbHandler {
 
     try {
       // Simulating API call
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       curUser.update((val) {
         val?.eMail = eMail;
         val?.nickName = nickName;
@@ -72,7 +72,7 @@ class UserHandler extends DbHandler {
   Future<void> fetchUserLev() async {
     try {
       // Simulating API call
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       levList.assignAll([
         Lev(
             levName: 'Beginner',
@@ -106,7 +106,7 @@ class UserHandler extends DbHandler {
   Future<void> userUpdate(String nickName, String eMail, String phone) async {
     try {
       // Simulating API call
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       curUser.update((val) {
         val?.nickName = nickName;
         val?.eMail = eMail;
@@ -121,7 +121,7 @@ class UserHandler extends DbHandler {
       String profileImage, String nickName, String eMail, String phone) async {
     try {
       // Simulating API call
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       curUser.update((val) {
         val?.profileImage = profileImage;
         val?.nickName = nickName;
@@ -146,7 +146,7 @@ class UserHandler extends DbHandler {
   Future<void> userUpdatePwd(String password) async {
     try {
       // Simulating API call
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       curUser.update((val) {
         val?.password = password;
       });

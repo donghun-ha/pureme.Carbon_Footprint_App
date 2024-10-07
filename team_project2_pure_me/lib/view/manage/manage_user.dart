@@ -5,7 +5,7 @@ class ManageUser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       // 유저 검색 기능을 쓰기
       // 
     );
