@@ -5,7 +5,7 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       // 필요한 변수: curUser, curTotalCarbon
       // 필요 함수: curUser는 로그인시 이미 바뀌어서 상관없지만
       // curTotalCarbon 바꾸기 위한 vmhandler.fetchTotalCarbon 한번 불러줘야함

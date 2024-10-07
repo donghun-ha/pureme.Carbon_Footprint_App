@@ -5,7 +5,7 @@ class FeedDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       // 피드 가져오는 함수: fetchFeedDetail(), 
       // 피드가 담겨있는 변수 : curFeed
 

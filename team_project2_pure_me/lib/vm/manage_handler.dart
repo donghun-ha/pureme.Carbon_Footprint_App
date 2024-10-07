@@ -1,6 +1,5 @@
-import 'package:get/get.dart';
-import 'package:team_project2_pure_me/model/user.dart';
-import 'package:team_project2_pure_me/vm/feed_handler.dart';
+
+/*
 
 class ManageHandler extends FeedHandler{
 
@@ -16,3 +15,5 @@ class ManageHandler extends FeedHandler{
   }
 
 }
+
+*/

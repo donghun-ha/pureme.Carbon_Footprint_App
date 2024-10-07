@@ -42,3 +42,5 @@ post_install do |installer|
     flutter_additional_ios_build_settings(target)
   end
 end
+
+install! 'cocoapods', :warn_for_unused_master_specs_repo => false

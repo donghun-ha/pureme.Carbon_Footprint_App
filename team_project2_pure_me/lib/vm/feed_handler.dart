@@ -1,8 +1,6 @@
-import 'package:get/get.dart';
-import 'package:team_project2_pure_me/model/feed.dart';
-import 'package:team_project2_pure_me/model/reply.dart';
 
-import 'package:team_project2_pure_me/vm/calc_handler.dart';
+
+/*
 
 class FeedHandler extends CalcHandler{
   List<String> feedList = <String>[].obs; /// feedHome화면에서 쓸 feedList
@@ -20,6 +18,7 @@ class FeedHandler extends CalcHandler{
   bool curFeedLike = false;
 
   String? insertImageName;
+
 
 
   fetchFeedList(){
@@ -94,4 +93,7 @@ class FeedHandler extends CalcHandler{
   }
 
 
+
 }
+
+*/

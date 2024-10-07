@@ -5,7 +5,7 @@ class CalcRecycle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       // 텍스트필드의 내용을 insertCarbonGen(String kind, String amount)에 넣어준다.
     );
   }

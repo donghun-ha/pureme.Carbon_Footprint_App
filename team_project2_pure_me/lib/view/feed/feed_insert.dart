@@ -5,7 +5,7 @@ class FeedInsert extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       // imagePicker : feedImagePicker
       // 피드 추가하는 함수 : insertFeed(String content(내용))
     );
