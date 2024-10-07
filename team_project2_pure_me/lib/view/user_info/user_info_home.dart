@@ -50,9 +50,9 @@ class UserInfoHome extends StatelessWidget {
                             children: [
                               Container(
                                 height: 200,
-                                decoration: BoxDecoration(
-                                  color: Colors.lightGreen[100],
-                                  borderRadius: const BorderRadius.only(
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFE9FCE7),
+                                  borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(20),
                                     topRight: Radius.circular(20),
                                   ),
@@ -63,10 +63,10 @@ class UserInfoHome extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       CircleAvatar(
-                                        radius: 60,
+                                        radius: 65,
                                         backgroundImage: NetworkImage(profileImage),
                                       ),
-                                      const SizedBox(width: 16),
+                                      const SizedBox(width: 22),
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,7 +90,7 @@ class UserInfoHome extends StatelessWidget {
                                             const SizedBox(height: 8),
                                             Text(
                                               nickName,
-                                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                              style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                                             ),
                                             Text(
                                               email,
