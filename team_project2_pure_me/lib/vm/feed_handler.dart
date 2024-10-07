@@ -47,7 +47,7 @@ class FeedHandler extends CalcHandler {
 //
 //
   fetchFeedList() async {
-    String curEMail = curUser.value.eMail;
+    String curEMail = curUser.eMail;
 
     /// 다른사람의 피드(curEMail 변수 이용)의 "ImageName"들만 가져와서
     /// feedList에 저장하기만 하면됨.
@@ -61,7 +61,7 @@ class FeedHandler extends CalcHandler {
   }
 
   fetchLike() {
-    String curEMail = curUser.value.eMail;
+    String curEMail = curUser.eMail;
     // 를 이용해서
     /// Liketable에서 좋아요 숫자를 가져오고,
     /// 내가 좋아요를 눌렀는지도 가져오고
@@ -75,7 +75,7 @@ class FeedHandler extends CalcHandler {
   changeLike(bool value) {
     /// curFeedLike = value
     /// update()
-    String curEMail = curUser.value.eMail;
+    String curEMail = curUser.eMail;
 
     /// 를 이용해 데이터베이스에도 같이 업데이트한다
   }
@@ -92,7 +92,7 @@ class FeedHandler extends CalcHandler {
   insertReply(String content) {
     Reply(
         feedName: curFeed.feedName!, // 현재 피드의 이름
-        authorEMail: curUser.value.eMail, // 현재 유저의 이메일
+        authorEMail: curUser.eMail, // 현재 유저의 이메일
         content: content,
         writeTime: DateTime.now(),
         replyState: 0 //기본값
@@ -103,7 +103,7 @@ class FeedHandler extends CalcHandler {
 
   insertFeed(String content) {
     Feed(
-        authorEMail: curUser.value.eMail,
+        authorEMail: curUser.eMail,
         content: content,
         feedImageName: insertImageName!,
         writeTime: DateTime.now(),

@@ -1,157 +1,154 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:team_project2_pure_me/model/lev.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:team_project2_pure_me/vm/db_handler.dart';
 
-class UserHandler extends DbHandler {
-  final Rx<User> curUser = User(
-          eMail: '1234@gmail.com',
-          nickName: 'TjPureMe',
-          password: '1234',
-          phone: '010-1234-5678',
-          createDate: DateTime.now(),
-          point: 0,
-          profileImage: 'sample.png')
-      .obs;
+import 'package:http/http.dart' as http;
 
-  final RxList<Lev> levList = <Lev>[].obs;
-  final RxInt curLev = 0.obs;
-  final RxBool eMailUnique = false.obs;
-  final Rx<String?> profileImageName = Rx<String?>(null);
+class UserHandler extends DbHandler {
+  XFile? imageFile;
+
+  final ImagePicker picker = ImagePicker();
+
+  User curUser = User(
+      eMail: '1234@gmail.com',
+      nickName: 'TjPureMe',
+      password: '1234',
+      phone: '010-1234-5678',
+      createDate: DateTime.now(),
+      point: 0,
+      profileImage: 'sample.png'); // fetch해오기 위한 User class
+
+  List<Lev> levList = <Lev>[].obs;
+  int curLev = 0; // point를 통해 계산한 레벨을 저장할 변수
+
+  bool eMailUnique = false; // 회원가입시 이메일 확인을 위한 변수
+
+  String? profileImageName;
+
+  /// 회원정보 수정시 이미지 이름을 바꿔야할때 필요한 변수
 
   Future<bool> loginVerify(String eMail, String password) async {
-    try {
-      // Simulating API call
-      await Future.delayed(const Duration(seconds: 1));
-      if (eMail == '1234@gmail.com' && password == '1234') {
-        curUser.update((val) {
-          val?.eMail = eMail;
-          val?.password = password;
-        });
-        return true;
-      }
-      return false;
-    } catch (e) {
-      print('Error in loginVerify: $e');
-      return false;
-    }
-  }
+    var url = Uri.parse(
+        "http://127.0.0.1:8000/user/loginVerify?eMail=$eMail&password=$password");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    bool ver = result[0]['seq'];
 
-  Future<void> eMailVerify(String eMail) async {
-    try {
-      // Simulating API call
-      await Future.delayed(const Duration(seconds: 1));
-      eMailUnique.value = eMail != '1234@gmail.com';
-    } catch (e) {
-      print('Error in eMailVerify: $e');
-    }
-  }
-
-  Future<bool> signIn(String eMail, String password, String passwordVerify,
-      String nickName, String phone) async {
-    if (password != passwordVerify) return false;
-
-    try {
-      // Simulating API call
-      await Future.delayed(const Duration(seconds: 1));
-      curUser.update((val) {
-        val?.eMail = eMail;
-        val?.nickName = nickName;
-        val?.password = password;
-        val?.phone = phone;
-        val?.createDate = DateTime.now();
-        val?.point = 0;
-      });
+    if (ver) {
+      url = Uri.parse("http://127.0.0.1:8000/user/login?eMail=$eMail");
+      response = await http.get(url);
+      dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+      result = dataConvertedJSON['result'];
+      curUser = User.fromMap(result[0]);
+      update();
+      print(curUser.eMail);
       return true;
-    } catch (e) {
-      print('Error in signIn: $e');
+    } else {
       return false;
     }
   }
 
-  Future<void> fetchUserLev() async {
-    try {
-      // Simulating API call
-      await Future.delayed(const Duration(seconds: 1));
-      levList.assignAll([
-        Lev(
-            levName: 'Beginner',
-            levImageName: 'beginner.png',
-            requiredPoint: 0),
-        Lev(
-            levName: 'Intermediate',
-            levImageName: 'intermediate.png',
-            requiredPoint: 100),
-        Lev(
-            levName: 'Advanced',
-            levImageName: 'advanced.png',
-            requiredPoint: 200),
-      ]);
-      changeCurLev();
-    } catch (e) {
-      print('Error in fetchUserLev: $e');
+  eMailVerify(String eMail) async {
+    var url = Uri.parse("http://127.0.0.1:8000/user/eMailVerify?eMail=$eMail");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+
+    eMailUnique = result[0]['result'];
+    update(); // 로직 구현 후 이 부분은 삭제바람
+  }
+
+  signIn(String eMail, String password, String passwordVerify, String nickName,
+      String phone) async {
+    if (password != passwordVerify) {
+      return false;
+    } else {}
+    var url = Uri.parse(
+        "http://127.0.0.1:8000/user/signIn?eMail=$eMail&nickname=$nickName&password=$password&phone=$phone");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+
+    return result == "OK";
+  }
+
+  fetchUserLev() {
+    /// firebase의 레벨table을 참조해서 유저의 레벨을 fetch해오는 함수
+    /// LevList에 lev들을 저장한다.
+  }
+
+  changeCurLev() {
+    // curLev를 바꿔준다 LevList에 맞게 바꿔준 뒤 update()하는 로직을 짠다.
+  }
+
+  userUpdate(String eMail, String nickName, String phone) async {
+    var url = Uri.parse(
+        "http://127.0.0.1:8000/user/update?cureMail=${curUser.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone");
+    print(url);
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+
+    curUser.nickName = nickName;
+    curUser.eMail = eMail;
+    curUser.phone = phone;
+    update();
+  }
+
+  userUpdateAll(
+      String eMail, String nickName, String phone, String profileImage) async {
+    var url = Uri.parse(
+        "http://127.0.0.1:8000/user/updateAll?cureMail=${curUser.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone&&profileImage=$profileImage");
+    print(url);
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+
+    curUser.profileImage = profileImage;
+    curUser.nickName = nickName;
+    curUser.eMail = eMail;
+    curUser.phone = phone;
+  }
+
+  //// handler.userImagePicker(ImageSource.gallery)로 실행시키세요
+  userImagePicker(ImageSource imageSource) async {
+    final XFile? pickedFile = await picker.pickImage(source: imageSource);
+    imageFile = XFile(pickedFile!.path);
+    List preFileName = imageFile!.path.split('/');
+    profileImageName = preFileName[preFileName.length - 1];
+    update();
+  }
+
+  userImageInsert(String fileName) async {
+    var request = http.MultipartRequest(
+        "POST", Uri.parse("http://127.0.0.1:8000/user/imageUpload"));
+    var multipartFile =
+        await http.MultipartFile.fromPath('file', imageFile!.path);
+    request.files.add(multipartFile);
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      print('success');
+    } else {
+      print("error");
     }
   }
 
-  void changeCurLev() {
-    for (int i = 0; i < levList.length; i++) {
-      if (curUser.value.point >= levList[i].requiredPoint) {
-        curLev.value = i + 1;
-      } else {
-        break;
-      }
-    }
-  }
+  userImageUpdate(String fileName) {}
 
-  Future<void> userUpdate(String nickName, String eMail, String phone) async {
-    try {
-      // Simulating API call
-      await Future.delayed(const Duration(seconds: 1));
-      curUser.update((val) {
-        val?.nickName = nickName;
-        val?.eMail = eMail;
-        val?.phone = phone;
-      });
-    } catch (e) {
-      print('Error in userUpdate: $e');
-    }
-  }
+  userUpdatePwd(String password) async {
+    var url = Uri.parse(
+        "http://127.0.0.1:8000/user/updatePW?eMail=${curUser.eMail}&password=$password");
+    print(url);
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
 
-  Future<void> userUpdateAll(
-      String profileImage, String nickName, String eMail, String phone) async {
-    try {
-      // Simulating API call
-      await Future.delayed(const Duration(seconds: 1));
-      curUser.update((val) {
-        val?.profileImage = profileImage;
-        val?.nickName = nickName;
-        val?.eMail = eMail;
-        val?.phone = phone;
-      });
-    } catch (e) {
-      print('Error in userUpdateAll: $e');
-    }
-  }
-
-  Future<void> userImagePicker() async {
-    // Implement image picker logic here
-    // After picking the image, update profileImageName
-    // For example:
-    // final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
-    // if (pickedFile != null) {
-    //   profileImageName.value = pickedFile.path.split('/').last;
-    // }
-  }
-
-  Future<void> userUpdatePwd(String password) async {
-    try {
-      // Simulating API call
-      await Future.delayed(const Duration(seconds: 1));
-      curUser.update((val) {
-        val?.password = password;
-      });
-    } catch (e) {
-      print('Error in userUpdatePwd: $e');
-    }
+    ///
+    /// 비밀번호를 받아서 데이터베이스에 변경만 시킨다.
   }
 }

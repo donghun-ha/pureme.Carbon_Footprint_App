@@ -1,5 +1,4 @@
-class User{
-  
+class User {
   String eMail; // 이메일
   String nickName; // 닉네임
   String password; // 패스워드
@@ -19,12 +18,12 @@ class User{
   });
 
   User.fromMap(Map<String, dynamic> res)
-  : eMail = res['eMail'],
-  nickName = res['nickName'],
-  password = res['password'],
-  phone = res['phone'],
-  createDate = DateTime.parse(res['createDate']),
-  point = int.parse(res['point']) ,
-  profileImage = res['profileImage'] == 'null' ? null: res['profileImage'];
-
+      : eMail = res['eMail'],
+        nickName = res['nickName'],
+        password = res['password'],
+        phone = res['phone'],
+        createDate = DateTime.parse(res['createDate']),
+        point = res['point'],
+        profileImage =
+            res['profileImage'] == 'null' ? null : res['profileImage'];
 }
