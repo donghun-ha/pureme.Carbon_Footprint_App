@@ -7,12 +7,12 @@ import 'package:team_project2_pure_me/view/background_green.dart';
 class RankPage extends StatelessWidget {
   final RankHandler rankHandler = Get.find<RankHandler>();
 
-  RankPage({super. key}) ;
+  RankPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BackgroundGreen(
-      content: Scaffold( 
+      content: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: const Text('Ranking'),
@@ -25,33 +25,37 @@ class RankPage extends StatelessWidget {
             children: [
               Expanded(
                 child: Obx(() => ListView.builder(
-                  itemCount: rankHandler.rankList.length,
-                  itemBuilder: (context, index) {
-                    User user = rankHandler.rankList[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          child: Text('${index + 1}'),
-                          backgroundColor: _getRankColor(index),
-                        ),
-                        title: Text(user.nickName),
-                        subtitle: Text('Points: ${user.point}'),
-                        trailing: user.profileImage != null
-                            ? CircleAvatar(backgroundImage: NetworkImage(user.profileImage!))
-                            : null,
-                      ),
-                    );
-                  },
-                )),
+                      itemCount: rankHandler.rankList.length,
+                      itemBuilder: (context, index) {
+                        User user = rankHandler.rankList[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 16),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              child: Text('${index + 1}'),
+                              backgroundColor: _getRankColor(index),
+                            ),
+                            title: Text(user.nickName),
+                            subtitle: Text('Points: ${user.point}'),
+                            trailing: user.profileImage != null
+                                ? CircleAvatar(
+                                    backgroundImage:
+                                        NetworkImage(user.profileImage!))
+                                : null,
+                          ),
+                        );
+                      },
+                    )),
               ),
               Obx(() => Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'Your Rank: ${rankHandler.myrank}',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              )),
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'Your Rank: ${rankHandler.myrank}',
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  )),
             ],
           ),
         ),
