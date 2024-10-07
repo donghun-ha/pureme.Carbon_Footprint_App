@@ -6,8 +6,8 @@ from manager import router as manage_router
 
 app = FastAPI()
 app.include_router(user_router, prefix="/user", tags=["user"])
-app.include_router(feed_router, prefix="/footprint", tags=["footprint"])
-app.include_router(footprint_router, prefix="/feed", tags=["feed"])
+app.include_router(footprint_router, prefix="/footprint", tags=["footprint"])
+app.include_router(feed_router, prefix="/feed", tags=["feed"])
 app.include_router(manage_router, prefix="/manage", tags=["manage"])
 
 
