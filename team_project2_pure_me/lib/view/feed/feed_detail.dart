@@ -16,7 +16,7 @@ class FeedDetail extends StatelessWidget {
           image: AssetImage('images/background_id.png'), // 배경 이미지
         ),
       ),
-      child: const Scaffold(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
         // 피드 가져오는 함수: fetchFeedDetail(),
         // 피드가 담겨있는 변수 : curFeed
