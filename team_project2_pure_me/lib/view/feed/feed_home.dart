@@ -61,10 +61,13 @@ class FeedHome extends StatelessWidget {
                                   itemBuilder: (context, index) {
                                     Feed feed = feedHandler.feedList[index];
                                     return GestureDetector(
-                                      onTap: () => Get.to(
-                                        () => FeedDetail(),
-                                        arguments: feed,
-                                      ),
+                                      onTap: () {
+                                        feedHandler.detailFeed(feed.feedName!);
+                                        Get.to(
+                                          () => FeedDetail(),
+                                          arguments: feed,
+                                        );
+                                      },
                                       child: Card(
                                         color: const Color(0xFFB1B1B1),
                                         child: ClipRRect(
