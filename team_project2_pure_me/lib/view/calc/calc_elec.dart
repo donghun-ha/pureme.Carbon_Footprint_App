@@ -19,7 +19,7 @@ class CalcElec extends StatelessWidget {
         child: Scaffold(
             backgroundColor: Colors.transparent,
             body: GetBuilder<Vmhandler>(builder: (controller) {
-              return
+              
                   // FutureBuilder(
                   //   future: controller.,
                   //   builder: (context, snapshot) {
@@ -33,7 +33,7 @@ class CalcElec extends StatelessWidget {
                   //       );
                   //     } else {
                   //       return
-                  Obx(() {
+                  
                 return Center(
                   child: Column(
                     children: [
@@ -146,7 +146,7 @@ class CalcElec extends StatelessWidget {
                     ],
                   ),
                 );
-              });
-            })));
+              })));
+            }
   }
-}
+
