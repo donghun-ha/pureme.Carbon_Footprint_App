@@ -329,6 +329,7 @@ async def get_rankings(limit: int = 10):
         # 유저가 아직 딕셔너리에 없으면 초기화합니다.
         if user_email not in user_activities:
             user_activities[user_email] = {}
+        print({row})
 
         # 해당 유저의 특정 카테고리 활동량을 저장합니다.
         user_activities[user_email][category_kind] = total_amount
