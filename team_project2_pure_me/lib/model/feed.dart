@@ -1,5 +1,5 @@
 class Feed {
-  // 피드 아이디(키값)
+  /// 피드 아이디(키값)
   String? feedName;
 
   /// 작성자 이메일

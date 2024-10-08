@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/view/login_signin/sign_up.dart';
 import 'package:team_project2_pure_me/view/tabbar_page.dart';
 
 class Login extends StatelessWidget {
   Login({super.key});
 
+  final GetStorage box = GetStorage();
   final TextEditingController idController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
 
@@ -97,6 +99,7 @@ class Login extends StatelessWidget {
                           // 로그인 로직
 
                           // 로그인 성공시 페이지 이동
+                          box.write('pureme_id', idController.text);
                           Get.to(() => TabbarPage());
                         },
                         child: const Text(

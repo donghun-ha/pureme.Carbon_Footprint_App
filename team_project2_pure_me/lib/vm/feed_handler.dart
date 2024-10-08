@@ -1,28 +1,33 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/model/reply.dart';
 
 import 'package:team_project2_pure_me/vm/calc_handler.dart';
 
 class FeedHandler extends CalcHandler {
-  var feedList = <Feed>[].obs;
+  final GetStorage box = GetStorage();
   final CollectionReference _feed =
       FirebaseFirestore.instance.collection('post');
 
   /// feedHome화면에서 쓸 feedList
-  List<Reply> replyList = <Reply>[].obs;
+  final feedList = <Feed>[].obs;
+
+  /// detailFeed
+  final curFeed = <Feed>[].obs;
 
   /// feedDetail화면에서 쓸 replyList
+  final replyList = <Reply>[].obs;
 
-  Feed curFeed = Feed(
-      feedName: '', // 작성된 feed의 Name
-      authorEMail: '', // 작성자 이메일
-      content: '', // 내용
-      feedImageName: '', // 잠시대기
-      writeTime: DateTime(0), // ??
-      feedState: '게시' // 기본값
-      );
+  // Feed? curFeed = Feed(
+  //     feedName: '', // 작성된 feed의 Name
+  //     authorEMail: '', // 작성자 이메일
+  //     content: '', // 내용
+  //     feedImageName: '', // 잠시대기
+  //     writeTime: DateTime(0), // ??
+  //     feedState: '게시' // 기본값
+  //     );
 
   /// feedDetail화면에서 쓸 Feed
 
@@ -33,7 +38,11 @@ class FeedHandler extends CalcHandler {
   @override
   void onInit() {
     super.onInit();
-    _feed.orderBy('writetime', descending: true).snapshots().listen(
+    _feed
+        .where('state', isEqualTo: '게시')
+        .orderBy('writetime', descending: true)
+        .snapshots()
+        .listen(
       (event) {
         feedList.value = event.docs
             .map(
@@ -42,6 +51,32 @@ class FeedHandler extends CalcHandler {
             .toList();
       },
     );
+  }
+
+  detailFeed(String docId) {
+    _feed.doc(docId).snapshots().listen(
+      (event) {
+        // print(event);
+        curFeed.value = [
+          Feed.fromMap(event.data() as Map<String, dynamic>, docId)
+        ];
+        replyList.value =
+            curFeed[0].reply!.map((e) => Reply.fromMap(e)).toList();
+      },
+    );
+  }
+
+  addReply(String docId, String content) {
+    Map<String, dynamic> newData = {
+      'content': content,
+      'state': '게시',
+      'writer': box.read('pureme_id'),
+      'writetime':
+          DateTime.now().toString().substring(0, 19).replaceFirst(' ', 'T'),
+    };
+    _feed.doc(docId).update({
+      'reply': FieldValue.arrayUnion([newData]) // 리스트에 Map 추가
+    });
   }
 
 //
@@ -89,17 +124,17 @@ class FeedHandler extends CalcHandler {
     //등을 이용해서 replyList를 변형시킨다.
   }
 
-  insertReply(String content) {
-    Reply(
-        feedName: curFeed.feedName!, // 현재 피드의 이름
-        authorEMail: curUser.eMail, // 현재 유저의 이메일
-        content: content,
-        writeTime: DateTime.now(),
-        replyState: 0 //기본값
-        );
-    //를 firebase에 추가하고
-    // 추가한 다음 fetchReply()를 다시 불러올 것
-  }
+  // insertReply(String content) {
+  //   Reply(
+  //       feedName: curFeed.feedName!, // 현재 피드의 이름
+  //       authorEMail: curUser.eMail, // 현재 유저의 이메일
+  //       content: content,
+  //       writeTime: DateTime.now(),
+  //       replyState: 0 //기본값
+  //       );
+  //   //를 firebase에 추가하고
+  //   // 추가한 다음 fetchReply()를 다시 불러올 것
+  // }
 
   insertFeed(String content) {
     Feed(
