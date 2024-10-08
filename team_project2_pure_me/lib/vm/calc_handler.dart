@@ -4,8 +4,13 @@ import 'package:team_project2_pure_me/vm/user_handler.dart';
 class CalcHandler extends UserHandler {
   double curTotalCarbon = 0; // 현재 TotalCarborn의 양을 나타내는 변수
 
-  var transDropdown = <String>['버스', '지하철', '자전거/도보'].obs;
+  var transDropdown = <String>['대중교통', '자동차', '자전거', '도보'].obs;
+  var transDropdownEn = <String>['public', 'car', 'bycycle', 'walk'];
+  int currentTranIndex = 0;
   String? curtransDropValue;
+
+  var recylist = <String>['paper', 'plastic', 'glass', 'metal', 'other'];
+  int recyIndex = 0;
 
   fetchTotalCarbon() {
     /// DB에서 식을 구현해 myCarbon이 어느정도인지 알아온다

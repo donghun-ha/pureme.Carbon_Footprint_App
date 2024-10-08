@@ -3,7 +3,7 @@
 
 Author: 하동훈
 Date: 2024-10-07
-Usage: 탄소발자국 조회   : http://127.0.0.1:8000/pureme/select?user_id=asd
+Usage: 탄소발자국 조회   : http://127.0.0.1:8000/footprint/select?user_id=asd
 
 이 파일은 FastAPI의 APIRouter를 사용하여 탄소 발자국을 계산하는 API 엔드포인트를 정의합니다.
 사용자의 다양한 활동 데이터를 받아 탄소 배출량, 절감량, 순 탄소 발자국을 계산하여 반환합니다.
@@ -24,8 +24,8 @@ router = APIRouter()
 def connect():
     """MySQL 데이터베이스에 연결하는 함수입니다."""
     conn = pymysql.connect(
-        host='127.0.0.1',
-        user='root',
+        host='192.168.50.71',
+        user='user',
         password='qwer1234',
         db='pureme',
         charset='utf8'
@@ -49,6 +49,8 @@ async def select(user_eMail: str = None, search: str = ''):
 @router.get("/insert")
 async def insert(category_kind: str = None, user_eMail: str = None, createDate: str = None, amount: str = None):
     """새로운 사용자 활동 데이터를 데이터베이스에 추가합니다."""
+
+    print(category_kind, user_eMail, createDate, amount)
     conn = connect()
     curs = conn.cursor()
 

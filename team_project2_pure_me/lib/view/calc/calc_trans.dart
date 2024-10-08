@@ -1,14 +1,25 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/vm/vmhandler.dart';
+import 'package:http/http.dart' as http;
 
 class CalcTrans extends StatelessWidget {
   CalcTrans({super.key});
   final TextEditingController transController = TextEditingController();
+  final GetStorage box = GetStorage();
+  late String? result = '__';
 
   @override
   Widget build(BuildContext context) {
     final vmHandler = Get.put(Vmhandler());
+    if (vmHandler.curtransDropValue == null &&
+        vmHandler.transDropdown.isNotEmpty) {
+      vmHandler.curtransDropValue = vmHandler.transDropdown[0];
+    }
+
     // final curtransDropValue = vmHandler.transDropdown[0];
 
     return Container(
@@ -18,6 +29,7 @@ class CalcTrans extends StatelessWidget {
           image: AssetImage('images/background_id.png'),
         )),
         child: Scaffold(
+          backgroundColor: Colors.transparent,
           body: GetBuilder<Vmhandler>(
             builder: (controller) {
               return
@@ -56,7 +68,7 @@ class CalcTrans extends StatelessWidget {
                                         children: [
                                           GestureDetector(
                                               onTap: () {
-                                                //
+                                                Get.back();
                                               },
                                               child:
                                                   const Icon(Icons.arrow_back)),
@@ -96,7 +108,7 @@ class CalcTrans extends StatelessWidget {
                                           .colorScheme
                                           .secondary,
                                       value: controller.curtransDropValue ??
-                                          controller.transDropdown[0],
+                                          vmHandler.transDropdown[0],
                                       icon:
                                           const Icon(Icons.keyboard_arrow_down),
                                       items: controller.transDropdown
@@ -113,6 +125,10 @@ class CalcTrans extends StatelessWidget {
                                         );
                                       }).toList(),
                                       onChanged: (value) {
+                                        controller.currentTranIndex = controller
+                                            .transDropdown
+                                            .indexOf(value);
+
                                         if (value != null) {
                                           controller.transDropChange(value);
                                         }
@@ -177,9 +193,10 @@ class CalcTrans extends StatelessWidget {
     }
   }
 
-  insertCarbonGen(vmHandler) {
+  insertCarbonGen(Vmhandler vmHandler) {
     if (vmHandler.curtransDropValue != null) {
       double? amount = double.tryParse(transController.text);
+      giveData(vmHandler);
       if (amount != null) {
         vmHandler.insertCarbonGen(vmHandler.curtransDropValue!, amount);
       } else {
@@ -190,6 +207,15 @@ class CalcTrans extends StatelessWidget {
       // 교통 수단이 선택되지 않았을 때 오류 처리
       Get.snackbar('오류', '교통 수단을 선택해주세요.');
     }
+  }
+
+  giveData(Vmhandler vmHandler) async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/footprint/insert?category_kind=${vmHandler.transDropdownEn[vmHandler.currentTranIndex]}&user_eMail=aaa&createDate=${DateTime.now()}&amount=${transController.text.trim()}');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    result = dataConvertedJSON['message'];
+    Get.back();
   }
 } // End
 // 텍스트필드의 내용을 insertCarbonGen(String curtransDropValue를, double amount)에 넣어준다.

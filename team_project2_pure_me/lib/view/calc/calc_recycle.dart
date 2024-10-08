@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/vm/vmhandler.dart';
+import 'package:http/http.dart' as http;
 
 class CalcRecycle extends StatelessWidget {
   CalcRecycle({super.key});
@@ -9,17 +12,25 @@ class CalcRecycle extends StatelessWidget {
   final TextEditingController glassController = TextEditingController();
   final TextEditingController goldController = TextEditingController();
   final TextEditingController somethingelseController = TextEditingController();
+  late String? result = '__';
 
   @override
   Widget build(BuildContext context) {
+    final vmHandler = Get.put(Vmhandler());
+    
+    
+
+
     return Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
           fit: BoxFit.cover,
           image: AssetImage('images/background_id.png'),
         )),
-        child: Scaffold(body: GetBuilder<Vmhandler>(builder: (controller) {
-          return Obx(() {
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: GetBuilder<Vmhandler>(builder: (controller) {
+          
             return Center(
               child: Column(
                 children: [
@@ -28,7 +39,7 @@ class CalcRecycle extends StatelessWidget {
                   ),
                   Stack(children: [
                     Container(
-                        color: Colors.greenAccent,
+                        color: const Color(0xFFB8F2B4),
                         height: 850,
                         width: 400,
                         child: Column(
@@ -165,7 +176,7 @@ class CalcRecycle extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: TextField(
-                                    controller: goldController,
+                                    controller: somethingelseController,
                                     decoration: const InputDecoration(
                                       hintText: '기타 폐기물 소비량(kg)',
                                       hintStyle: TextStyle(color: Colors.grey),
@@ -177,7 +188,7 @@ class CalcRecycle extends StatelessWidget {
                                   padding: const EdgeInsets.all(20.0),
                                   child: ElevatedButton(
                                       onPressed: () {
-                                        //
+                                        insertCarbonGen(vmHandler);
                                       },
                                       child: const Text('재활용 소비량 입력')),
                                 )
@@ -191,8 +202,39 @@ class CalcRecycle extends StatelessWidget {
                 ],
               ),
             );
-          });
-        })));
+          })));
+        }
+        
+        insertCarbonGen(Vmhandler vmHandler) {
+
+          double? paperAmount = double.tryParse(paperController.text); 
+          double? plasticAmount = double.tryParse(plasticController.text);
+          double? glassAmount = double.tryParse(glassController.text);
+          double? goldAmount = double.tryParse(goldController.text);
+          double? somethingElseAmount = double.tryParse(somethingelseController.text);
+
+          if (paperAmount != null || plasticAmount != null || glassAmount != null ||
+                goldAmount != null || somethingElseAmount != null ) {
+                    giveData(vmHandler);
+                } else {
+                  Get.snackbar('경고', '숫자를 모두 입력해주세요.');
+                }
+        }
+
+
+        giveData(Vmhandler vmHandler) async {
+            var url = Uri.parse(
+              'http://127.0.0.1:8000/footprint/insert?category_kind=Recycle&user_eMail=aaa&createDate=${DateTime.now()}&amount=${paperController.text.trim()}, ${plasticController.text.trim()}, ${glassController.text.trim()}, ${goldController.text.trim()}, ${somethingelseController.text.trim()}'
+            );
+            var response = await http.get(url);
+            var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+            result = dataConvertedJSON['message'];
+            Get.back();
+        }
+
+
+
+
   }
-}
+
  // 텍스트필드의 내용을 insertCarbonGen(String kind, String amount)에 넣어준다.

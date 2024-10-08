@@ -11,6 +11,7 @@ class CalcFood extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vmHandler = Get.put(Vmhandler());
     return Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
@@ -21,7 +22,7 @@ class CalcFood extends StatelessWidget {
           backgroundColor: Colors.transparent,
           body: GetBuilder<Vmhandler>(
             builder: (controller) {
-              return
+              
                   // FutureBuilder(
                   //   future: controller.,
                   //   builder: (context, snapshot) {
@@ -35,8 +36,7 @@ class CalcFood extends StatelessWidget {
                   //       );
                   //     } else {
                   //       return
-                  Obx(
-                () {
+                  
                   return Center(
                     child: Column(
                       children: [
@@ -65,7 +65,7 @@ class CalcFood extends StatelessWidget {
                                         ],
                                       ),
                                       const Padding(
-                                        padding: const EdgeInsets.all(15.0),
+                                        padding: EdgeInsets.all(15.0),
                                         child: Text(
                                           '식습관 정보 입력',
                                           style: TextStyle(
@@ -193,13 +193,12 @@ class CalcFood extends StatelessWidget {
                     ),
                   );
                 },
-              );
+              )));
               //   }
               // },
-              // );
-            },
-          ),
-        ));
+            }
+          
+        
   }
-}
+
 // 텍스트필드의 내용을 insertCarbonGen(String kind, String amount)에 넣어준다.
