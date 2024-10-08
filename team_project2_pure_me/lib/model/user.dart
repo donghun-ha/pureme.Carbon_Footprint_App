@@ -4,7 +4,7 @@ class User {
   String password; // 패스워드
   String phone; // 핸드폰
   DateTime createDate; // 생성일
-  int point; //레벨에 따른 점수
+  double point; //레벨에 따른 점수
   String? profileImage; // 이미지이름
 
   User({
