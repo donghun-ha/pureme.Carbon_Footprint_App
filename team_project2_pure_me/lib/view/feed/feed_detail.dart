@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/model/reply.dart';
 import 'package:team_project2_pure_me/vm/feed_handler.dart';
@@ -7,6 +8,7 @@ import 'package:team_project2_pure_me/vm/feed_handler.dart';
 class FeedDetail extends StatelessWidget {
   FeedDetail({super.key});
 
+  final GetStorage box = GetStorage();
   final TextEditingController replyController = TextEditingController();
 
   final Feed feedValue = Get.arguments ?? "__";
@@ -58,15 +60,19 @@ class FeedDetail extends StatelessWidget {
                                 Row(
                                   children: [
                                     // 로그인한 이용자와 게시글의 작성자가 같을경우 보이게
-                                    IconButton(
-                                      onPressed: () {
-                                        // 삭제로직
-                                      },
-                                      icon: const Icon(
-                                        Icons.delete_outline,
-                                        color: Colors.red,
-                                      ),
-                                    ),
+                                    box.read("pureme_id") ==
+                                            feedValue.authorEMail
+                                        ? IconButton(
+                                            onPressed: () {
+                                              // 삭제로직
+                                              print(feedValue);
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete_outline,
+                                              color: Colors.red,
+                                            ),
+                                          )
+                                        : const SizedBox.shrink(),
                                     IconButton(
                                       onPressed: () {
                                         // 신고 로직
@@ -89,7 +95,7 @@ class FeedDetail extends StatelessWidget {
                         height: MediaQuery.of(context).size.height * 0.21,
                         color: Colors.grey[300],
                         child:
-                            Image.network(feedHandler.curFeed[0].feedImageName),
+                            Image.network(feedHandler.curFeed[0].feedImagePath),
                       ),
                       Text(
                         '${feedHandler.curFeed[0].writeTime.year}-${feedHandler.curFeed[0].writeTime.month.toString().padLeft(2, '0')}-${feedHandler.curFeed[0].writeTime.day.toString().padLeft(2, '0')} ${feedHandler.curFeed[0].writeTime.hour.toString().padLeft(2, '0')}:${feedHandler.curFeed[0].writeTime.minute.toString().padLeft(2, '0')}',
@@ -115,8 +121,8 @@ class FeedDetail extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        child: feedHandler.curFeed[0].reply == null
-                            ? const Text(" ")
+                        child: feedHandler.curFeed[0].reply!.isEmpty
+                            ? const Text("첫 댓글을 작성해보세요!")
                             : Text(
                                 '${feedHandler.curFeed[0].reply![0]['writer']}\n${feedHandler.curFeed[0].reply![0]['content']}'),
                       ),
