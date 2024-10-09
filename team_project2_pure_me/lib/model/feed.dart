@@ -8,8 +8,11 @@ class Feed {
   /// 내용
   String content;
 
+  /// 사진의 경로
+  String feedImagePath;
+
   /// 사진의 이름
-  String feedImageName;
+  String imageName;
 
   /// 쓴 시간
   DateTime writeTime;
@@ -32,7 +35,8 @@ class Feed {
     this.feedName,
     required this.authorEMail,
     required this.content,
-    required this.feedImageName,
+    required this.feedImagePath,
+    required this.imageName,
     required this.writeTime,
     required this.feedState,
     this.deleteTime,
@@ -45,7 +49,8 @@ class Feed {
         feedName: id,
         authorEMail: res['writer'],
         content: res['content'],
-        feedImageName: res['image'],
+        feedImagePath: res['image'],
+        imageName: res['imagename'],
         writeTime: DateTime.parse(res['writetime']),
         feedState: res['state'],
         reply: res['reply']);

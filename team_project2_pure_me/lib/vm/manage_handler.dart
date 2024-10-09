@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/user.dart';
-import 'package:team_project2_pure_me/vm/feed_handler.dart';
+import 'package:team_project2_pure_me/vm/calc_handler.dart';
 
-class ManageHandler extends FeedHandler {
+class ManageHandler extends CalcHandler {
   List<User> searchedUserList = <User>[].obs;
 
   SearchUser(String userEMail) {
