@@ -17,7 +17,7 @@ class ManageApp extends StatelessWidget {
       body: GetBuilder<ManageHandler>(
         builder: (controller) {
           return FutureBuilder(
-            future: vmhandler.fetchUserAmount(),
+            future: vmhandler.fetchAppManage(),
             builder: (ccc, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting){
                 return const Center(
