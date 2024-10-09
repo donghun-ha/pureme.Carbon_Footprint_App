@@ -52,7 +52,7 @@ class ManageHome extends StatelessWidget {
 
   test1ButtonPressed(){
     final aaa = Vmhandler();
-    // aaa.test1();
+    aaa.searchUser('aa');
   }
 
   test2ButtonPressed(){

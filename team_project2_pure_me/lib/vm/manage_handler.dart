@@ -22,22 +22,22 @@ class ManageHandler extends CalcHandler {
   int? searchFeedIndex;
   
   // searchUser에서 쓸 변수들
+  var searchUserList = <User>[].obs;
+  String serachUserWord = '';
+  int? searchUserIndex;
+
 
   // 안드로이드를를 위한 URL
   String manageUrl = 'http://10.0.2.2:8000/manage';
 
   // ios를 위한 URL
-  // String manageUrl = 'http://10.0.2.2:8000/manage';
+  // String manageUrl = "http://127.0.0.1:8000/manage";
 
   final CollectionReference _manageFeed =
     FirebaseFirestore.instance.collection('post');
 
 
-  // SearchUser(String userEMail) async {
-  //   /// userEMail을 통해 user를 검색, List로 반환할 수 있는 class
-  //   /// searchUserList 에 List<User>를 넣을수 있도록
-  //   ///
-  // }
+
 
   fetchAppManage()async{
     await fetchUserAmount();
@@ -177,9 +177,38 @@ class ManageHandler extends CalcHandler {
     update();
   }
 
+///////////////////saerchUser에서 쓸 함수들
 
+searchUser(String? searchWord)async{
+  if (serachUserWord.isNotEmpty){
+    var url = Uri.parse("$manageUrl/searchUser?userEMail=$searchWord");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    List result = dataConvertedJSON['result'];
+    
+    searchUserList.value = result.map((e) {return User.fromMap(e);},).toList();
+    return "OK";
+  }else{
+    return "Noop";
+  }
+}
 
+searchUserWordchanged(String value){
+  serachUserWord = value;
+  searchUserIndex = null;
+  update();
+}
 
+searchUserIndexChanged(int idx){
+  print(idx);
+  print(searchUserIndex);
+  if (idx == searchUserIndex){
+    searchUserIndex = null;
+  }else{
+    searchUserIndex = idx;
+  }
+  update();
+}
 
 
 

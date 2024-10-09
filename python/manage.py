@@ -3,6 +3,8 @@ import pymysql
 
 from datetime import datetime, timedelta
 
+import re
+
 router = APIRouter()
 
 
@@ -59,6 +61,39 @@ async def userperday():
         print(rows)        
 
         result = [{'count': row[0]} for row in rows]
+        conn.commit()
+        return {'result': result}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()
+
+
+@router.get("/searchUser")
+async def userperday(userEMail :str = None):
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        ##### 일별 이메일 생성수
+        sql = """
+        SELECT *
+        FROM user
+        WHERE eMail LIKE %s
+        """
+        # SQL에서 `LIKE` 문 사용
+        curs.execute(sql, (f"%{userEMail}%",))  # `email_id`로 시작하는 모든 이메일 검색
+        rows = curs.fetchall()
+        result = [{
+            'eMail': row[0],
+            'nickName': row[1],
+            'password': row[2],
+            'phone': row[3],
+            'createDate': row[4],
+            'etc': row[5],
+            'point': row[6],
+            'profileImage' : row[7]
+            } for row in rows]
         conn.commit()
         return {'result': result}
     except Exception as e:
