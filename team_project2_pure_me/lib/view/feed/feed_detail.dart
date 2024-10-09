@@ -65,7 +65,7 @@ class FeedDetail extends StatelessWidget {
                                         ? IconButton(
                                             onPressed: () {
                                               // 삭제로직
-                                              print(feedValue);
+                                              deleteAlert();
                                             },
                                             icon: const Icon(
                                               Icons.delete_outline,
@@ -195,12 +195,29 @@ class FeedDetail extends StatelessWidget {
     );
   }
 
+  // --- Function ---
   Widget replyList(Reply reply) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(reply.authorEMail),
-        Text(reply.content),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(reply.authorEMail),
+            Text(reply.content),
+          ],
+        ),
+        reply.authorEMail == box.read('pureme_id')
+            ? IconButton(
+                onPressed: () {
+                  feedHandler.deleteReply(feedValue.feedName!, reply.index);
+                },
+                icon: const Icon(
+                  Icons.delete_outline,
+                  color: Colors.red,
+                ),
+              )
+            : const SizedBox.shrink(),
       ],
     );
   }
@@ -208,7 +225,31 @@ class FeedDetail extends StatelessWidget {
   Widget buildReplyList(List<Reply> replies) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: replies.map((reply) => replyList(reply)).toList(),
+      children: replies
+          .where((reply) => reply.replyState == '게시') // state가 '게시'인 reply만 필터링
+          .map((reply) => replyList(reply))
+          .toList(),
+    );
+  }
+
+  deleteAlert() {
+    Get.defaultDialog(
+      title: '경고',
+      middleText: '게시글을 삭제하시겠습니까?',
+      actions: [
+        TextButton(
+          onPressed: () {
+            feedHandler.deleteFeed(feedValue.feedName!);
+            Get.back();
+            Get.back();
+          },
+          child: const Text('삭제'),
+        ),
+        TextButton(
+          onPressed: () => Get.back(),
+          child: const Text('취소'),
+        ),
+      ],
     );
   }
 } // End

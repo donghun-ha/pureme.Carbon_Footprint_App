@@ -17,10 +17,27 @@ class FeedHandler extends ImageHandler {
   final feedList = <Feed>[].obs;
 
   /// detailFeed
-  final curFeed = <Feed>[].obs;
+  final curFeed = <Feed>[
+    Feed(
+        authorEMail: '',
+        content: '',
+        feedImagePath: '',
+        imageName: '',
+        writeTime: DateTime.now(),
+        reply: [
+          {
+            'writer': '',
+            'content': '',
+          },
+        ],
+        feedState: '')
+  ].obs;
 
   /// feedDetail화면에서 쓸 replyList
   final replyList = <Reply>[].obs;
+
+  /// user 화면에 보일 FeedList
+  final userFeedList = <Feed>[].obs;
 
   @override
   void onInit() {
@@ -36,8 +53,15 @@ class FeedHandler extends ImageHandler {
               (doc) => Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
             )
             .toList();
+        userFeedList.value = feedList
+            .where((feed) => feed.authorEMail == box.read('pureme_id'))
+            .toList();
       },
     );
+  }
+
+  test() {
+    print(userFeedList);
   }
 
   /// 피드 추가
@@ -81,10 +105,20 @@ class FeedHandler extends ImageHandler {
         curFeed.value = [
           Feed.fromMap(event.data() as Map<String, dynamic>, docId)
         ];
-        replyList.value =
-            curFeed[0].reply!.map((e) => Reply.fromMap(e)).toList();
+        // replyList.value =
+        //     curFeed[0].reply!.map((e) => Reply.fromMap(e)).toList();
+        replyList.clear();
+        for (int i = 0; i < curFeed[0].reply!.length; i++) {
+          replyList.add(Reply.fromMap(curFeed[0].reply![i], i));
+        }
       },
     );
+  }
+
+  /// 피드 삭제
+  /// state를 삭제로 변경
+  deleteFeed(String docId) {
+    _feed.doc(docId).update({'state': '삭제'});
   }
 
   /// 댓글 추가
@@ -103,5 +137,10 @@ class FeedHandler extends ImageHandler {
     });
   }
 
-//
+  /// 댓글 삭제
+  /// state변경
+  deleteReply(String docId, int index) {
+    curFeed[0].reply![index]['state'] = '삭제';
+    _feed.doc(docId).update({'reply': curFeed[0].reply});
+  }
 }

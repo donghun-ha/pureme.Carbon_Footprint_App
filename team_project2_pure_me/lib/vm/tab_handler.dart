@@ -15,8 +15,8 @@ class TabHandler extends GetxController with GetSingleTickerProviderStateMixin {
   }
 
   @override
-  void onClose() {
+  void dispose() {
     tabController.dispose();
-    super.onClose();
+    super.dispose();
   }
 }

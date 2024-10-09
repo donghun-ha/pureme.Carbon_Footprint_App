@@ -51,6 +51,12 @@ class FeedHome extends StatelessWidget {
                               Get.to(
                                 () => FeedDetail(),
                                 arguments: feed,
+                              )!
+                                  .then(
+                                (value) {
+                                  feedHandler.imgFile = null;
+                                  feedHandler.imageFile = null;
+                                },
                               );
                             },
                             child: Card(
