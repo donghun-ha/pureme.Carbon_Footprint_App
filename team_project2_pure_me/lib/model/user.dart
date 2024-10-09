@@ -23,7 +23,7 @@ class User {
         password = res['password'],
         phone = res['phone'],
         createDate = DateTime.parse(res['createDate']),
-        point = res['point'],
+        point = double.parse(res['point']) ,
         profileImage =
             res['profileImage'] == 'null' ? null : res['profileImage'];
 }

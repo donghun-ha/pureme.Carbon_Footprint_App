@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
+import 'package:team_project2_pure_me/model/report.dart';
+import 'package:team_project2_pure_me/model/rpt_all.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:team_project2_pure_me/vm/calc_handler.dart';
 import 'package:http/http.dart' as http;
@@ -25,6 +27,12 @@ class ManageHandler extends CalcHandler {
   var searchUserList = <User>[].obs;
   String serachUserWord = '';
   int? searchUserIndex;
+
+  //Report 에서 쓸 변수들
+  var reportFeedCountList = <RptAll>[].obs;
+  var reportFeedListById = <Report>[].obs;
+
+  int? selectedReportFeedIndex;
 
 
   // 안드로이드를를 위한 URL
@@ -208,6 +216,45 @@ searchUserIndexChanged(int idx){
     searchUserIndex = idx;
   }
   update();
+}
+
+///////////////////reportFeed에서 쓸 함수들
+queryReportAll()async{
+  var url = Uri.parse("$manageUrl/queryReportAll");
+  var response = await http.get(url);
+  var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+  List result = dataConvertedJSON['result'];
+  
+  reportFeedCountList.value = result.map((e) {
+    return RptAll.fromMap(e);},).toList();
+  print(reportFeedCountList);
+}
+
+
+queryReportReason(String feedId)async{
+  var url = Uri.parse("$manageUrl/queryReportReason?feedId=$feedId");
+  var response = await http.get(url);
+  var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+  List result = dataConvertedJSON['result'];
+  
+  reportFeedListById.value = result.map((e) {
+    return Report.fromMap(e);},).toList();
+  print(reportFeedListById);
+
+}
+
+ReportFeedChanged(int idx){
+  if (idx == selectedReportFeedIndex){
+    selectedReportFeedIndex = null;
+    reportFeedListById.value=[];
+    update();
+  }else{
+    selectedReportFeedIndex = idx;
+    update();
+    queryReportReason(reportFeedCountList[idx].feedId);
+  }
+  
+  
 }
 
 
