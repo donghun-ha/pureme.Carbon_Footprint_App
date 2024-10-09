@@ -63,6 +63,7 @@ async def userperday():
         result = [{'count': row[0]} for row in rows]
         conn.commit()
         return {'result': result}
+    ### 에러나면 쓰기
     except Exception as e:
         print("Error:", e)
         return {"results": "Error"}
@@ -71,7 +72,7 @@ async def userperday():
 
 
 @router.get("/searchUser")
-async def userperday(userEMail :str = None):
+async def userperday(serachUserWord :str = None):
     conn = connect()
     curs = conn.cursor()
     try:
@@ -82,8 +83,9 @@ async def userperday(userEMail :str = None):
         WHERE eMail LIKE %s
         """
         # SQL에서 `LIKE` 문 사용
-        curs.execute(sql, (f"%{userEMail}%",))  # `email_id`로 시작하는 모든 이메일 검색
+        curs.execute(sql, (f"%{serachUserWord}%",)) 
         rows = curs.fetchall()
+        ## user에 담을수있도록 result제공
         result = [{
             'eMail': row[0],
             'nickName': row[1],
@@ -93,6 +95,63 @@ async def userperday(userEMail :str = None):
             'etc': row[5],
             'point': row[6],
             'profileImage' : row[7]
+            } for row in rows]
+        conn.commit()
+        return {'result': result}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()
+
+
+
+#### 
+@router.get("/queryReportcount")
+async def queryReportcount():
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        sql = """
+            SELECT feedId, COUNT(feedId) AS feed_count
+            FROM report
+            GROUP BY feedId;
+        """
+
+        curs.execute(sql)  
+        rows = curs.fetchall()
+        result = [{
+            'feedId': row[0],
+            'feed_count': row[1],
+            } for row in rows]
+        conn.commit()
+        return {'result': result}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()
+
+
+@router.get("/queryReportReason")
+async def queryReportReason(feedId :str = None):
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        ##### 일별 이메일 생성수
+        sql = """
+            SELECT *
+            FROM report
+            WHERE feedId = %s;
+        """
+
+        curs.execute(sql, feedId)  # `email_id`로 시작하는 모든 이메일 검색
+        rows = curs.fetchall()
+        result = [{
+            'user_eMail': row[0],
+            'feedId': row[1],
+            'reportTime': row[2],
+            'reportReason': row[3],
             } for row in rows]
         conn.commit()
         return {'result': result}

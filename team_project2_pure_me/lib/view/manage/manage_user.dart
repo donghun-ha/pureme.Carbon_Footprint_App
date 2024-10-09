@@ -16,6 +16,7 @@ class ManageUser extends StatelessWidget {
       appBar: AppBar(
         title: const Text("유저 검색"),
       ),
+      //// update()를 위한 겟빌더
       body: GetBuilder<Vmhandler>(
         builder: (controller) {
           return Column(
@@ -23,12 +24,14 @@ class ManageUser extends StatelessWidget {
               TextField(
                 controller: _searchController,
                 onChanged: (value) {
-                  vmhandler.searchUserWordchanged(value);
+                  vmhandler.searchUserWordchanged(value); /////검색어를 바꿔주는함수
                 },
               ),
+              //// DB에서 async처리를 위한 FutureBuilder
                 FutureBuilder(
-                  future: vmhandler.searchUser(vmhandler.serachUserWord), 
+                  future: vmhandler.searchUser(),  /// 검색어에 따라 DB에서 끌어오는 함수
                   builder: (context, snapshot) {
+                // if절: 예외처리
                 if (snapshot.connectionState == ConnectionState.waiting){
                   return const Center(
                     child: CircularProgressIndicator(),
@@ -49,6 +52,7 @@ class ManageUser extends StatelessWidget {
                               User curUser = vmhandler.searchUserList[index];
                               return GestureDetector(
                                 onTap: () {
+                                  /// 특정한 User를 선택하기 위한 함수. vmhandler.searchUserIndex가 update됨                                   
                                   vmhandler.searchUserIndexChanged(index);
                                 },
                                 child: Card(
@@ -60,6 +64,7 @@ class ManageUser extends StatelessWidget {
                             },
                           ) ,
                         ),
+                        /// 이부분은 필요한 기능에 따라 버튼등을 만들어주세요.
                         SizedBox(
                           child: vmhandler.searchUserIndex != null
                           ? Card(

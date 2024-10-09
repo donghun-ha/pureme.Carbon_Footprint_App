@@ -13,11 +13,14 @@ class ManageReport extends StatelessWidget {
       appBar: AppBar(
         title: const Text("안녕하세요"),
       ),
+            //// update()를 위한 겟빌더
       body: GetBuilder<Vmhandler>(
         builder: (controller) {
+              //// DB에서 async처리를 위한 FutureBuilder
           return FutureBuilder(
-            future: vmhandler.queryReportAll(), 
+            future: vmhandler.queryReportcount(), 
             builder: (context, snapshot) {
+              /// if문: 예외처리
               if (snapshot.connectionState == ConnectionState.waiting){
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -35,7 +38,10 @@ class ManageReport extends StatelessWidget {
                           itemCount: vmhandler.reportFeedCountList.length,
                           itemBuilder: (context, index) {
                             return GestureDetector(
-                              onTap: ()=> vmhandler.ReportFeedChanged(index),
+                              /// 선택기능을 위한 GestureDetector,
+                              ///  vmhandler.reportFeedIndex와
+                              /// vmhandler.reportFeedListById가 바뀜.
+                              onTap: ()=> vmhandler.reportFeedIndexChanged(index),
                               child: Card(
                                 child: Text(
                                     "${vmhandler.reportFeedCountList[index].feedId} : ${vmhandler.reportFeedCountList[index].feed_count}"

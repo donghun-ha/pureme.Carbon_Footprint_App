@@ -1,11 +1,10 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/model/report.dart';
-import 'package:team_project2_pure_me/model/rpt_all.dart';
+import 'package:team_project2_pure_me/model/rpt_count.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:team_project2_pure_me/vm/calc_handler.dart';
 import 'package:http/http.dart' as http;
@@ -29,10 +28,10 @@ class ManageHandler extends CalcHandler {
   int? searchUserIndex;
 
   //Report 에서 쓸 변수들
-  var reportFeedCountList = <RptAll>[].obs;
+  var reportFeedCountList = <RptCount>[].obs;
   var reportFeedListById = <Report>[].obs;
 
-  int? selectedReportFeedIndex;
+  int? reportFeedIndex;
 
 
   // 안드로이드를를 위한 URL
@@ -187,9 +186,10 @@ class ManageHandler extends CalcHandler {
 
 ///////////////////saerchUser에서 쓸 함수들
 
-searchUser(String? searchWord)async{
+searchUser()async{
+  
   if (serachUserWord.isNotEmpty){
-    var url = Uri.parse("$manageUrl/searchUser?userEMail=$searchWord");
+    var url = Uri.parse("$manageUrl/searchUser?serachUserWord=$serachUserWord");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List result = dataConvertedJSON['result'];
@@ -219,18 +219,19 @@ searchUserIndexChanged(int idx){
 }
 
 ///////////////////reportFeed에서 쓸 함수들
-queryReportAll()async{
-  var url = Uri.parse("$manageUrl/queryReportAll");
+///feed가 report받은 숫자를 전부 씀
+queryReportcount()async{
+  var url = Uri.parse("$manageUrl/queryReportcount");
   var response = await http.get(url);
   var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
   List result = dataConvertedJSON['result'];
   
   reportFeedCountList.value = result.map((e) {
-    return RptAll.fromMap(e);},).toList();
+    return RptCount.fromMap(e);},).toList();
   print(reportFeedCountList);
 }
 
-
+///feed 하나의 리포트 이유들을 가져옴
 queryReportReason(String feedId)async{
   var url = Uri.parse("$manageUrl/queryReportReason?feedId=$feedId");
   var response = await http.get(url);
@@ -243,13 +244,14 @@ queryReportReason(String feedId)async{
 
 }
 
-ReportFeedChanged(int idx){
-  if (idx == selectedReportFeedIndex){
-    selectedReportFeedIndex = null;
+/// 어떤 feed를 가져왔는지를 바꾸기 위한 함수
+reportFeedIndexChanged(int idx){
+  if (idx == reportFeedIndex){
+    reportFeedIndex = null;
     reportFeedListById.value=[];
     update();
   }else{
-    selectedReportFeedIndex = idx;
+    reportFeedIndex = idx;
     update();
     queryReportReason(reportFeedCountList[idx].feedId);
   }

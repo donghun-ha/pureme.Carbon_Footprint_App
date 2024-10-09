@@ -15,11 +15,14 @@ class ManageFeed extends StatelessWidget {
       appBar: AppBar(
         title: const Text("안녕하세요"),
       ),
+      //// update()를 위한 겟빌더
       body: GetBuilder<Vmhandler>(
         builder: (context) {
+          /// async처리를 위한 퓨처빌더
           return FutureBuilder(
             future: vmhandler.searchFeed(vmhandler.searchFeedWord),
             builder: (context,snapshot) {
+              // if문: 예외처리
               if (snapshot.connectionState == ConnectionState.waiting){
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -37,6 +40,8 @@ class ManageFeed extends StatelessWidget {
                       ),
                       IconButton(
                         onPressed: (){
+                          /// 더미데이터. 어떤식으로 검색할지 정해야됨.
+                          /// 지금상황에선 검색기능이 제대로 작동하지않음.
                           updateSearchFeedWord(searchController.text);
                         } , 
                         icon: const Icon(Icons.search)
@@ -78,7 +83,7 @@ class ManageFeed extends StatelessWidget {
     );
   }
   updateSearchFeedWord(String text)async{
-    await updateSearchFeedWord(text);
+    // await updateSearchFeedWord(text);
   }
 
 }//End
