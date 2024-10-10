@@ -57,6 +57,9 @@ dependencies:
   # like_button
   like_button: ^2.0.5
 
+  # Charts
+  syncfusion_flutter_charts: ^27.1.52
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
