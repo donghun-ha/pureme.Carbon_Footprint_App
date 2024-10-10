@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/vm/vmhandler.dart';
+import 'package:http/http.dart' as http;
 
 class CalcElec extends StatelessWidget {
   CalcElec({super.key});
   final TextEditingController electricController = TextEditingController();
   final TextEditingController gasController = TextEditingController();
+  late String? result = '__';
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +137,7 @@ class CalcElec extends StatelessWidget {
                                     padding: const EdgeInsets.all(20.0),
                                     child: ElevatedButton(
                                         onPressed: () {
-                                          //
+                                          insertCarbonGen(vmHandler);
                                         },
                                         child: const Text('전기 사용량 입력')),
                                   )
@@ -148,5 +152,33 @@ class CalcElec extends StatelessWidget {
                 );
               })));
             }
+          
+
+          insertCarbonGen(Vmhandler vmHandler) {
+
+            double? electricity = double.tryParse(electricController.text.trim());
+            double? gas = double.tryParse(gasController.text.trim());
+            
+            if (electricity != null || gas != null) {
+              giveData(vmHandler);
+            } else {
+              Get.snackbar('경고', '숫자를 모두 입력해주세요.');
+            }
+          }
+
+          giveData(Vmhandler vmHandler) async {
+              var url = Uri.parse('http://127.0.0.1:8000/footprint/insert?category_kind=${vmHandler.electricitylist}&user_eMail=aaa&createDate=${DateTime.now()}&amount=${electricController.text.trim()},${gasController.text.trim()}');
+              var response = await http.get(url);
+              var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+              result = dataConvertedJSON['message'];
+              Get.back();
+          }
+
+
+
+
+
+
+
   }
 

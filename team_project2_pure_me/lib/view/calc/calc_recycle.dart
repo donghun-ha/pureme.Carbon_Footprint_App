@@ -207,14 +207,14 @@ class CalcRecycle extends StatelessWidget {
         
         insertCarbonGen(Vmhandler vmHandler) {
 
-          double? paperAmount = double.tryParse(paperController.text); 
-          double? plasticAmount = double.tryParse(plasticController.text);
-          double? glassAmount = double.tryParse(glassController.text);
-          double? goldAmount = double.tryParse(goldController.text);
-          double? somethingElseAmount = double.tryParse(somethingelseController.text);
+          double? paper = double.tryParse(paperController.text); 
+          double? plastic = double.tryParse(plasticController.text);
+          double? glass = double.tryParse(glassController.text);
+          double? metal = double.tryParse(goldController.text);
+          double? other = double.tryParse(somethingelseController.text);
 
-          if (paperAmount != null || plasticAmount != null || glassAmount != null ||
-                goldAmount != null || somethingElseAmount != null ) {
+          if (paper != null || plastic != null || glass != null ||
+                metal != null || other != null ) {
                     giveData(vmHandler);
                 } else {
                   Get.snackbar('경고', '숫자를 모두 입력해주세요.');
@@ -224,15 +224,18 @@ class CalcRecycle extends StatelessWidget {
 
         giveData(Vmhandler vmHandler) async {
             var url = Uri.parse(
-              'http://127.0.0.1:8000/footprint/insert?category_kind=Recycle&user_eMail=aaa&createDate=${DateTime.now()}&amount=${paperController.text.trim()}, ${plasticController.text.trim()}, ${glassController.text.trim()}, ${goldController.text.trim()}, ${somethingelseController.text.trim()}'
+              'http://127.0.0.1:8000/footprint/insert?category_kind=${vmHandler.recylist[0]}&user_eMail=aaa&createDate=${DateTime.now()}&amount=${paperController.text.trim()},${plasticController.text.trim()},${glassController.text.trim()},${goldController.text.trim()},${somethingelseController.text.trim()}'
             );
             var response = await http.get(url);
             var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
             result = dataConvertedJSON['message'];
-            Get.back();
+            giveData2(vmHandler);
+
         }
 
-
+        giveData2(Vmhandler vmHandler) {
+            
+        }
 
 
   }
