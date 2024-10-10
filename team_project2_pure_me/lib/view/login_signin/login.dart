@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/view/login_signin/sign_up.dart';
 import 'package:team_project2_pure_me/view/tabbar_page.dart';
-import 'package:team_project2_pure_me/vm/vmhandler.dart';
+import 'package:team_project2_pure_me/vm/rank_handler.dart';
 
 class Login extends StatelessWidget {
   Login({super.key});
@@ -15,7 +15,7 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vmHandler = Get.put(Vmhandler());
+    final vmHandler = Get.put(RankHandler());
 
     return GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -34,7 +34,7 @@ class Login extends StatelessWidget {
               // getStorage의 box에 id를 쓰자.
               //아이디는 getStoarge로 넘기자.
               //
-              body: GetBuilder<Vmhandler>(builder: (controller) {
+              body: GetBuilder<RankHandler>(builder: (controller) {
                 return Padding(
                   padding: const EdgeInsets.all(32.0),
                   child: Center(
