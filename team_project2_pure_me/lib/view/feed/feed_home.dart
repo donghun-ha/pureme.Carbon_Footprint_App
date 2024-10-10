@@ -21,6 +21,7 @@ class FeedHome extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.fromLTRB(25, 100, 25, 25),
             child: Card(
+              elevation: 3,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

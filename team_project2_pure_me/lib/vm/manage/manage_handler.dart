@@ -6,11 +6,9 @@ import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/model/report.dart';
 import 'package:team_project2_pure_me/model/rpt_count.dart';
 import 'package:team_project2_pure_me/model/user.dart';
-import 'package:team_project2_pure_me/vm/calc_handler.dart';
 import 'package:http/http.dart' as http;
-import 'package:team_project2_pure_me/vm/rank_handler.dart';
 
-class ManageHandler extends CalcHandler {
+class ManageHandler extends GetxController {
   // List<User> searchedUserList = <User>[].obs;
 
   //appManage에서 쓸 리스트들
@@ -35,10 +33,10 @@ class ManageHandler extends CalcHandler {
   int? reportFeedIndex;
 
   // 안드로이드를를 위한 URL
-  String manageUrl = 'http://10.0.2.2:8000/manage';
+  // String manageUrl = 'http://10.0.2.2:8000/manage';
 
   // ios를 위한 URL
-  // String manageUrl = "http://127.0.0.1:8000/manage";
+  String manageUrl = "http://127.0.0.1:8000/manage";
 
   final CollectionReference _manageFeed =
       FirebaseFirestore.instance.collection('post');
@@ -66,19 +64,19 @@ class ManageHandler extends CalcHandler {
     List tempList = [];
 
     String yesterday = DateTime.now()
-        .subtract(Duration(days: 1))
+        .subtract(const Duration(days: 1))
         .toString()
         .substring(0, 19)
         .replaceFirst(' ', 'T');
 
     String lastweek = DateTime.now()
-        .subtract(Duration(days: 7))
+        .subtract(const Duration(days: 7))
         .toString()
         .substring(0, 19)
         .replaceFirst(' ', 'T');
 
     String lastmonth = DateTime.now()
-        .subtract(Duration(days: 30))
+        .subtract(const Duration(days: 30))
         .toString()
         .substring(0, 19)
         .replaceFirst(' ', 'T');
@@ -123,7 +121,7 @@ class ManageHandler extends CalcHandler {
 
   test2() async {
     Timestamp timestamp =
-        Timestamp.fromDate(DateTime.now().subtract(Duration(days: 1)));
+        Timestamp.fromDate(DateTime.now().subtract(const Duration(days: 1)));
     FirebaseFirestore.instance.collection('post').add({
       'writer': 'pureme_id',
       'state': '테스트',

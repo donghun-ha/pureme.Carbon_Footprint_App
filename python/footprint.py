@@ -163,7 +163,7 @@ def calculate_reduction_from_average(activities: Dict[str, float]):
             # 사용자 활동에 따른 배출량 계산
             carbon_output = amount * CARBON_FACTORS[activity]
             
-            print(carbon_output)
+            # print(carbon_output)
             # 특정 활동들(car, public, bicycle, walk)은 교통 평균량과 비교
             if activity in ['car', 'public', 'bicycle', 'walk']:
                 average_output = average_traffic

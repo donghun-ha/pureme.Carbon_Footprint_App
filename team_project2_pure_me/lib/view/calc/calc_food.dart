@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:team_project2_pure_me/vm/vmhandler.dart';
 import 'package:http/http.dart' as http;
+import 'package:team_project2_pure_me/vm/calc/calc_handler.dart';
 
 class CalcFood extends StatelessWidget {
   CalcFood({super.key});
@@ -18,7 +18,7 @@ class CalcFood extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vmHandler = Get.put(Vmhandler());
+    final vmHandler = Get.put(CalcHandler());
     return Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
@@ -27,7 +27,7 @@ class CalcFood extends StatelessWidget {
         )),
         child: Scaffold(
             backgroundColor: Colors.transparent,
-            body: GetBuilder<Vmhandler>(
+            body: GetBuilder<CalcHandler>(
               builder: (controller) {
                 return Center(
                   child: Column(
@@ -188,7 +188,7 @@ class CalcFood extends StatelessWidget {
             )));
   }
 
-  insertCarbonGen(Vmhandler vmHandler) {
+  insertCarbonGen(CalcHandler vmHandler) {
     double? meat = double.tryParse(meatController.text);
     double? vegetarian = double.tryParse(vegetableController.text);
     double? dairy = double.tryParse(milkController.text);
@@ -210,7 +210,7 @@ class CalcFood extends StatelessWidget {
   }
 
   giveData(
-      Vmhandler vmHandler, String kind, String amount, String email) async {
+      CalcHandler vmHandler, String kind, String amount, String email) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/footprint/insert?category_kind=$kind&user_eMail=$email&createDate=${DateTime.now()}&amount=$amount');
     var response = await http.get(url);

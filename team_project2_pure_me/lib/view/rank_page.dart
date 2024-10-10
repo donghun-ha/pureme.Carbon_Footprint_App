@@ -132,7 +132,7 @@ class RankPage extends StatelessWidget {
       case 0:
         return const Color.fromARGB(167, 253, 245, 12);
       case 1:
-        return Colors.grey[300]!;
+        return const Color.fromARGB(255, 13, 13, 13);
       case 2:
         return Colors.brown[300]!;
       default:

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/view/login_signin/login.dart';
-import 'package:team_project2_pure_me/vm/vmhandler.dart';
+import 'package:team_project2_pure_me/vm/user_handler.dart';
 
 class SignUp extends StatelessWidget {
   SignUp({super.key});
@@ -11,14 +11,11 @@ class SignUp extends StatelessWidget {
   final TextEditingController pwController = TextEditingController();
   final TextEditingController pwVerifyController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final validText = RegExp(r"^[ㄱ-ㅎ가-힣0-9a-zA-Z]*$");  
+  final validText = RegExp(r"^[ㄱ-ㅎ가-힣0-9a-zA-Z]*$");
 
   @override
   Widget build(BuildContext context) {
-    final vmHandler = Get.put(Vmhandler());
-    
-    
-    
+    final vmHandler = Get.put(UserHandler());
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -36,7 +33,7 @@ class SignUp extends StatelessWidget {
             /// SQL에서 이메일 중복을 확인하는 변수 : eMailUnique
             /// 회원가입 시켜주는 함수 : signIn
             ///
-            body: GetBuilder<Vmhandler>(
+            body: GetBuilder<UserHandler>(
               builder: (controller) {
                 return SingleChildScrollView(
                   child: Center(
@@ -167,15 +164,15 @@ class SignUp extends StatelessWidget {
                                           ),
                                         ),
                                         onPressed: () async {
-                                          String email = idController.text.trim();
+                                          String email =
+                                              idController.text.trim();
 
-                                          if(email.isNotEmpty) {
+                                          if (email.isNotEmpty) {
                                             if (!validText.hasMatch(email)) {
                                               ___showValidation();
                                               return;
                                             }
                                           }
-
 
                                           if (idController.text
                                               .trim()
@@ -185,7 +182,8 @@ class SignUp extends StatelessWidget {
                                             print(vmHandler.eMailUnique);
                                             if (vmHandler.eMailUnique) {
                                               bool pwCheck =
-                                                  await vmHandler.signIn(  // if (password != passwordVerify) { return false; 이게 왔다.
+                                                  await vmHandler.signIn(
+                                                // if (password != passwordVerify) { return false; 이게 왔다.
                                                 idController.text.trim(),
                                                 pwController.text.trim(),
                                                 pwVerifyController.text.trim(),
@@ -286,9 +284,9 @@ class SignUp extends StatelessWidget {
 
   ___showValidation() {
     Get.snackbar(
-    "경고",
-    "형식이 올바르지 않습니다.",
-    snackPosition: SnackPosition.TOP,
-  );
+      "경고",
+      "형식이 올바르지 않습니다.",
+      snackPosition: SnackPosition.TOP,
+    );
   }
 }   // End

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/model/reply.dart';
-import 'package:team_project2_pure_me/vm/convert_email_to_name.dart';
+import 'package:team_project2_pure_me/vm/convert/convert_email_to_name.dart';
 
 import 'package:team_project2_pure_me/vm/image_handler.dart';
 

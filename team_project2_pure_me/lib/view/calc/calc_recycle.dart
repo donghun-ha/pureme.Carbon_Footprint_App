@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:team_project2_pure_me/vm/vmhandler.dart';
+import 'package:team_project2_pure_me/vm/calc/calc_handler.dart';
 import 'package:http/http.dart' as http;
 
 class CalcRecycle extends StatelessWidget {
@@ -18,7 +18,7 @@ class CalcRecycle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vmHandler = Get.put(Vmhandler());
+    final vmHandler = Get.put(CalcHandler());
 
     return Container(
         decoration: const BoxDecoration(
@@ -28,7 +28,7 @@ class CalcRecycle extends StatelessWidget {
         )),
         child: Scaffold(
             backgroundColor: Colors.transparent,
-            body: GetBuilder<Vmhandler>(builder: (controller) {
+            body: GetBuilder<CalcHandler>(builder: (controller) {
               return Center(
                 child: Column(
                   children: [
@@ -208,7 +208,7 @@ class CalcRecycle extends StatelessWidget {
             })));
   }
 
-  insertCarbonGen(Vmhandler vmHandler) {
+  insertCarbonGen(CalcHandler vmHandler) {
     double? paper = double.tryParse(paperController.text);
     double? plastic = double.tryParse(plasticController.text);
     double? glass = double.tryParse(glassController.text);
@@ -236,9 +236,9 @@ class CalcRecycle extends StatelessWidget {
   }
 
   giveData(
-      Vmhandler vmHandler, String kind, String amount, String email) async {
+      CalcHandler vmHandler, String kind, String amount, String email) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/footprint/insert?category_kind=${kind}&amount=${amount}&user_eMail=$email&createDate=${DateTime.now()}');
+        'http://127.0.0.1:8000/footprint/insert?category_kind=$kind&amount=$amount&user_eMail=$email&createDate=${DateTime.now()}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     result = dataConvertedJSON['message'];
