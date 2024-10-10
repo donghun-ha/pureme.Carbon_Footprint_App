@@ -4,7 +4,7 @@ import 'package:team_project2_pure_me/view/feed/feed_home.dart';
 import 'package:team_project2_pure_me/view/home.dart';
 import 'package:team_project2_pure_me/view/rank_page.dart';
 import 'package:team_project2_pure_me/view/user_info/user_info_home.dart';
-import 'package:team_project2_pure_me/vm/tab_handler.dart';
+import 'package:team_project2_pure_me/vm/tabbar/tab_handler.dart';
 
 class TabbarPage extends StatelessWidget {
   TabbarPage({super.key});
@@ -30,7 +30,7 @@ class TabbarPage extends StatelessWidget {
             controller: tabHandler.tabController,
             children: [
               // page
-              const Home(),
+              Home(),
               FeedHome(),
               RankPage(),
               UserInfoHome(),

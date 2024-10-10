@@ -3,13 +3,20 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:http/http.dart' as http;
+import 'package:team_project2_pure_me/vm/user_handler.dart';
 
-class RankHandler extends GetxController {
+class RankHandler extends UserHandler {
   RxList<User> rankList = <User>[].obs;
   RxInt myrank = 0.obs;
 
+  RxString totalCarbonFootprint = '0'.obs;
+  RxString totalReducedCarbonFootprint = '0'.obs;
+  RxString treesFootprint = '0'.obs;
+  RxString totalEnergyReduction = '0'.obs;
+
   RankHandler() {
     fetchRank();
+    // fetchTotalCarbon();
   }
 
   // final String defaultUrl = "http://127.0.0.1:8000/footprint";
@@ -20,6 +27,7 @@ class RankHandler extends GetxController {
     super.onInit();
     fetchRank();
     fetchMyRank();
+    // fetchTotalCarbon();
   }
 
   // 랭킹 데이터 가져오기
@@ -29,12 +37,12 @@ class RankHandler extends GetxController {
 
     if (response.statusCode == 200) {
       // 성공적으로 응답을 받았을 때
-      print('Response data: ${response.body}'); // 응답 데이터 확인
+      // print('Response data: ${response.body}'); // 응답 데이터 확인
       final data = json.decode(response.body);
       List<User> users = (data['rankings'] as List)
           .map((user) => User(
                 eMail: user['user_eMail'], // eMail 매핑
-                nickName: user['nickName'] ?? '', // 닉네임
+                nickName: user['user_nickName'] ?? '', // 닉네임
                 password: '', // 패스워드는 API에서 제공되지 않으므로 빈 문자열
                 phone: '', // 핸드폰 정보가 없으므로 빈 문자열
                 createDate: DateTime.now(), // 생성일 기본값 (API에서 제공되지 않음)
@@ -49,6 +57,27 @@ class RankHandler extends GetxController {
     }
   }
 
+  // 탄소량 불러오는 함수
+  fetchTotalCarbon() async {
+    var url = Uri.parse(
+        "$defaultUrl/calculate_with_reduction?user_eMail=${curUser.value.eMail}");
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+      final totalFootprint = dataConvertedJSON['result'];
+      // print(totalFootprint);
+      if (totalFootprint[0] != 0.0) {
+        totalCarbonFootprint.value = totalFootprint[2].toString();
+        totalReducedCarbonFootprint.value = totalFootprint[3].toString();
+        treesFootprint.value = totalFootprint[1].toString();
+        totalEnergyReduction.value = totalFootprint[0].toString();
+      }
+    } else {
+      print("랭킹을 불러오는 데 실패했습니다: ${response.statusCode}");
+    }
+  }
+
   void fetchMyRank() {
     // 더미 데이터로 내 랭킹 설정
     myrank.value = 3;
@@ -57,5 +86,6 @@ class RankHandler extends GetxController {
   void refreshRankings() {
     fetchRank();
     fetchMyRank();
+    // fetchTotalCarbon();
   }
 }

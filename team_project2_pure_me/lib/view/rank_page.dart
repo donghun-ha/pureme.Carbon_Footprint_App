@@ -70,12 +70,13 @@ class RankPage extends StatelessWidget {
                                 const Divider(),
                             itemBuilder: (context, index) {
                               final user = rankHandler.rankList[index];
+                              print(user.nickName);
                               return ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: _getColor(index),
                                   child: Text('${index + 1}'),
                                 ),
-                                title: Text(user.nickName),
+                                title: Text(user.eMail),
                                 subtitle: Text('Point: ${user.point}'),
                                 trailing: Text('${(user.point)} KG',
                                     style: const TextStyle(
@@ -131,7 +132,7 @@ class RankPage extends StatelessWidget {
       case 0:
         return const Color.fromARGB(167, 253, 245, 12);
       case 1:
-        return Colors.grey[300]!;
+        return const Color.fromARGB(255, 13, 13, 13);
       case 2:
         return Colors.brown[300]!;
       default:

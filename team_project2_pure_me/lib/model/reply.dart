@@ -4,8 +4,14 @@ class Reply {
   /// reply의 이름
   // String feedName;
 
+  /// 댓글의 index
+  int index;
+
   /// 작성자 이메일
   String authorEMail;
+
+  /// 작성자 닉네임
+  String? userName;
 
   /// 댓글 내용
   String content;
@@ -26,7 +32,9 @@ class Reply {
   Reply({
     // this.replyName,
     // required this.feedName,
+    required this.index,
     required this.authorEMail,
+    this.userName,
     required this.content,
     required this.writeTime,
     required this.replyState,
@@ -34,8 +42,9 @@ class Reply {
     this.editTime,
   });
 
-  Reply.fromMap(Map<String, dynamic> res)
-      : authorEMail = res['writer'],
+  Reply.fromMap(Map<String, dynamic> res, int replyIndex)
+      : index = replyIndex,
+        authorEMail = res['writer'],
         content = res['content'],
         writeTime = DateTime.parse(res['writetime']),
         replyState = res['state'];

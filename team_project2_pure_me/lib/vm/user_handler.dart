@@ -4,23 +4,22 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:team_project2_pure_me/model/lev.dart';
 import 'package:team_project2_pure_me/model/user.dart';
-import 'package:team_project2_pure_me/vm/db_handler.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:team_project2_pure_me/vm/feed_handler.dart';
 
-class UserHandler extends DbHandler {
-  XFile? imageFile;
+class UserHandler extends FeedHandler {
+  RxList<User> userList = <User>[].obs;
 
-  final ImagePicker picker = ImagePicker();
-
-  User curUser = User(
-      eMail: '1234@gmail.com',
-      nickName: 'TjPureMe',
-      password: '1234',
-      phone: '010-1234-5678',
-      createDate: DateTime.now(),
-      point: 0,
-      profileImage: 'sample.png'); // fetch해오기 위한 User class
+  final curUser = User(
+          eMail: '1234@gmail.com',
+          nickName: '',
+          password: '1234',
+          phone: '010-1234-5678',
+          createDate: DateTime.now(),
+          point: 0,
+          profileImage: 'sample.png')
+      .obs; // fetch해오기 위한 User class
 
   List<Lev> levList = <Lev>[].obs;
   int curLev = 0; // point를 통해 계산한 레벨을 저장할 변수
@@ -40,16 +39,25 @@ class UserHandler extends DbHandler {
     bool ver = result[0]['seq'];
 
     if (ver) {
-      url = Uri.parse("http://127.0.0.1:8000/user/login?eMail=$eMail");
-      response = await http.get(url);
-      dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-      result = dataConvertedJSON['result'];
-      curUser = User.fromMap(result[0]);
-      print(curUser.eMail);
+      await curUserUpdate(eMail);
+      // print(curUser.eMail);
+      // print(curUser.point);
+      // await pointUpdate(1);
+      // print(curUser.point);
       return true;
     } else {
       return false;
     }
+  }
+
+  curUserUpdate(String eMail) async {
+    var url = Uri.parse("http://127.0.0.1:8000/user/login?eMail=$eMail");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    curUser.value = User.fromMap(result[0]);
+    update();
+    // print(curUser.nickName);
   }
 
   eMailVerify(String eMail) async {
@@ -59,11 +67,9 @@ class UserHandler extends DbHandler {
     var result = dataConvertedJSON['result'];
 
     eMailUnique = result[0]['result'];
-    print(eMailUnique);
-    update(); // 로직 구현 후 이 부분은 삭제바람
+    update();
   }
 
-  // 회원가입 signUP
   signIn(String eMail, String password, String passwordVerify, String nickName,
       String phone) async {
     if (password != passwordVerify) {
@@ -89,31 +95,33 @@ class UserHandler extends DbHandler {
 
   userUpdate(String eMail, String nickName, String phone) async {
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/update?cureMail=${curUser.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone");
+        "http://127.0.0.1:8000/user/update?cureMail=${curUser.value.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone");
     print(url);
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
 
-    curUser.nickName = nickName;
-    curUser.eMail = eMail;
-    curUser.phone = phone;
+    curUser.value.nickName = nickName;
+    curUser.value.eMail = eMail;
+    curUser.value.phone = phone;
     update();
   }
 
   userUpdateAll(
       String eMail, String nickName, String phone, String profileImage) async {
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/updateAll?cureMail=${curUser.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone&&profileImage=$profileImage");
-    print(url);
+        "http://127.0.0.1:8000/user/updateAll?cureMail=${curUser.value.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone&&profileImage=$profileImage");
+
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
 
-    curUser.profileImage = profileImage;
-    curUser.nickName = nickName;
-    curUser.eMail = eMail;
-    curUser.phone = phone;
+    curUser.value.profileImage = profileImage;
+    print(curUser.value.profileImage);
+    curUser.value.nickName = nickName;
+    curUser.value.eMail = eMail;
+    curUser.value.phone = phone;
+    update();
   }
 
   //// handler.userImagePicker(ImageSource.gallery)로 실행시키세요
@@ -125,7 +133,7 @@ class UserHandler extends DbHandler {
     update();
   }
 
-  userImageInsert(String fileName) async {
+  userImageInsert() async {
     var request = http.MultipartRequest(
         "POST", Uri.parse("http://127.0.0.1:8000/user/imageUpload"));
     var multipartFile =
@@ -143,13 +151,22 @@ class UserHandler extends DbHandler {
 
   userUpdatePwd(String password) async {
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/updatePW?eMail=${curUser.eMail}&password=$password");
-    print(url);
+        "http://127.0.0.1:8000/user/updatePW?eMail=${curUser.value.eMail}&password=$password");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
 
     ///
     /// 비밀번호를 받아서 데이터베이스에 변경만 시킨다.
+  }
+
+  pointUpdate(int addPoint) async {
+    curUser.value.point += addPoint;
+    var url = Uri.parse(
+        "http://127.0.0.1:8000/user/updatepoint?eMail=${curUser.value.eMail}&point=${curUser.value.point}");
+    print(url);
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
   }
 }

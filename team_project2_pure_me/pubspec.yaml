@@ -40,7 +40,7 @@ dependencies:
 
   firebase_core: ^3.6.0
 
-  #firebase_storage: ^12.3.2
+  firebase_storage: ^12.3.2
 
   # get
   get: ^4.6.6
@@ -53,6 +53,12 @@ dependencies:
 
   # imagePicker
   image_picker: ^1.1.2
+
+  # like_button
+  like_button: ^2.0.5
+
+  # Charts
+  syncfusion_flutter_charts: ^27.1.52
 
 dev_dependencies:
   flutter_test:

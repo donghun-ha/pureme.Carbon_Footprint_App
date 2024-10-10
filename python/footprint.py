@@ -163,7 +163,7 @@ def calculate_reduction_from_average(activities: Dict[str, float]):
             # 사용자 활동에 따른 배출량 계산
             carbon_output = amount * CARBON_FACTORS[activity]
             
-            print(carbon_output)
+            # print(carbon_output)
             # 특정 활동들(car, public, bicycle, walk)은 교통 평균량과 비교
             if activity in ['car', 'public', 'bicycle', 'walk']:
                 average_output = average_traffic
@@ -251,14 +251,18 @@ async def calculate_with_reduction(user_eMail: str):
     # 절감량을 기반으로 에너지 감소량과 심은 나무 수 계산
     total_energy_reduction = convert_to_energy_reduction(total_carbon_reduction)
     total_trees_planted = convert_to_trees_planted(total_carbon_reduction)
+
+    summary = {
+        round(total_energy_reduction,2),
+        round(total_trees_planted,2),
+        round(total_carbon_footprint,2),
+        round(total_carbon_reduction,2),
+        # average_comparison,
+    }
     
     # 결과를 JSON 형식으로 반환 (절감량 포함)
     return {
-        '총 탄소 발자국': f"{total_carbon_footprint:.2f} kg CO2",
-        '총 절감된 탄소 발자국': f"{total_carbon_reduction:.2f} kg CO2",
-        '총 에너지 감소량': f"{total_energy_reduction:.2f} MWh",
-        '심은 나무 수': f"{total_trees_planted:.2f} 그루",
-        '활동별 절감량 비교': average_comparison  # 전 세계 평균치와 비교한 절감량 반환
+        'result': summary
     }
 
 @router.get("/rankings")
@@ -321,14 +325,16 @@ async def get_rankings(limit: int = 10):
 
     # 쿼리 결과를 순회하며 유저별로 활동 데이터를 정리합니다.
     for row in rows:
-        user_nick_name = row[0]          # 유저의 닉네임
+        user_nickName = row[0]          # 유저의 닉네임
         user_email = row[1]               # 유저의 이메일 주소
         category_kind = row[2]            # 활동 카테고리 종류
         total_amount = float(row[3])      # 해당 활동 카테고리의 총 활동량
+        
 
         # 유저가 아직 딕셔너리에 없으면 초기화합니다.
         if user_email not in user_activities:
             user_activities[user_email] = {}
+        print({row})
 
         # 해당 유저의 특정 카테고리 활동량을 저장합니다.
         user_activities[user_email][category_kind] = total_amount
@@ -343,8 +349,9 @@ async def get_rankings(limit: int = 10):
         
         # 유저의 이메일과 총 절감량을 리스트에 추가합니다.
         user_reductions.append({
+            # 'user_nickName' : user_nickName,
             'user_eMail': user_email,
-            'total_reduction': total_carbon_reduction
+            'total_reduction': round(total_carbon_reduction,2)
         })
 
     # 절감량 기준으로 유저들을 내림차순으로 정렬합니다.
@@ -356,3 +363,4 @@ async def get_rankings(limit: int = 10):
     return {
         'rankings': top_users
     }
+

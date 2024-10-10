@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/model/reply.dart';
 import 'package:team_project2_pure_me/vm/feed_handler.dart';
@@ -7,6 +8,7 @@ import 'package:team_project2_pure_me/vm/feed_handler.dart';
 class FeedDetail extends StatelessWidget {
   FeedDetail({super.key});
 
+  final GetStorage box = GetStorage();
   final TextEditingController replyController = TextEditingController();
 
   final Feed feedValue = Get.arguments ?? "__";
@@ -24,15 +26,6 @@ class FeedDetail extends StatelessWidget {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        // 피드 가져오는 함수: fetchFeedDetail(),
-        // 피드가 담겨있는 변수 : curFeed
-
-        // 좋아요 가져오는 함수: fetchLike
-        // 좋아요 상태 관리하는 변수 : curFeedLike
-        // 좋아요 상태 변경하는 함수 : changelLike
-        // 신고 추가해주는 함수 // 추후 추가예정
-        // 댓글 리스트 불러오는 함수 : fetchReply()
-        // 댓글 insert해주는 함수 : insertReply(String content(내용))
         body: Obx(
           () => Center(
             child: Padding(
@@ -54,19 +47,23 @@ class FeedDetail extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text("${feedHandler.curFeed[0].authorEMail}님"),
+                                Text("${feedHandler.curFeed[0].userName}님"),
                                 Row(
                                   children: [
                                     // 로그인한 이용자와 게시글의 작성자가 같을경우 보이게
-                                    IconButton(
-                                      onPressed: () {
-                                        // 삭제로직
-                                      },
-                                      icon: const Icon(
-                                        Icons.delete_outline,
-                                        color: Colors.red,
-                                      ),
-                                    ),
+                                    box.read("pureme_id") ==
+                                            feedValue.authorEMail
+                                        ? IconButton(
+                                            onPressed: () {
+                                              // 삭제로직
+                                              deleteAlert();
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete_outline,
+                                              color: Colors.red,
+                                            ),
+                                          )
+                                        : const SizedBox.shrink(),
                                     IconButton(
                                       onPressed: () {
                                         // 신고 로직
@@ -89,7 +86,7 @@ class FeedDetail extends StatelessWidget {
                         height: MediaQuery.of(context).size.height * 0.21,
                         color: Colors.grey[300],
                         child:
-                            Image.network(feedHandler.curFeed[0].feedImageName),
+                            Image.network(feedHandler.curFeed[0].feedImagePath),
                       ),
                       Text(
                         '${feedHandler.curFeed[0].writeTime.year}-${feedHandler.curFeed[0].writeTime.month.toString().padLeft(2, '0')}-${feedHandler.curFeed[0].writeTime.day.toString().padLeft(2, '0')} ${feedHandler.curFeed[0].writeTime.hour.toString().padLeft(2, '0')}:${feedHandler.curFeed[0].writeTime.minute.toString().padLeft(2, '0')}',
@@ -115,10 +112,10 @@ class FeedDetail extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        child: feedHandler.curFeed[0].reply == null
-                            ? const Text(" ")
+                        child: feedHandler.showReplyList.isEmpty
+                            ? const Text("첫 댓글을 작성해보세요!")
                             : Text(
-                                '${feedHandler.curFeed[0].reply![0]['writer']}\n${feedHandler.curFeed[0].reply![0]['content']}'),
+                                '${feedHandler.showReplyList[feedHandler.showReplyList.length - 1].userName}\n${feedHandler.showReplyList[feedHandler.showReplyList.length - 1].content}'),
                       ),
                     ],
                   ),
@@ -189,12 +186,29 @@ class FeedDetail extends StatelessWidget {
     );
   }
 
+  // --- Function ---
   Widget replyList(Reply reply) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(reply.authorEMail),
-        Text(reply.content),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(reply.userName!),
+            Text(reply.content),
+          ],
+        ),
+        reply.authorEMail == box.read('pureme_id')
+            ? IconButton(
+                onPressed: () {
+                  feedHandler.deleteReply(feedValue.feedName!, reply.index);
+                },
+                icon: const Icon(
+                  Icons.delete_outline,
+                  color: Colors.red,
+                ),
+              )
+            : const SizedBox.shrink(),
       ],
     );
   }
@@ -202,7 +216,31 @@ class FeedDetail extends StatelessWidget {
   Widget buildReplyList(List<Reply> replies) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: replies.map((reply) => replyList(reply)).toList(),
+      children: feedHandler.showReplyList
+          .where((reply) => reply.replyState == '게시') // state가 '게시'인 reply만 필터링
+          .map((reply) => replyList(reply))
+          .toList(),
+    );
+  }
+
+  deleteAlert() {
+    Get.defaultDialog(
+      title: '경고',
+      middleText: '게시글을 삭제하시겠습니까?',
+      actions: [
+        TextButton(
+          onPressed: () {
+            feedHandler.deleteFeed(feedValue.feedName!);
+            Get.back();
+            Get.back();
+          },
+          child: const Text('삭제'),
+        ),
+        TextButton(
+          onPressed: () => Get.back(),
+          child: const Text('취소'),
+        ),
+      ],
     );
   }
 } // End
