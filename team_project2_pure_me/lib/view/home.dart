@@ -198,7 +198,9 @@ class Home extends StatelessWidget {
                                     ),
                                   ),
                                   onPressed: () {
-                                    Get.to(() => const CalcHome());
+                                    Get.to(() => const CalcHome())!.then(
+                                        (value) =>
+                                            controllor.fetchTotalCarbon());
                                   },
                                   child: Row(
                                     children: [

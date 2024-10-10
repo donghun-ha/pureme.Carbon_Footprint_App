@@ -68,10 +68,10 @@ class RankHandler extends UserHandler {
       final totalFootprint = dataConvertedJSON['result'];
       print(totalFootprint);
       // if (totalFootprint[0] != 0.0 ) {
-        totalCarbonFootprint.value = totalFootprint[2].toString();
-        totalReducedCarbonFootprint.value = totalFootprint[3].toString();
-        treesFootprint.value = totalFootprint[1].toString();
-        totalEnergyReduction.value = totalFootprint[0].toString();
+      totalCarbonFootprint.value = totalFootprint[2].toString();
+      totalReducedCarbonFootprint.value = totalFootprint[3].toString();
+      treesFootprint.value = totalFootprint[1].toString();
+      totalEnergyReduction.value = totalFootprint[0].toString();
       // } else{
       //   totalCarbonFootprint.value = '0';
       //   totalReducedCarbonFootprint.value = '0';
