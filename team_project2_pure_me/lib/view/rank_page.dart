@@ -70,6 +70,7 @@ class RankPage extends StatelessWidget {
                                 const Divider(),
                             itemBuilder: (context, index) {
                               final user = rankHandler.rankList[index];
+                              print(user.nickName);
                               return ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: _getColor(index),

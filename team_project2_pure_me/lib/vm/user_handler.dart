@@ -14,14 +14,15 @@ class UserHandler extends DbHandler {
 
   final ImagePicker picker = ImagePicker();
 
-  User curUser = User(
-      eMail: '1234@gmail.com',
-      nickName: 'TjPureMe',
-      password: '1234',
-      phone: '010-1234-5678',
-      createDate: DateTime.now(),
-      point: 0,
-      profileImage: 'sample.png'); // fetch해오기 위한 User class
+  final curUser = User(
+          eMail: '1234@gmail.com',
+          nickName: '',
+          password: '1234',
+          phone: '010-1234-5678',
+          createDate: DateTime.now(),
+          point: 0,
+          profileImage: 'sample.png')
+      .obs; // fetch해오기 위한 User class
 
   List<Lev> levList = <Lev>[].obs;
   int curLev = 0; // point를 통해 계산한 레벨을 저장할 변수
@@ -45,9 +46,10 @@ class UserHandler extends DbHandler {
       response = await http.get(url);
       dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
       result = dataConvertedJSON['result'];
-      curUser = User.fromMap(result[0]);
+      curUser.value = User.fromMap(result[0]);
       update();
-      print(curUser.nickName);
+      print(curUser.value.nickName);
+      print(curUser.value.eMail);
       return true;
     } else {
       return false;
@@ -89,31 +91,31 @@ class UserHandler extends DbHandler {
 
   userUpdate(String eMail, String nickName, String phone) async {
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/update?cureMail=${curUser.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone");
+        "http://127.0.0.1:8000/user/update?cureMail=${curUser.value.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone");
     print(url);
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
 
-    curUser.nickName = nickName;
-    curUser.eMail = eMail;
-    curUser.phone = phone;
+    curUser.value.nickName = nickName;
+    curUser.value.eMail = eMail;
+    curUser.value.phone = phone;
     update();
   }
 
   userUpdateAll(
       String eMail, String nickName, String phone, String profileImage) async {
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/updateAll?cureMail=${curUser.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone&&profileImage=$profileImage");
+        "http://127.0.0.1:8000/user/updateAll?cureMail=${curUser.value.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone&&profileImage=$profileImage");
     print(url);
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
 
-    curUser.profileImage = profileImage;
-    curUser.nickName = nickName;
-    curUser.eMail = eMail;
-    curUser.phone = phone;
+    curUser.value.profileImage = profileImage;
+    curUser.value.nickName = nickName;
+    curUser.value.eMail = eMail;
+    curUser.value.phone = phone;
   }
 
   //// handler.userImagePicker(ImageSource.gallery)로 실행시키세요
@@ -143,7 +145,7 @@ class UserHandler extends DbHandler {
 
   userUpdatePwd(String password) async {
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/updatePW?eMail=${curUser.eMail}&password=$password");
+        "http://127.0.0.1:8000/user/updatePW?eMail=${curUser.value.eMail}&password=$password");
     print(url);
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
