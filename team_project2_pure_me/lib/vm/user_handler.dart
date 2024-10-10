@@ -59,6 +59,7 @@ class UserHandler extends DbHandler {
     var result = dataConvertedJSON['result'];
 
     eMailUnique = result[0]['result'];
+    print(eMailUnique);
     update(); // 로직 구현 후 이 부분은 삭제바람
   }
 
@@ -74,7 +75,7 @@ class UserHandler extends DbHandler {
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
 
-    return result == "OK";
+    return true;
   }
 
   fetchUserLev() {

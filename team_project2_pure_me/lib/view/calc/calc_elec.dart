@@ -160,14 +160,15 @@ class CalcElec extends StatelessWidget {
             double? gas = double.tryParse(gasController.text.trim());
             
             if (electricity != null || gas != null) {
-              giveData(vmHandler);
+              giveData(vmHandler, vmHandler.electricitylist[0], electricController.text.trim(), "aaa");
+              giveData(vmHandler, vmHandler.electricitylist[1], gasController.text.trim(), "aaa");
             } else {
               Get.snackbar('경고', '숫자를 모두 입력해주세요.');
             }
           }
 
-          giveData(Vmhandler vmHandler) async {
-              var url = Uri.parse('http://127.0.0.1:8000/footprint/insert?category_kind=${vmHandler.electricitylist}&user_eMail=aaa&createDate=${DateTime.now()}&amount=${electricController.text.trim()},${gasController.text.trim()}');
+          giveData(Vmhandler vmHandler, String kind, String amount, String email) async {
+              var url = Uri.parse('http://127.0.0.1:8000/footprint/insert?category_kind=$kind&user_eMail=aaa&createDate=${DateTime.now()}&amount=$amount');
               var response = await http.get(url);
               var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
               result = dataConvertedJSON['message'];

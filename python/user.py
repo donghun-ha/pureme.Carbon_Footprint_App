@@ -14,8 +14,8 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 def connect():
     conn = pymysql.connect(
-        host='127.0.0.1',
-        user='root',
+        host='192.168.50.71',
+        user='user',
         password='qwer1234',
         db='pureme',
         charset='utf8'
