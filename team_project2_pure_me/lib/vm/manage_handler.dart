@@ -21,7 +21,7 @@ class ManageHandler extends CalcHandler {
   var searchFeedList = <Feed>[].obs;
   String searchFeedWord = '';
   int? searchFeedIndex;
-  
+
   // searchUser에서 쓸 변수들
   var searchUserList = <User>[].obs;
   String serachUserWord = '';
@@ -33,7 +33,6 @@ class ManageHandler extends CalcHandler {
 
   int? reportFeedIndex;
 
-
   // 안드로이드를를 위한 URL
   String manageUrl = 'http://10.0.2.2:8000/manage';
 
@@ -41,18 +40,12 @@ class ManageHandler extends CalcHandler {
   // String manageUrl = "http://127.0.0.1:8000/manage";
 
   final CollectionReference _manageFeed =
-    FirebaseFirestore.instance.collection('post');
+      FirebaseFirestore.instance.collection('post');
 
-
-
-
-  fetchAppManage()async{
+  fetchAppManage() async {
     await fetchUserAmount();
     await fetchFeedAmount();
   }
-
-
-
 
   fetchUserAmount() async {
     var url = Uri.parse("$manageUrl/userperday");
@@ -62,28 +55,32 @@ class ManageHandler extends CalcHandler {
     print(result);
 
     signInUserList.value = [
-      result[0]['count'], 
-      result[1]['count'], 
+      result[0]['count'],
+      result[1]['count'],
       result[2]['count']
     ];
   }
 
-
-
-  fetchFeedAmount()async{
+  fetchFeedAmount() async {
     List tempList = [];
-    
+
     String yesterday = DateTime.now()
-    .subtract(Duration(days: 1))    
-    .toString().substring(0, 19).replaceFirst(' ', 'T');
+        .subtract(Duration(days: 1))
+        .toString()
+        .substring(0, 19)
+        .replaceFirst(' ', 'T');
 
     String lastweek = DateTime.now()
-    .subtract(Duration(days: 7))    
-    .toString().substring(0, 19).replaceFirst(' ', 'T');
+        .subtract(Duration(days: 7))
+        .toString()
+        .substring(0, 19)
+        .replaceFirst(' ', 'T');
 
     String lastmonth = DateTime.now()
-    .subtract(Duration(days: 30))    
-    .toString().substring(0, 19).replaceFirst(' ', 'T');
+        .subtract(Duration(days: 30))
+        .toString()
+        .substring(0, 19)
+        .replaceFirst(' ', 'T');
 
     // 더미데이터
     // Timestamp yesterday = Timestamp.fromDate(DateTime.now()
@@ -96,62 +93,50 @@ class ManageHandler extends CalcHandler {
     // .subtract(Duration(days: 30))
     // );
 
-
-    dynamic yesterdaysnp =  await _manageFeed
+    dynamic yesterdaysnp = await _manageFeed
         .where('state', isEqualTo: '게시')
         .where('writetime', isGreaterThan: yesterday)
         .get();
     tempList.add(yesterdaysnp.size);
 
-    dynamic lastweeksnp =  await _manageFeed
+    dynamic lastweeksnp = await _manageFeed
         .where('state', isEqualTo: '게시')
         .where('writetime', isGreaterThan: lastweek)
         .get();
     tempList.add(lastweeksnp.size);
-    
-    dynamic lastmonthsnp =  await _manageFeed
+
+    dynamic lastmonthsnp = await _manageFeed
         .where('state', isEqualTo: '게시')
         .where('writetime', isGreaterThan: lastmonth)
         .get();
     tempList.add(lastmonthsnp.size);
-    
+
     madeFeedList.value = [
       tempList[0],
       tempList[1],
       tempList[2],
     ];
-
   }
 
+  test1() async {}
 
-
-  test1()async{
-
-  }
-
-
-
-  test2()async{
-
-    Timestamp timestamp = Timestamp.fromDate(DateTime.now()
-    .subtract(Duration(days: 1))
-    );
+  test2() async {
+    Timestamp timestamp =
+        Timestamp.fromDate(DateTime.now().subtract(Duration(days: 1)));
     FirebaseFirestore.instance.collection('post').add({
       'writer': 'pureme_id',
       'state': '테스트',
       'content': 'content',
-      'testtime':
-          timestamp,
+      'testtime': timestamp,
       'reply': [],
       'image': 'image',
       'imagename': 'imageName',
     });
   }
 
-
 //////FeedManage쪽에서 쓰는 함수들
-  searchFeed(String searchFeedword)async{
-    if (searchFeedword.isEmpty){
+  searchFeed(String searchFeedword) async {
+    if (searchFeedword.isEmpty) {
       _manageFeed
           .where('state', isEqualTo: '게시')
           .orderBy('writetime', descending: true)
@@ -160,25 +145,24 @@ class ManageHandler extends CalcHandler {
         (event) {
           searchFeedList.value = event.docs
               .map(
-                (doc) => Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
+                (doc) =>
+                    Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
               )
               .toList();
         },
       );
-    }else{
-
-    }
+    } else {}
   }
 
-  updateSearchFeedWord(String text){
+  updateSearchFeedWord(String text) {
     searchFeedWord = text;
     update();
   }
 
-  changeFeedIndex(int index){
-    if (index == searchFeedIndex){
+  changeFeedIndex(int index) {
+    if (index == searchFeedIndex) {
       searchFeedIndex = null;
-    } else{
+    } else {
       searchFeedIndex = index;
     }
     update();
@@ -186,80 +170,83 @@ class ManageHandler extends CalcHandler {
 
 ///////////////////saerchUser에서 쓸 함수들
 
-searchUser()async{
-  
-  if (serachUserWord.isNotEmpty){
-    var url = Uri.parse("$manageUrl/searchUser?serachUserWord=$serachUserWord");
+  searchUser() async {
+    if (serachUserWord.isNotEmpty) {
+      var url =
+          Uri.parse("$manageUrl/searchUser?serachUserWord=$serachUserWord");
+      var response = await http.get(url);
+      var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+      List result = dataConvertedJSON['result'];
+
+      searchUserList.value = result.map(
+        (e) {
+          return User.fromMap(e);
+        },
+      ).toList();
+      return "OK";
+    } else {
+      return "Noop";
+    }
+  }
+
+  searchUserWordchanged(String value) {
+    serachUserWord = value;
+    searchUserIndex = null;
+    update();
+  }
+
+  searchUserIndexChanged(int idx) {
+    print(idx);
+    print(searchUserIndex);
+    if (idx == searchUserIndex) {
+      searchUserIndex = null;
+    } else {
+      searchUserIndex = idx;
+    }
+    update();
+  }
+
+///////////////////reportFeed에서 쓸 함수들
+  ///feed가 report받은 숫자를 전부 씀
+  queryReportcount() async {
+    var url = Uri.parse("$manageUrl/queryReportcount");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List result = dataConvertedJSON['result'];
-    
-    searchUserList.value = result.map((e) {return User.fromMap(e);},).toList();
-    return "OK";
-  }else{
-    return "Noop";
+
+    reportFeedCountList.value = result.map(
+      (e) {
+        return RptCount.fromMap(e);
+      },
+    ).toList();
+    print(reportFeedCountList);
   }
-}
 
-searchUserWordchanged(String value){
-  serachUserWord = value;
-  searchUserIndex = null;
-  update();
-}
+  ///feed 하나의 리포트 이유들을 가져옴
+  queryReportReason(String feedId) async {
+    var url = Uri.parse("$manageUrl/queryReportReason?feedId=$feedId");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    List result = dataConvertedJSON['result'];
 
-searchUserIndexChanged(int idx){
-  print(idx);
-  print(searchUserIndex);
-  if (idx == searchUserIndex){
-    searchUserIndex = null;
-  }else{
-    searchUserIndex = idx;
+    reportFeedListById.value = result.map(
+      (e) {
+        return Report.fromMap(e);
+      },
+    ).toList();
+    print(reportFeedListById);
   }
-  update();
-}
 
-///////////////////reportFeed에서 쓸 함수들
-///feed가 report받은 숫자를 전부 씀
-queryReportcount()async{
-  var url = Uri.parse("$manageUrl/queryReportcount");
-  var response = await http.get(url);
-  var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-  List result = dataConvertedJSON['result'];
-  
-  reportFeedCountList.value = result.map((e) {
-    return RptCount.fromMap(e);},).toList();
-  print(reportFeedCountList);
-}
-
-///feed 하나의 리포트 이유들을 가져옴
-queryReportReason(String feedId)async{
-  var url = Uri.parse("$manageUrl/queryReportReason?feedId=$feedId");
-  var response = await http.get(url);
-  var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-  List result = dataConvertedJSON['result'];
-  
-  reportFeedListById.value = result.map((e) {
-    return Report.fromMap(e);},).toList();
-  print(reportFeedListById);
-
-}
-
-/// 어떤 feed를 가져왔는지를 바꾸기 위한 함수
-reportFeedIndexChanged(int idx){
-  if (idx == reportFeedIndex){
-    reportFeedIndex = null;
-    reportFeedListById.value=[];
-    update();
-  }else{
-    reportFeedIndex = idx;
-    update();
-    queryReportReason(reportFeedCountList[idx].feedId);
+  /// 어떤 feed를 가져왔는지를 바꾸기 위한 함수
+  reportFeedIndexChanged(int idx) {
+    if (idx == reportFeedIndex) {
+      reportFeedIndex = null;
+      reportFeedListById.value = [];
+      update();
+    } else {
+      reportFeedIndex = idx;
+      update();
+      queryReportReason(reportFeedCountList[idx].feedId);
+    }
   }
-  
-  
-}
-
-
-
-
 }//End
