@@ -45,7 +45,6 @@ class UserHandler extends DbHandler {
       dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
       result = dataConvertedJSON['result'];
       curUser = User.fromMap(result[0]);
-      update();
       print(curUser.eMail);
       return true;
     } else {
@@ -63,6 +62,7 @@ class UserHandler extends DbHandler {
     update(); // 로직 구현 후 이 부분은 삭제바람
   }
 
+  // 회원가입 signUP
   signIn(String eMail, String password, String passwordVerify, String nickName,
       String phone) async {
     if (password != passwordVerify) {

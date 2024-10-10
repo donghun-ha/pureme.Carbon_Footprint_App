@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/vm/vmhandler.dart';
+import 'package:http/http.dart' as http;
 
 class CalcFood extends StatelessWidget {
   CalcFood({super.key});
@@ -8,6 +11,7 @@ class CalcFood extends StatelessWidget {
   final TextEditingController vegetableController = TextEditingController();
   final TextEditingController milkController = TextEditingController();
   final TextEditingController plantController = TextEditingController();
+  late String? result = '__';
 
   @override
   Widget build(BuildContext context) {
@@ -22,21 +26,6 @@ class CalcFood extends StatelessWidget {
           backgroundColor: Colors.transparent,
           body: GetBuilder<Vmhandler>(
             builder: (controller) {
-              
-                  // FutureBuilder(
-                  //   future: controller.,
-                  //   builder: (context, snapshot) {
-                  //     if (snapshot.connectionState == ConnectionState.waiting) {
-                  //       return const Center(
-                  //         child: CircularProgressIndicator(),
-                  //       );
-                  //     } else if (snapshot.hasError) {
-                  //       return Center(
-                  //         child: Text('Error : ${snapshot.error}'),
-                  //       );
-                  //     } else {
-                  //       return
-                  
                   return Center(
                     child: Column(
                       children: [
@@ -145,7 +134,7 @@ class CalcFood extends StatelessWidget {
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: TextField(
-                                          controller: vegetableController,
+                                          controller: milkController,
                                           decoration: const InputDecoration(
                                             hintText: '주간 유제품 소비량 (kg)',
                                             hintStyle:
@@ -165,7 +154,7 @@ class CalcFood extends StatelessWidget {
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: TextField(
-                                          controller: vegetableController,
+                                          controller: plantController,
                                           decoration: const InputDecoration(
                                             hintText: '주간 식물성 대체 식품 소비량',
                                             hintStyle:
@@ -178,7 +167,7 @@ class CalcFood extends StatelessWidget {
                                         padding: const EdgeInsets.all(20.0),
                                         child: ElevatedButton(
                                             onPressed: () {
-                                              //
+                                               insertCarbonGen(vmHandler);
                                             },
                                             child: const Text('식습관 정보 입력')),
                                       )
@@ -194,10 +183,33 @@ class CalcFood extends StatelessWidget {
                   );
                 },
               )));
-              //   }
-              // },
             }
           
+          insertCarbonGen(Vmhandler vmHandler) {
+
+          double? meat = double.tryParse(meatController.text); 
+          double? vegetarian = double.tryParse(vegetableController.text);
+          double? dairy = double.tryParse(milkController.text);
+          double? plant = double.tryParse(plantController.text);
+
+          if (meat != null || vegetarian != null || dairy != null ||
+                plant != null) {
+                    giveData(vmHandler);
+                } else {
+                  Get.snackbar('경고', '숫자를 모두 입력해주세요.');
+                }
+        }
+
+
+        giveData(Vmhandler vmHandler) async {
+            var url = Uri.parse(
+              'http://127.0.0.1:8000/footprint/insert?category_kind=${vmHandler.foodlist}&user_eMail=aaa&createDate=${DateTime.now()}&amount=${meatController.text.trim()},${vegetableController.text.trim()},${milkController.text.trim()},${plantController.text.trim()}'
+            );
+            var response = await http.get(url);
+            var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+            result = dataConvertedJSON['message'];
+            Get.back();
+        }
         
   }
 

@@ -12,6 +12,7 @@ class RankHandler extends GetxController {
     fetchRank();
   }
 
+  // final String defaultUrl = "http://127.0.0.1:8000/footprint";
   final String defaultUrl = "http://127.0.0.1:8000/footprint";
 
   @override
