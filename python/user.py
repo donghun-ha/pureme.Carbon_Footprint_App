@@ -192,6 +192,28 @@ async def login(eMail: str = None, password:str = None):
     finally:
         conn.close()
 
+@router.get("/updatepoint")
+async def login(eMail: str = None, point :str = None):
+
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        sql = """
+        UPDATE user 
+        SET
+            point = %s
+        WHERE eMail = %s
+        """
+        curs.execute(sql, (point,eMail))
+        conn.commit()
+        return {'result': 'OK'}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()
+
+
 
 @router.post("/imageUpload")
 async def upload_file(file : UploadFile = File(...)):
@@ -206,4 +228,32 @@ async def upload_file(file : UploadFile = File(...)):
         print("Error:", e)
         return({"reslut" : "Error"})
 
+@router.get("/view/{file_name}")
+async def get_file(file_name: str):
+    file_path = os.path.join(UPLOAD_FOLDER, file_name)
+    if os.path.exists(file_path):
+        return FileResponse(path=file_path, filename=file_name)
+    return {'result' : 'Error'}
 
+
+
+
+@router.get("/userNames")
+async def userName():
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        sql = """
+        SELECT eMail, nickName 
+        FROM user;
+        """
+        curs.execute(sql)
+        rows = curs.fetchall()
+        result = dict(rows)
+        print(result)
+        return {'results': result}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()

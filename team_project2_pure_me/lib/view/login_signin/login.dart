@@ -106,7 +106,6 @@ class Login extends StatelessWidget {
                                     pwController.text.trim());
                                 if (checkLogin) {
                                   box.write('pureme_id', idController.text);
-                                  // Get.to(() => TabbarPage());
                                   _showDialog();
                                 } else {
                                   errorSnackBar();
@@ -153,7 +152,7 @@ class Login extends StatelessWidget {
   errorSnackBar() {
     Get.snackbar(
       "경고",
-      "입력중 문제가 발생 하였습니다.",
+      "입력을 안했거나 아이디, 비밀번호를 확인하세요.",
       snackPosition: SnackPosition.TOP,
     );
   }

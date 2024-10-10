@@ -8,6 +8,7 @@ import 'package:team_project2_pure_me/model/rpt_count.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:team_project2_pure_me/vm/calc_handler.dart';
 import 'package:http/http.dart' as http;
+import 'package:team_project2_pure_me/vm/rank_handler.dart';
 
 class ManageHandler extends CalcHandler {
   // List<User> searchedUserList = <User>[].obs;

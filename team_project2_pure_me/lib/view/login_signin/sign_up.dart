@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:team_project2_pure_me/view/login_signin/login.dart';
 import 'package:team_project2_pure_me/vm/vmhandler.dart';
 
 class SignUp extends StatelessWidget {
@@ -10,10 +11,14 @@ class SignUp extends StatelessWidget {
   final TextEditingController pwController = TextEditingController();
   final TextEditingController pwVerifyController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  final validText = RegExp(r"^[ㄱ-ㅎ가-힣0-9a-zA-Z]*$");  
 
   @override
   Widget build(BuildContext context) {
     final vmHandler = Get.put(Vmhandler());
+    
+    
+    
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -161,15 +166,45 @@ class SignUp extends StatelessWidget {
                                                 BorderRadius.circular(10),
                                           ),
                                         ),
-                                        onPressed: () {
-                                          vmHandler.signIn(
-                                              idController.text.trim(),
-                                              pwController.text.trim(),
-                                              pwVerifyController.text.trim(),
-                                              nameController.text.trim(),
-                                              phoneController.text.trim());
-                                          // 회원가입 로직 후 뒤로가기
+                                        onPressed: () async {
+                                          String email = idController.text.trim();
+
+                                          if(email.isNotEmpty) {
+                                            if (!validText.hasMatch(email)) {
+                                              ___showValidation();
+                                              return;
+                                            }
+                                          }
+
+
+                                          if (idController.text
+                                              .trim()
+                                              .isNotEmpty) {
+                                            await vmHandler.eMailVerify(
+                                                idController.text.trim());
+                                            print(vmHandler.eMailUnique);
+                                            if (vmHandler.eMailUnique) {
+                                              bool pwCheck =
+                                                  await vmHandler.signIn(  // if (password != passwordVerify) { return false; 이게 왔다.
+                                                idController.text.trim(),
+                                                pwController.text.trim(),
+                                                pwVerifyController.text.trim(),
+                                                nameController.text.trim(),
+                                                phoneController.text.trim(),
+                                              );
+                                              if (pwCheck) {
+                                                _showDialog();
+                                              } else {
+                                                ErrorSnackBar();
+                                              }
+                                            } else {
+                                              _ErrorSnackBar();
+                                            }
+                                          }
                                         },
+
+                                        // 회원가입 로직 후 뒤로가기
+
                                         child: const Text(
                                           '회원가입',
                                           style: TextStyle(
@@ -189,7 +224,6 @@ class SignUp extends StatelessWidget {
                                           ),
                                         ),
                                         onPressed: () {
-                                          //
                                           Get.back();
                                         },
                                         child: const Text(
@@ -215,4 +249,46 @@ class SignUp extends StatelessWidget {
       ),
     );
   }
-}
+
+  _showDialog() {
+    Get.defaultDialog(
+      title: '회원가입',
+      middleText: '회원가입이 완료되었습니다.',
+      backgroundColor: Colors.white,
+      barrierDismissible: false,
+      actions: [
+        TextButton(
+          onPressed: () {
+            Get.back();
+            Get.to(Login());
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    );
+  }
+
+  _ErrorSnackBar() {
+    Get.snackbar(
+      "경고",
+      "이미 사용중인 이메일이 존재합니다!",
+      snackPosition: SnackPosition.TOP,
+    );
+  }
+
+  ErrorSnackBar() {
+    Get.snackbar(
+      "경고",
+      "비밀번호가 일치하지 않습니다.",
+      snackPosition: SnackPosition.TOP,
+    );
+  }
+
+  ___showValidation() {
+    Get.snackbar(
+    "경고",
+    "형식이 올바르지 않습니다.",
+    snackPosition: SnackPosition.TOP,
+  );
+  }
+}   // End

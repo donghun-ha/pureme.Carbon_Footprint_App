@@ -37,7 +37,7 @@ class RankHandler extends UserHandler {
 
     if (response.statusCode == 200) {
       // 성공적으로 응답을 받았을 때
-      print('Response data: ${response.body}'); // 응답 데이터 확인
+      // print('Response data: ${response.body}'); // 응답 데이터 확인
       final data = json.decode(response.body);
       List<User> users = (data['rankings'] as List)
           .map((user) => User(
@@ -66,10 +66,13 @@ class RankHandler extends UserHandler {
     if (response.statusCode == 200) {
       final dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
       final totalFootprint = dataConvertedJSON['result'];
-      totalCarbonFootprint.value = totalFootprint[2].toString();
-      totalReducedCarbonFootprint.value = totalFootprint[3].toString();
-      treesFootprint.value = totalFootprint[1].toString();
-      totalEnergyReduction.value = totalFootprint[0].toString();
+      print(totalFootprint);
+      if (totalFootprint[0] != 0.0) {
+        totalCarbonFootprint.value = totalFootprint[2].toString();
+        totalReducedCarbonFootprint.value = totalFootprint[3].toString();
+        treesFootprint.value = totalFootprint[1].toString();
+        totalEnergyReduction.value = totalFootprint[0].toString();
+      }
     } else {
       print("랭킹을 불러오는 데 실패했습니다: ${response.statusCode}");
     }
