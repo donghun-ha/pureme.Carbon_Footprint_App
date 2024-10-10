@@ -9,6 +9,7 @@ import 'package:team_project2_pure_me/vm/db_handler.dart';
 import 'package:http/http.dart' as http;
 
 class UserHandler extends DbHandler {
+  RxList<User> userList = <User>[].obs;
   XFile? imageFile;
 
   final ImagePicker picker = ImagePicker();
@@ -45,7 +46,8 @@ class UserHandler extends DbHandler {
       dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
       result = dataConvertedJSON['result'];
       curUser = User.fromMap(result[0]);
-      print(curUser.eMail);
+      update();
+      print(curUser.nickName);
       return true;
     } else {
       return false;
@@ -62,7 +64,6 @@ class UserHandler extends DbHandler {
     update(); // 로직 구현 후 이 부분은 삭제바람
   }
 
-  // 회원가입 signUP
   signIn(String eMail, String password, String passwordVerify, String nickName,
       String phone) async {
     if (password != passwordVerify) {

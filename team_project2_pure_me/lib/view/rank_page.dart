@@ -75,7 +75,7 @@ class RankPage extends StatelessWidget {
                                   backgroundColor: _getColor(index),
                                   child: Text('${index + 1}'),
                                 ),
-                                title: Text(user.nickName),
+                                title: Text(user.eMail),
                                 subtitle: Text('Point: ${user.point}'),
                                 trailing: Text('${(user.point)} KG',
                                     style: const TextStyle(

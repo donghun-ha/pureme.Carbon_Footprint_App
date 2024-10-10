@@ -11,7 +11,7 @@ class Login extends StatelessWidget {
   final GetStorage box = GetStorage();
   final TextEditingController idController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
-  
+  late String? result = '__';
 
   @override
   Widget build(BuildContext context) {
