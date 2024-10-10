@@ -53,37 +53,42 @@ class UserInfoConfig extends StatelessWidget {
                                 const SizedBox(width: 8),
                                 const Text(
                                   '설정',
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
                           ),
                           const Divider(),
                           ListTile(
-                            leading: Image.asset('images/post.png', width: 24, height: 24),
+                            leading: Image.asset('images/post.png',
+                                width: 24, height: 24),
                             title: const Text('회원정보 수정'),
                             onTap: () => Get.to(() => UserInfoUpdate()),
                           ),
                           const Divider(),
                           ListTile(
-                            leading: Image.asset('images/settings.png', width: 24, height: 24),
+                            leading: Image.asset('images/settings.png',
+                                width: 24, height: 24),
                             title: const Text('비밀번호 변경'),
                             onTap: () => Get.to(() => UserInfoPassword()),
                           ),
                           const Divider(),
                           ListTile(
-                            leading: Image.asset('images/ranking.png', width: 24, height: 24),
+                            leading: Image.asset('images/ranking.png',
+                                width: 24, height: 24),
                             title: const Text('로그아웃'),
                             onTap: () {
                               // 로그아웃 로직 구현
                               // 예: Get.offAllNamed('/login');
                             },
-                          ), 
-                          const Divider(), 
+                          ),
+                          const Divider(),
                           const SizedBox(height: 50)
                         ],
                       ),
-                    ), 
+                    ),
                   ],
                 ),
               ),

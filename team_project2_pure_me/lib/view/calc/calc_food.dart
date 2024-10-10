@@ -195,14 +195,14 @@ class CalcFood extends StatelessWidget {
     double? plant = double.tryParse(plantController.text);
 
     if (meat != null || vegetarian != null || dairy != null || plant != null) {
-      giveData(
-          vmHandler, vmHandler.foodlist[0], meatController.text.trim(), box.read('pureme_id'));
-      giveData(
-          vmHandler, vmHandler.foodlist[1], vegetableController.text.trim(), box.read('pureme_id'));
-      giveData(
-          vmHandler, vmHandler.foodlist[2], milkController.text.trim(), box.read('pureme_id'));
-      giveData(
-          vmHandler, vmHandler.foodlist[3], plantController.text.trim(), box.read('pureme_id'));
+      giveData(vmHandler, vmHandler.foodlist[0], meatController.text.trim(),
+          box.read('pureme_id'));
+      giveData(vmHandler, vmHandler.foodlist[1],
+          vegetableController.text.trim(), box.read('pureme_id'));
+      giveData(vmHandler, vmHandler.foodlist[2], milkController.text.trim(),
+          box.read('pureme_id'));
+      giveData(vmHandler, vmHandler.foodlist[3], plantController.text.trim(),
+          box.read('pureme_id'));
       Get.back();
     } else {
       Get.snackbar('경고', '숫자를 모두 입력해주세요.');

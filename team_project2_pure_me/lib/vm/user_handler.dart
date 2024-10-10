@@ -40,7 +40,7 @@ class UserHandler extends FeedHandler {
 
     if (ver) {
       await curUserUpdate(eMail);
-      print(curUser.eMail);
+      // print(curUser.eMail);
       // print(curUser.point);
       // await pointUpdate(1);
       // print(curUser.point);
@@ -50,17 +50,15 @@ class UserHandler extends FeedHandler {
     }
   }
 
-  curUserUpdate(String eMail)async{
+  curUserUpdate(String eMail) async {
     var url = Uri.parse("http://127.0.0.1:8000/user/login?eMail=$eMail");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
-    curUser = User.fromMap(result[0]);
+    curUser.value = User.fromMap(result[0]);
     update();
-    print(curUser.nickName);
-
+    // print(curUser.nickName);
   }
-
 
   eMailVerify(String eMail) async {
     var url = Uri.parse("http://127.0.0.1:8000/user/eMailVerify?eMail=$eMail");
@@ -69,7 +67,7 @@ class UserHandler extends FeedHandler {
     var result = dataConvertedJSON['result'];
 
     eMailUnique = result[0]['result'];
-    update(); 
+    update();
   }
 
   signIn(String eMail, String password, String passwordVerify, String nickName,
@@ -111,19 +109,18 @@ class UserHandler extends FeedHandler {
 
   userUpdateAll(
       String eMail, String nickName, String phone, String profileImage) async {
-
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/updateAll?cureMail=${curUser.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone&&profileImage=$profileImage");
+        "http://127.0.0.1:8000/user/updateAll?cureMail=${curUser.value.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone&&profileImage=$profileImage");
 
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
 
-    curUser.profileImage = profileImage;
-    print(curUser.profileImage);
-    curUser.nickName = nickName;
-    curUser.eMail = eMail;
-    curUser.phone = phone;
+    curUser.value.profileImage = profileImage;
+    print(curUser.value.profileImage);
+    curUser.value.nickName = nickName;
+    curUser.value.eMail = eMail;
+    curUser.value.phone = phone;
     update();
   }
 
@@ -154,7 +151,7 @@ class UserHandler extends FeedHandler {
 
   userUpdatePwd(String password) async {
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/updatePW?eMail=${curUser.eMail}&password=$password");
+        "http://127.0.0.1:8000/user/updatePW?eMail=${curUser.value.eMail}&password=$password");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -163,19 +160,13 @@ class UserHandler extends FeedHandler {
     /// 비밀번호를 받아서 데이터베이스에 변경만 시킨다.
   }
 
-  pointUpdate(int addPoint)async{
-    curUser.point += addPoint;
+  pointUpdate(int addPoint) async {
+    curUser.value.point += addPoint;
     var url = Uri.parse(
-      "http://127.0.0.1:8000/user/updatepoint?eMail=${curUser.eMail}&point=${curUser.point}");
+        "http://127.0.0.1:8000/user/updatepoint?eMail=${curUser.value.eMail}&point=${curUser.value.point}");
     print(url);
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
-
-
   }
-
-
-
-
 }
