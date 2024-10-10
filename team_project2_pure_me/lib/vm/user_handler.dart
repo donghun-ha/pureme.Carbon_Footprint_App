@@ -9,6 +9,7 @@ import 'package:team_project2_pure_me/vm/db_handler.dart';
 import 'package:http/http.dart' as http;
 
 class UserHandler extends DbHandler {
+  RxList<User> userList = <User>[].obs;
   XFile? imageFile;
 
   final ImagePicker picker = ImagePicker();
@@ -46,7 +47,7 @@ class UserHandler extends DbHandler {
       result = dataConvertedJSON['result'];
       curUser = User.fromMap(result[0]);
       update();
-      print(curUser.eMail);
+      print(curUser.nickName);
       return true;
     } else {
       return false;

@@ -30,7 +30,7 @@ class TabbarPage extends StatelessWidget {
             controller: tabHandler.tabController,
             children: [
               // page
-              const Home(),
+              Home(),
               FeedHome(),
               RankPage(),
               UserInfoHome(),
