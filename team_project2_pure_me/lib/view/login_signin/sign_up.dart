@@ -31,7 +31,7 @@ class SignUp extends StatelessWidget {
             /// SQL에서 이메일 중복을 확인하는 변수 : eMailUnique
             /// 회원가입 시켜주는 함수 : signIn
             ///
-            body: GetBuilder(
+            body: GetBuilder<Vmhandler>(
               builder: (controller) {
                 return SingleChildScrollView(
                   child: Center(
@@ -163,12 +163,11 @@ class SignUp extends StatelessWidget {
                                         ),
                                         onPressed: () {
                                           vmHandler.signIn(
-                                            idController.text.trim(), 
-                                            pwController.text.trim(), 
-                                            pwVerifyController.text.trim(), 
-                                            nameController.text.trim(), 
-                                            phoneController.text.trim()
-                                            );
+                                              idController.text.trim(),
+                                              pwController.text.trim(),
+                                              pwVerifyController.text.trim(),
+                                              nameController.text.trim(),
+                                              phoneController.text.trim());
                                           // 회원가입 로직 후 뒤로가기
                                         },
                                         child: const Text(

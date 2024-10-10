@@ -105,7 +105,7 @@ class Login extends StatelessWidget {
                                     idController.text.trim(),
                                     pwController.text.trim());
                                 if (checkLogin) {
-                                  box.write('', idController.text);
+                                  box.write('pureme_id', idController.text);
                                   Get.to(() => TabbarPage());
                                   _showDialog();
                                 } else {
