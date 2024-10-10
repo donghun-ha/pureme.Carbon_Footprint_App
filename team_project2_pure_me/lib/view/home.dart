@@ -32,11 +32,13 @@ class Home extends StatelessWidget {
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
                       child: Card(
+                        elevation: 3,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
                               Card(
+                                elevation: 1.5,
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Row(
@@ -55,24 +57,38 @@ class Home extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              Text(
-                                "총 ${controllor.totalReducedCarbonFootprint.value} KG",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ), // 탄소량 출력
-                              const Text(
-                                '탄소량을 줄이는 활동을 하셨습니다!',
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      "총 ${controllor.totalReducedCarbonFootprint.value} KG",
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const Text(
+                                      '탄소량을 줄이는 활동을 하셨습니다!',
+                                    ),
+                                  ],
+                                ),
                               ),
                               Image.asset(
                                 'images/earth.png',
                                 width: 100,
                               ),
-                              Text(
-                                '총 ${controllor.totalCarbonFootprint.value} KG',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ), // 탄소량 출력
-                              const Text('탄소량을 배출했습니다!'),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      '총 ${controllor.totalCarbonFootprint.value} KG',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ), // 탄소량 출력
+                                    const Text('탄소량을 배출했습니다!'),
+                                  ],
+                                ),
+                              ),
                               IntrinsicHeight(
                                 child: Row(
                                   mainAxisAlignment:
@@ -92,7 +108,10 @@ class Home extends StatelessWidget {
                                           ),
                                         ),
                                         Text(
-                                            "${controllor.totalEnergyReduction.value} L"), // 총에너지 감소량
+                                          "${controllor.totalEnergyReduction.value} L",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ), // 총에너지 감소량
                                       ],
                                     ),
                                     const VerticalDivider(
@@ -115,7 +134,10 @@ class Home extends StatelessWidget {
                                             ),
                                           ),
                                           Text(
-                                              '${controllor.treesFootprint.value} 그루'), // 총에너지 감소량
+                                            '${controllor.treesFootprint.value} 그루',
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ), // 총에너지 감소량
                                         ],
                                       ),
                                     ),
@@ -131,7 +153,9 @@ class Home extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 54),
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.65,
+                        height: 213,
                         child: Card(
+                          elevation: 3,
                           child: Column(
                             children: [
                               Row(

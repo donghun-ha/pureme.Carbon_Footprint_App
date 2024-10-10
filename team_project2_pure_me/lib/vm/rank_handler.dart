@@ -66,7 +66,7 @@ class RankHandler extends UserHandler {
     if (response.statusCode == 200) {
       final dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
       final totalFootprint = dataConvertedJSON['result'];
-      print(totalFootprint);
+      // print(totalFootprint);
       if (totalFootprint[0] != 0.0) {
         totalCarbonFootprint.value = totalFootprint[2].toString();
         totalReducedCarbonFootprint.value = totalFootprint[3].toString();

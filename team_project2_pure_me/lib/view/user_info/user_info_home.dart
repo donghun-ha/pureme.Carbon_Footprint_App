@@ -4,14 +4,13 @@ import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/view/feed/feed_detail.dart';
 import 'package:team_project2_pure_me/view/feed/feed_insert.dart';
-import 'package:team_project2_pure_me/vm/user_handler.dart';
-import 'package:team_project2_pure_me/vm/vmhandler.dart';
+import 'package:team_project2_pure_me/vm/rank_handler.dart';
 import 'user_info_config.dart';
 
 class UserInfoHome extends StatelessWidget {
   UserInfoHome({super.key});
 
-  final vmhandler = Get.put(Vmhandler());
+  final vmhandler = Get.put(RankHandler());
   final box = GetStorage();
 
   // 더미 데이터
@@ -22,7 +21,7 @@ class UserInfoHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String email = box.read('pureme_id');
-    return GetBuilder<Vmhandler>(builder: (con) {
+    return GetBuilder<RankHandler>(builder: (con) {
       return Scaffold(
           backgroundColor: Colors.transparent,
           body: Obx(
@@ -70,7 +69,8 @@ class UserInfoHome extends StatelessWidget {
                                             backgroundImage: vmhandler.curUser
                                                         .value.profileImage ==
                                                     null
-                                                ? AssetImage('images/co2.png')
+                                                ? const AssetImage(
+                                                    'images/co2.png')
                                                 : NetworkImage(
                                                     "http://127.0.0.1:8000/user/view/${vmhandler.curUser.value.profileImage!}"),
                                           ),

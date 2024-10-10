@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:team_project2_pure_me/vm/vmhandler.dart';
+import 'package:team_project2_pure_me/vm/calc/calc_handler.dart';
 import 'package:http/http.dart' as http;
 
 class CalcTrans extends StatelessWidget {
@@ -14,7 +14,7 @@ class CalcTrans extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vmHandler = Get.put(Vmhandler());
+    final vmHandler = Get.put(CalcHandler());
     if (vmHandler.curtransDropValue == null &&
         vmHandler.transDropdown.isNotEmpty) {
       vmHandler.curtransDropValue = vmHandler.transDropdown[0];
@@ -30,7 +30,7 @@ class CalcTrans extends StatelessWidget {
         )),
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          body: GetBuilder<Vmhandler>(
+          body: GetBuilder<CalcHandler>(
             builder: (controller) {
               return
                   // FutureBuilder(
@@ -193,7 +193,7 @@ class CalcTrans extends StatelessWidget {
     }
   }
 
-  insertCarbonGen(Vmhandler vmHandler) {
+  insertCarbonGen(CalcHandler vmHandler) {
     if (vmHandler.curtransDropValue != null) {
       double? amount = double.tryParse(transController.text);
       giveData(vmHandler);
@@ -209,7 +209,7 @@ class CalcTrans extends StatelessWidget {
     }
   }
 
-  giveData(Vmhandler vmHandler) async {
+  giveData(CalcHandler vmHandler) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/footprint/insert?category_kind=${vmHandler.transDropdownEn[vmHandler.currentTranIndex]}&user_eMail=${box.read('pureme_id')}&createDate=${DateTime.now()}&amount=${transController.text.trim()}');
     var response = await http.get(url);

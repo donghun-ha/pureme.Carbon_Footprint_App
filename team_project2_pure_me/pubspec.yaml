@@ -54,6 +54,9 @@ dependencies:
   # imagePicker
   image_picker: ^1.1.2
 
+  # like_button
+  like_button: ^2.0.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

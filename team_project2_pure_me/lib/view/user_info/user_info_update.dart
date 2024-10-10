@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:team_project2_pure_me/vm/vmhandler.dart';
+import 'package:team_project2_pure_me/vm/rank_handler.dart';
 
 class UserInfoUpdate extends StatelessWidget {
   UserInfoUpdate({super.key});
@@ -12,7 +12,7 @@ class UserInfoUpdate extends StatelessWidget {
   // 더미 데이터
   final int level = 3;
 
-  final vmhandler = Get.put(Vmhandler());
+  final vmhandler = Get.put(RankHandler());
   final box = GetStorage();
 
   final TextEditingController nicknameController = TextEditingController();
@@ -24,14 +24,14 @@ class UserInfoUpdate extends StatelessWidget {
     // String profileImage = 'images/earth.png';
     String nickName = 'Pureus';
     String email = 'pureus@example.com';
-    String phone = '010-1234-5678';
+    // String phone = '010-1234-5678';
 
     // 초기 더미 데이터 설정
     nicknameController.text = vmhandler.curUser.value.nickName;
     emailController.text = vmhandler.curUser.value.eMail;
     phoneController.text = vmhandler.curUser.value.phone;
 
-    return GetBuilder<Vmhandler>(builder: (controller) {
+    return GetBuilder<RankHandler>(builder: (controller) {
       return Scaffold(
         body: Stack(
           children: [
@@ -98,7 +98,8 @@ class UserInfoUpdate extends StatelessWidget {
                                               backgroundImage: vmhandler.curUser
                                                           .value.profileImage ==
                                                       null
-                                                  ? AssetImage('images/co2.png')
+                                                  ? const AssetImage(
+                                                      'images/co2.png')
                                                   : NetworkImage(
                                                       "http://127.0.0.1:8000/user/view/${vmhandler.curUser.value.profileImage!}"),
                                             )

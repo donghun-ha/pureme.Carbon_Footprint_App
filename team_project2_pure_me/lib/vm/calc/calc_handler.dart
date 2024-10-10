@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
-import 'package:team_project2_pure_me/vm/user_handler.dart';
 
-class CalcHandler extends UserHandler {
+class CalcHandler extends GetxController {
   double curTotalCarbon = 0; // 현재 TotalCarborn의 양을 나타내는 변수
 
   var transDropdown = <String>['대중교통', '자동차', '자전거', '도보'].obs;

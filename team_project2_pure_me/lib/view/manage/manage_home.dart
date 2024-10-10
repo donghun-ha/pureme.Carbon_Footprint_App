@@ -4,7 +4,6 @@ import 'package:team_project2_pure_me/view/manage/manage_app.dart';
 import 'package:team_project2_pure_me/view/manage/manage_feed.dart';
 import 'package:team_project2_pure_me/view/manage/manage_report.dart';
 import 'package:team_project2_pure_me/view/manage/manage_user.dart';
-import 'package:team_project2_pure_me/vm/vmhandler.dart';
 
 class ManageHome extends StatelessWidget {
   const ManageHome({super.key});
@@ -17,49 +16,30 @@ class ManageHome extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed:()=> Get.to( () => ManageApp()) , 
-              child: const Text("앱")
-            ),
+                onPressed: () => Get.to(() => ManageApp()),
+                child: const Text("앱")),
             ElevatedButton(
-              onPressed:()=> Get.to( () => ManageFeed()) , 
-              child: const Text("피드")
-            ),
+                onPressed: () => Get.to(() => const ManageFeed()),
+                child: const Text("피드")),
             ElevatedButton(
-              onPressed:()=> Get.to( () => ManageUser()) , 
-              child: const Text("유저")
-            ),
+                onPressed: () => Get.to(() => ManageUser()),
+                child: const Text("유저")),
             ElevatedButton(
-              onPressed:()=> Get.to( () => ManageReport()) , 
-              child: const Text("신고")
-            ),
+                onPressed: () => Get.to(() => ManageReport()),
+                child: const Text("신고")),
             ElevatedButton(
-              onPressed:(){
-                test1ButtonPressed();
-              } , 
-              child: const Text("테스트1")
-            ),
+                onPressed: () {
+                  //
+                },
+                child: const Text("테스트1")),
             ElevatedButton(
-              onPressed:(){
-                test2ButtonPressed();
-              } , 
-              child: const Text("테스트2")
-            ),
+                onPressed: () {
+                  //
+                },
+                child: const Text("테스트2")),
           ],
         ),
       ),
     );
   }
-
-  test1ButtonPressed(){
-    final aaa = Vmhandler();
-    aaa.queryReportReason('t4DkHa0u6Yv0XksAeGlh');
-  }
-
-  test2ButtonPressed(){
-    final aaa = Vmhandler();
-    aaa.test2();
-  }
-
-
-
 }//End
