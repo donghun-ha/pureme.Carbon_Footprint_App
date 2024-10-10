@@ -4,11 +4,13 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/model/reply.dart';
+import 'package:team_project2_pure_me/vm/convert_email_to_name.dart';
 
 import 'package:team_project2_pure_me/vm/image_handler.dart';
 
 class FeedHandler extends ImageHandler {
   final GetStorage box = GetStorage();
+  final ConvertEmailToName convertEmailToName = ConvertEmailToName();
 
   final CollectionReference _feed =
       FirebaseFirestore.instance.collection('post');
@@ -35,6 +37,7 @@ class FeedHandler extends ImageHandler {
 
   /// feedDetail화면에서 쓸 replyList
   final replyList = <Reply>[].obs;
+  final showReplyList = <Reply>[].obs;
 
   /// user 화면에 보일 FeedList
   final userFeedList = <Feed>[].obs;
@@ -58,10 +61,6 @@ class FeedHandler extends ImageHandler {
             .toList();
       },
     );
-  }
-
-  test() {
-    print(userFeedList);
   }
 
   /// 피드 추가
@@ -99,18 +98,29 @@ class FeedHandler extends ImageHandler {
   /// 피드 상새내용
   /// argument = docId
   detailFeed(String docId) {
+    convertEmailToName.getUserName();
+
     _feed.doc(docId).snapshots().listen(
       (event) {
         // print(event);
         curFeed.value = [
           Feed.fromMap(event.data() as Map<String, dynamic>, docId)
         ];
+        curFeed[0].userName =
+            convertEmailToName.changeAction(curFeed[0].authorEMail);
         // replyList.value =
         //     curFeed[0].reply!.map((e) => Reply.fromMap(e)).toList();
         replyList.clear();
         for (int i = 0; i < curFeed[0].reply!.length; i++) {
           replyList.add(Reply.fromMap(curFeed[0].reply![i], i));
+          replyList[i].userName =
+              convertEmailToName.changeAction(replyList[i].authorEMail);
         }
+        showReplyList.value = replyList
+            .where(
+                (reply) => reply.replyState == '게시') // state가 '게시'인 reply만 필터링
+            .map((reply) => (reply))
+            .toList();
       },
     );
   }

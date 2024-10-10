@@ -5,6 +5,9 @@ class Feed {
   /// 작성자 이메일
   String authorEMail;
 
+  /// 작성자 닉네임
+  String? userName;
+
   /// 내용
   String content;
 
@@ -20,8 +23,6 @@ class Feed {
   // 피드 상태 // 게시 숨김
   String feedState;
 
-  /// 뭘로할지는 추가예정
-
   /// 삭제된 시간
   DateTime? deleteTime;
 
@@ -34,6 +35,7 @@ class Feed {
   Feed({
     this.feedName,
     required this.authorEMail,
+    this.userName,
     required this.content,
     required this.feedImagePath,
     required this.imageName,
@@ -55,14 +57,17 @@ class Feed {
         feedState: res['state'],
         reply: res['reply']);
   }
-  //     : id
-  //     feedName = res['feedName'],
-  //       authorEMail = res['authorEMail'],
-  //       content = res['content'],
-  //       feedImageName = res['feedImageName'],
-  //       writeTime = res['writeTime'],
-  //       feedState = res['feedState']
-  // // deleteTime = DateTime.parse(res['deleteTime']),
-  // // editTime = DateTime.parse(res['editTime'])
-  // ;
+
+  // factory Feed.detailFromMap(Map<String, dynamic> res, String id, String name) {
+  //   return Feed(
+  //       feedName: id,
+  //       authorEMail: res['writer'],
+  //       userName: name,
+  //       content: res['content'],
+  //       feedImagePath: res['image'],
+  //       imageName: res['imagename'],
+  //       writeTime: DateTime.parse(res['writetime']),
+  //       feedState: res['state'],
+  //       reply: res['reply']);
+  // }
 }

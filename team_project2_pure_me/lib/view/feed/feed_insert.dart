@@ -9,11 +9,9 @@ class FeedInsert extends StatelessWidget {
   FeedInsert({super.key});
 
   final TextEditingController contentController = TextEditingController();
-
+  final feedHandler = Get.put(FeedHandler());
   @override
   Widget build(BuildContext context) {
-    final feedHandler = Get.put(FeedHandler());
-
     return GetBuilder<FeedHandler>(
       builder: (controller) {
         return GestureDetector(
@@ -112,11 +110,9 @@ class FeedInsert extends StatelessWidget {
                                   child: SizedBox(
                                     width: double.infinity,
                                     child: TextButton(
-                                      onPressed: () async {
+                                      onPressed: () {
                                         // 등록 동작
-                                        await controller
-                                            .addFeed(contentController.text);
-                                        Get.back();
+                                        insertButton();
                                       },
                                       style: TextButton.styleFrom(
                                         backgroundColor:
@@ -148,4 +144,25 @@ class FeedInsert extends StatelessWidget {
       },
     );
   }
-}
+
+  // --- Function ---
+  insertButton() {
+    if (feedHandler.imageFile != null &&
+        contentController.text.trim().isNotEmpty) {
+      feedHandler.addFeed(contentController.text);
+      Get.back();
+    } else {
+      buttonSnackBar();
+    }
+  }
+
+  buttonSnackBar() {
+    Get.snackbar(
+      '입력 오류',
+      '사진 및 문구를 추가해주세요',
+      duration: const Duration(seconds: 1), // 애니메이션 시간
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
+  }
+} // End

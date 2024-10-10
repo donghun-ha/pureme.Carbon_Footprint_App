@@ -10,6 +10,9 @@ class Reply {
   /// 작성자 이메일
   String authorEMail;
 
+  /// 작성자 닉네임
+  String? userName;
+
   /// 댓글 내용
   String content;
 
@@ -31,6 +34,7 @@ class Reply {
     // required this.feedName,
     required this.index,
     required this.authorEMail,
+    this.userName,
     required this.content,
     required this.writeTime,
     required this.replyState,

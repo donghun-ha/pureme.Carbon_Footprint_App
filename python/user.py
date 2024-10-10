@@ -206,4 +206,22 @@ async def upload_file(file : UploadFile = File(...)):
         print("Error:", e)
         return({"reslut" : "Error"})
 
-
+@router.get("/userNames")
+async def userName():
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        sql = """
+        SELECT eMail, nickName 
+        FROM user;
+        """
+        curs.execute(sql)
+        rows = curs.fetchall()
+        result = dict(rows)
+        print(result)
+        return {'results': result}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()

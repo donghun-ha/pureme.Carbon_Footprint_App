@@ -29,7 +29,7 @@ class RankHandler extends GetxController {
 
     if (response.statusCode == 200) {
       // 성공적으로 응답을 받았을 때
-      print('Response data: ${response.body}'); // 응답 데이터 확인
+      // print('Response data: ${response.body}'); // 응답 데이터 확인
       final data = json.decode(response.body);
       List<User> users = (data['rankings'] as List)
           .map((user) => User(

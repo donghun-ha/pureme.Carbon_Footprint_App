@@ -4,15 +4,12 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:team_project2_pure_me/model/lev.dart';
 import 'package:team_project2_pure_me/model/user.dart';
-import 'package:team_project2_pure_me/vm/db_handler.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:team_project2_pure_me/vm/feed_handler.dart';
 
-class UserHandler extends DbHandler {
+class UserHandler extends FeedHandler {
   RxList<User> userList = <User>[].obs;
-  XFile? imageFile;
-
-  final ImagePicker picker = ImagePicker();
 
   User curUser = User(
       eMail: '1234@gmail.com',

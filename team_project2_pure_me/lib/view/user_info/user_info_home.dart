@@ -128,7 +128,12 @@ class UserInfoHome extends StatelessWidget {
                                 child: ElevatedButton.icon(
                                   onPressed: () {
                                     // 글쓰기 기능 구현
-                                    Get.to(() => FeedInsert());
+                                    Get.to(() => FeedInsert())!.then(
+                                      (value) {
+                                        userHandler.imageFile = null;
+                                        userHandler.imgFile = null;
+                                      },
+                                    );
                                   },
                                   icon: Image.asset('images/post.png',
                                       width: 24, height: 24),
