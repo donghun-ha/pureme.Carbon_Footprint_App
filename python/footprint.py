@@ -252,13 +252,13 @@ async def calculate_with_reduction(user_eMail: str):
     total_energy_reduction = convert_to_energy_reduction(total_carbon_reduction)
     total_trees_planted = convert_to_trees_planted(total_carbon_reduction)
 
-    summary = {
+    summary = [
         round(total_energy_reduction,2),
         round(total_trees_planted,2),
         round(total_carbon_footprint,2),
         round(total_carbon_reduction,2),
         # average_comparison,
-    }
+    ]
     
     # 결과를 JSON 형식으로 반환 (절감량 포함)
     return {

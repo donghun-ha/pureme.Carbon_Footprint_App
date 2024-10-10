@@ -87,7 +87,7 @@ class UserInfoHome extends StatelessWidget {
                                                     GestureDetector(
                                                       onTap: () {
                                                         Get.to(() =>
-                                                                const UserInfoConfig())
+                                                                UserInfoConfig())
                                                             // !.then((value) =>
                                                             //   vmhandler.curUserUpdate(box.read('pureme_id'))
                                                             // )

@@ -66,13 +66,18 @@ class RankHandler extends UserHandler {
     if (response.statusCode == 200) {
       final dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
       final totalFootprint = dataConvertedJSON['result'];
-      // print(totalFootprint);
-      if (totalFootprint[0] != 0.0) {
+      print(totalFootprint);
+      // if (totalFootprint[0] != 0.0 ) {
         totalCarbonFootprint.value = totalFootprint[2].toString();
         totalReducedCarbonFootprint.value = totalFootprint[3].toString();
         treesFootprint.value = totalFootprint[1].toString();
         totalEnergyReduction.value = totalFootprint[0].toString();
-      }
+      // } else{
+      //   totalCarbonFootprint.value = '0';
+      //   totalReducedCarbonFootprint.value = '0';
+      //   treesFootprint.value = '0';
+      //   totalEnergyReduction.value = '0';
+      // }
     } else {
       print("랭킹을 불러오는 데 실패했습니다: ${response.statusCode}");
     }
