@@ -67,7 +67,7 @@ class UserInfoHome extends StatelessWidget {
                                           children: [
                                             GestureDetector(
                                               onTap: () {
-                                                Get.to(() => const UserInfoConfig());
+                                                Get.to(() =>  UserInfoConfig());
                                               },
                                               child: Image.asset('images/settings.png', width: 24, height: 24),
                                             ),

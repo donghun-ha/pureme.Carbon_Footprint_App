@@ -11,7 +11,7 @@ class SignUp extends StatelessWidget {
   final TextEditingController pwController = TextEditingController();
   final TextEditingController pwVerifyController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final validText = RegExp(r"^[ㄱ-ㅎ가-힣0-9a-zA-Z]*$");  
+  final validText = RegExp( r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');  
 
   @override
   Widget build(BuildContext context) {
@@ -111,6 +111,7 @@ class SignUp extends StatelessWidget {
                                         ),
                                       ),
                                     ),
+                                    obscureText: true,
                                   ),
                                 ),
                                 Padding(
@@ -129,6 +130,7 @@ class SignUp extends StatelessWidget {
                                         ),
                                       ),
                                     ),
+                                    obscureText: true,
                                   ),
                                 ),
                                 Padding(
@@ -168,14 +170,15 @@ class SignUp extends StatelessWidget {
                                         ),
                                         onPressed: () async {
                                           String email = idController.text.trim();
+                                          String phonenumber = phoneController.text.trim();
 
                                           if(email.isNotEmpty) {
                                             if (!validText.hasMatch(email)) {
-                                              ___showValidation();
+                                              ___showali();
                                               return;
                                             }
                                           }
-
+                                          
 
                                           if (idController.text
                                               .trim()
@@ -284,7 +287,7 @@ class SignUp extends StatelessWidget {
     );
   }
 
-  ___showValidation() {
+  ___showali() {
     Get.snackbar(
     "경고",
     "형식이 올바르지 않습니다.",

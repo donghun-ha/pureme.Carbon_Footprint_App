@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:team_project2_pure_me/view/login_signin/login.dart';
 import 'user_info_update.dart';
 import 'user_info_password.dart';
 
 class UserInfoConfig extends StatelessWidget {
-  const UserInfoConfig({super.key});
+  UserInfoConfig({super.key});
+
+  final box = GetStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -53,37 +57,44 @@ class UserInfoConfig extends StatelessWidget {
                                 const SizedBox(width: 8),
                                 const Text(
                                   '설정',
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
                           ),
                           const Divider(),
                           ListTile(
-                            leading: Image.asset('images/post.png', width: 24, height: 24),
+                            leading: Image.asset('images/post.png',
+                                width: 24, height: 24),
                             title: const Text('회원정보 수정'),
                             onTap: () => Get.to(() => UserInfoUpdate()),
                           ),
                           const Divider(),
                           ListTile(
-                            leading: Image.asset('images/settings.png', width: 24, height: 24),
+                            leading: Image.asset('images/settings.png',
+                                width: 24, height: 24),
                             title: const Text('비밀번호 변경'),
                             onTap: () => Get.to(() => UserInfoPassword()),
                           ),
                           const Divider(),
                           ListTile(
-                            leading: Image.asset('images/ranking.png', width: 24, height: 24),
+                            leading: Image.asset('images/ranking.png',
+                                width: 24, height: 24),
                             title: const Text('로그아웃'),
                             onTap: () {
+                              _showDialog();
+                            
                               // 로그아웃 로직 구현
                               // 예: Get.offAllNamed('/login');
                             },
-                          ), 
-                          const Divider(), 
+                          ),
+                          const Divider(),
                           const SizedBox(height: 50)
                         ],
                       ),
-                    ), 
+                    ),
                   ],
                 ),
               ),
@@ -91,6 +102,28 @@ class UserInfoConfig extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  _showDialog() {
+    Get.defaultDialog(
+      title: '로그아웃',
+      middleText: '로그아웃이 완료되었습니다.',
+      backgroundColor: Colors.white,
+      barrierDismissible: false,
+      actions: [
+        TextButton(
+          onPressed: () {
+            print('야호');
+            box.remove('pureme_id');
+            Get.back();
+            Get.back();
+            Get.back();
+            Get.back();
+          },
+          child: const Text('OK'),
+        ),
+      ],
     );
   }
 }
