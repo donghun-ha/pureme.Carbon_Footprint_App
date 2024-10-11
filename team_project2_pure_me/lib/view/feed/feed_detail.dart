@@ -83,7 +83,7 @@ class FeedDetail extends StatelessWidget {
                                               color: Colors.red,
                                             ),
                                           )
-                                        : const SizedBox.shrink(),
+                                        : 
                                     IconButton(
                                       onPressed: () {
                                         ///박상범 수정
@@ -359,14 +359,70 @@ class FeedDetail extends StatelessWidget {
     Get.defaultDialog(
       title: '게시글 신고',
       middleText: '게시글을 신고하시겠습니까?',
-      content: TextField(
-        controller: reportController,
+      content: SizedBox(
+        width: 200,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ////// 다이얼로그 내용
+            Text('신고자 : ${box.read("pureme_id")}'),
+            const Divider(),
+            Text('게시자 eMail : ${feedHandler.curFeed[0].authorEMail}'),
+            const Divider(),
+            const Text('신고 사유(최대 20)'),
+            const SizedBox(height: 10,),
+            //// 텍스트필드쪽 데코레이션
+            Container(
+              height: 100,
+              width: 200,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 1.0, 
+                ),
+                borderRadius: BorderRadius.circular(4.0), 
+              ),
+              child: TextField(
+                controller: reportController,
+                maxLength: 20, /// MySQL의 틀에 맞춰 최대갯수 20개로 제한함
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  counterText: '', 
+                  contentPadding: EdgeInsets.all(8.0), 
+                ),
+              ),
+            )
+          ],
+        ),
       ),
       actions: [
         TextButton(
-          onPressed: () {
-            feedHandler.reportFeed(feedValue.feedName!, reportController.text.trim());
-            Get.back();
+          onPressed: ()async{
+            /// 신고자 이메일
+            String eMail = box.read("pureme_id");
+            if (reportController.text.trim().isEmpty){
+              /// null값 처리
+              Get.snackbar(
+                '경고', 
+                '신고사유를 입력해주세요',
+                backgroundColor: Colors.red,
+                colorText: Colors.yellow,
+                );
+              return;
+            }
+            String result =await feedHandler.reportFeed(eMail ,feedValue.feedName!, reportController.text.trim());
+            //////// 완료 로직: 텍스트필드 제거
+            reportController.clear();
+            //// 신고는 한게시글당 하나만 가능하기 때문에 그를 위한 로직
+            if (result == 'OK'){
+              Get.back();
+              Get.back(); /// 신고하면 그즉시 피드화면으로 나가지도록 로직 구현
+              reportComplete();
+            } else{
+              Get.back();
+              reportFailed();
+            }
           },
           child: const Text('신고'),
         ),
@@ -378,6 +434,37 @@ class FeedDetail extends StatelessWidget {
     );
   }
 
+/// 신고 성공시 띄우는 Dialog
+  reportComplete(){
+    Get.defaultDialog(
+      title: '신고 완료',
+      middleText: '정상적으로 신고되었습니다.',
+      actions: [
+        TextButton(
+          onPressed: ()async{
+            Get.back();
+          },
+          child: const Text('확인'),
+        ),
+      ],
+    );
+  }
+
+/// 신고 실패시 띄우는 Dialog
+  reportFailed(){
+    Get.defaultDialog(
+      title: '신고 실패',
+      middleText: '이전에 한번 신고하셨습니다.',
+      actions: [
+        TextButton(
+          onPressed: ()async{
+            Get.back();
+          },
+          child: const Text('확인'),
+        ),
+      ],
+    );
+  }
 
 
 

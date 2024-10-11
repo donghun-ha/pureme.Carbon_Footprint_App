@@ -181,8 +181,15 @@ class FeedHandler extends ImageHandler {
     _feed.doc(docId).update({'state': '삭제'});
   }
 
+  //// 박상범 추가, Feed를 Report함
+  reportFeed(String eMail, String docId, String reportReason)async{
+    var url = Uri.parse(
+        "$baseUrl/feed/updateReport?feedId=$docId&userEmail=$eMail&reportReason=$reportReason");
+    final response = await http.get(url); // GET 요청
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    return result;
 
-  reportFeed(String docId, String reportReason) {
     
   }
 

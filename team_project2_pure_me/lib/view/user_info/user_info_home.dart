@@ -67,7 +67,7 @@ class UserInfoHome extends StatelessWidget {
                                             CrossAxisAlignment.start,
                                         children: [
                                           FutureBuilder(
-                                            future: _fetchImage(),
+                                            future: vmhandler.fetchImage(),
                                             builder: (context,snapshot) {
                                             if (snapshot.connectionState == ConnectionState.waiting) {
                                               return const Center(
@@ -240,20 +240,6 @@ class UserInfoHome extends StatelessWidget {
   }
 
 
-  Future<Uint8List?> _fetchImage() async {
-    try {
-      final response = await http.get(
-        Uri.parse("http://127.0.0.1:8000/user/view/${vmhandler.curUser.value.profileImage!}"),
-      );
-
-      if (response.statusCode == 200) {
-        return response.bodyBytes; // 바이트 배열로 반환
-      }
-    } catch (e) {
-      print("Error fetching image: $e");
-    }
-    return null; // 에러 발생 시 null 반환
-  }
 
 
 

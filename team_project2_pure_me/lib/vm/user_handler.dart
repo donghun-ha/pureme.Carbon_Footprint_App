@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:image_picker/image_picker.dart';
@@ -162,7 +163,7 @@ class UserHandler extends FeedHandler {
   userImageDelete() async {
     if (curUser.value.profileImage != null) {
       final response = await http.delete(Uri.parse(
-          "http://127.0.0.1:8000/user/imageDelete/${curUser.value.profileImage}"));
+          "$baseUrl/user/imageDelete/${curUser.value.profileImage}"));
       if (response.statusCode == 200) {
         curUser.value.profileImage = null;
         print("Image deleted successfully");
@@ -192,4 +193,21 @@ class UserHandler extends FeedHandler {
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
   }
+
+
+  Future<Uint8List?> fetchImage() async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/user/view/${curUser.value.profileImage!}"),
+      );
+
+      if (response.statusCode == 200) {
+        return response.bodyBytes; // 바이트 배열로 반환
+      }
+    } catch (e) {
+      print("Error fetching image: $e");
+    }
+    return null; // 에러 발생 시 null 반환
+  }
+
 }
