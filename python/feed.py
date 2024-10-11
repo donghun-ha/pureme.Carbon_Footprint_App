@@ -5,8 +5,8 @@ router = APIRouter()
 
 def connect():
     conn = pymysql.connect(
-        host='127.0.0.1',
-        user='root',
+        host='192.168.50.71',
+        user='user',
         password='qwer1234',
         db='pureme',
         charset='utf8'
@@ -14,48 +14,73 @@ def connect():
     return conn
 
 
-@router.get("/likefeed")
-async def login(eMail: str = None, feedId : str = None):
+@router.get("/getFeedLike")
+async def getFeedLike(feedId: str = None, userEmail : str = None):
     conn = connect()
     curs = conn.cursor()
     try:
         sql = """
-        SELECT haert
-        FROM likefeed
-        WHERE user_eMail=%s
-        AND feedId=%s
+        SELECT 
+            heart_row.user_eMail, heart_row.heart, total_heart
+        FROM 
+            (SELECT user_eMail, SUM(heart) as heart
+                FROM pureme.likefeed
+                WHERE feedId = %s
+                GROUP BY user_eMail)
+            as heart_row,
+            (SELECT SUM(heart) AS total_heart
+                FROM pureme.likefeed
+                WHERE feedId = %s)
+            as total_heart_row
+        WHERE 
+            heart_row.user_eMail = %s
+
+        UNION
+
+        SELECT 
+            NULL AS user_eMail, 0 AS heart, total_heart_row.total_heart
+        FROM 
+            (SELECT SUM(heart) AS total_heart
+                FROM pureme.likefeed
+                WHERE feedId = %s)
+            as total_heart_row
+        WHERE NOT EXISTS 
+            (SELECT 1 
+                FROM pureme.likefeed
+                WHERE feedId = %s
+                AND user_eMail = %s)
         """
-        curs.execute(sql, (eMail,feedId))
-        rows = curs.fetchall()
-        result = [{'result': row[0]==1} for row in rows]
+        curs.execute(sql, (feedId, feedId, userEmail, feedId, feedId, userEmail))
+        row = curs.fetchone()
+        print(row)
+        # result = [{'result': row[0]==1} for row in rows]
         conn.commit()
-        return {'result': result}
+        return {'result': row}
     except Exception as e:
         print("Error:", e)
-        return {"results": "Error"}
+        return {"result": "Error"}
     finally:
         conn.close()
 
 
-@router.get("/changeLike")
-async def login(haert:str =None, eMail: str = None, feedId : str = None ):
+@router.get("/updateLike")
+async def updateLike(feedId:str =None, userEmail: str = None, heart : str = None ):
     conn = connect()
     curs = conn.cursor()
     try:
         sql ="""
-        UPDATE likefeed 
-        SET
-            haert = %s
-        WHERE user_eMail=%s
-        AND feedId=%s
+        INSERT INTO 
+            likefeed (user_eMail, feedId, heart)
+        VALUES
+            (%s, %s, %s);
         """
 
-        curs.execute(sql, (haert, eMail,feedId))
+        curs.execute(sql, (userEmail, feedId, heart))
         conn.commit()
         return {'result': 'OK'}
     except Exception as e:
         print("Error:", e)
-        return {"results": "Error"}
+        return {"result": "Error"}
     finally:
         conn.close()
 

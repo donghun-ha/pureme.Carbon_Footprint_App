@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:like_button/like_button.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/model/reply.dart';
 import 'package:team_project2_pure_me/vm/feed_handler.dart';
@@ -17,6 +18,7 @@ class FeedDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     feedHandler.detailFeed(feedValue.feedName!);
+    feedHandler.getFeedLike();
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -103,6 +105,28 @@ class FeedDetail extends StatelessWidget {
                       Row(
                         // 하트랑 댓글 들어갈 자리
                         children: [
+                          LikeButton(
+                            likeCount: feedHandler.likeCount.value, // 값을 받아와야함
+                            isLiked: feedHandler.isLike.value, // 값을 받아와야함
+                            // countBuilder: (likeCount, isLiked, text) {
+                            //   var color = isLiked
+                            //       ? Colors.deepPurpleAccent
+                            //       : Colors.grey;
+                            //   Widget result;
+                            //   if (likeCount == 0) {
+                            //     result = Text(
+                            //       "love",
+                            //       style: TextStyle(color: color),
+                            //     );
+                            //   } else
+                            //     result = Text(
+                            //       text,
+                            //       style: TextStyle(color: color),
+                            //     );
+                            //   return result;
+                            // },
+                            onTap: feedHandler.onLikeButtonTapped,
+                          ),
                           IconButton(
                             onPressed: () =>
                                 replyBottomSheet(context, feedHandler),
