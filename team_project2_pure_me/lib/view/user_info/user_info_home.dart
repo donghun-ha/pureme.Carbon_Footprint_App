@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -6,6 +8,7 @@ import 'package:team_project2_pure_me/view/feed/feed_detail.dart';
 import 'package:team_project2_pure_me/view/feed/feed_insert.dart';
 import 'package:team_project2_pure_me/vm/rank_handler.dart';
 import 'user_info_config.dart';
+import 'package:http/http.dart' as http;
 
 class UserInfoHome extends StatelessWidget {
   UserInfoHome({super.key});
@@ -20,7 +23,6 @@ class UserInfoHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String email = box.read('pureme_id');
     return GetBuilder<RankHandler>(builder: (con) {
       return Scaffold(
           backgroundColor: Colors.transparent,
@@ -64,15 +66,30 @@ class UserInfoHome extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          CircleAvatar(
-                                            radius: 65,
-                                            backgroundImage: vmhandler.curUser
-                                                        .value.profileImage ==
-                                                    null
-                                                ? const AssetImage(
-                                                    'images/co2.png')
-                                                : NetworkImage(
-                                                    "http://127.0.0.1:8000/user/view/${vmhandler.curUser.value.profileImage!}"),
+                                          FutureBuilder(
+                                            future: _fetchImage(),
+                                            builder: (context,snapshot) {
+                                            if (snapshot.connectionState == ConnectionState.waiting) {
+                                              return const Center(
+                                                child: CircularProgressIndicator(),
+                                              );
+                                            } else if (snapshot.hasError) {
+                                              return Center(
+                                                child: Text("Error : ${snapshot.error}"),
+                                              );
+                                            }else{
+                                              return CircleAvatar(
+                                                radius: 65,
+                                                backgroundImage: vmhandler.curUser
+                                                            .value.profileImage ==
+                                                        null
+                                                    ? const AssetImage(
+                                                        'images/co2.png')
+                                                    : MemoryImage(
+                                                      snapshot.data!
+                                                    ),
+                                              );}
+                                            }
                                           ),
                                           const SizedBox(width: 22),
                                           Expanded(
@@ -87,11 +104,7 @@ class UserInfoHome extends StatelessWidget {
                                                     GestureDetector(
                                                       onTap: () {
                                                         Get.to(() =>
-                                                                UserInfoConfig())
-                                                            // !.then((value) =>
-                                                            //   vmhandler.curUserUpdate(box.read('pureme_id'))
-                                                            // )
-                                                            ;
+                                                                UserInfoConfig());
                                                       },
                                                       child: Image.asset(
                                                           'images/settings.png',
@@ -116,15 +129,14 @@ class UserInfoHome extends StatelessWidget {
                                                 ),
                                                 const SizedBox(height: 8),
                                                 Text(
-                                                  vmhandler
-                                                      .curUser.value.nickName,
+                                                  vmhandler.curUser.value.nickName,
                                                   style: const TextStyle(
                                                       fontSize: 25,
                                                       fontWeight:
                                                           FontWeight.bold),
                                                 ),
                                                 Text(
-                                                  email,
+                                                  vmhandler.curUser.value.eMail,
                                                   style: const TextStyle(
                                                       fontSize: 16),
                                                 ),
@@ -226,4 +238,26 @@ class UserInfoHome extends StatelessWidget {
           ));
     });
   }
-}
+
+
+  Future<Uint8List?> _fetchImage() async {
+    try {
+      final response = await http.get(
+        Uri.parse("http://127.0.0.1:8000/user/view/${vmhandler.curUser.value.profileImage!}"),
+      );
+
+      if (response.statusCode == 200) {
+        return response.bodyBytes; // 바이트 배열로 반환
+      }
+    } catch (e) {
+      print("Error fetching image: $e");
+    }
+    return null; // 에러 발생 시 null 반환
+  }
+
+
+
+
+
+
+}//End

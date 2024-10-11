@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:team_project2_pure_me/vm/rank_handler.dart';
+import 'package:http/http.dart' as http;
 
 class UserInfoUpdate extends StatelessWidget {
   UserInfoUpdate({super.key});
@@ -16,19 +18,13 @@ class UserInfoUpdate extends StatelessWidget {
   final box = GetStorage();
 
   final TextEditingController nicknameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    // String profileImage = 'images/earth.png';
-    String nickName = 'Pureus';
-    String email = 'pureus@example.com';
-    // String phone = '010-1234-5678';
 
     // 초기 더미 데이터 설정
     nicknameController.text = vmhandler.curUser.value.nickName;
-    emailController.text = vmhandler.curUser.value.eMail;
     phoneController.text = vmhandler.curUser.value.phone;
 
     return GetBuilder<RankHandler>(builder: (controller) {
@@ -90,39 +86,71 @@ class UserInfoUpdate extends StatelessWidget {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Column(
-                                    children: [
-                                      vmhandler.imageFile == null
-                                          ? CircleAvatar(
-                                              radius: 50,
-                                              backgroundImage: vmhandler.curUser
-                                                          .value.profileImage ==
-                                                      null
-                                                  ? const AssetImage(
-                                                      'images/co2.png')
-                                                  : NetworkImage(
-                                                      "http://127.0.0.1:8000/user/view/${vmhandler.curUser.value.profileImage!}"),
-                                            )
-                                          : CircleAvatar(
-                                              radius: 50,
-                                              backgroundImage: FileImage(File(
-                                                  vmhandler.imageFile!.path)),
+                                  FutureBuilder(
+                                    future: _fetchImage(),
+                                    builder: (context,snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      } else if (snapshot.hasError) {
+                                        return Center(
+                                          child: Text("Error : ${snapshot.error}"),
+                                        );
+                                      }else{
+                                        return Column(  
+                                          children: [
+                                            vmhandler.imageFile == null
+                                                ? CircleAvatar(
+                                                    radius: 50,
+                                                    backgroundImage: vmhandler.curUser
+                                                                .value.profileImage ==
+                                                            null
+                                                        ? const AssetImage(
+                                                            'images/co2.png')
+                                                        : NetworkImage(
+                                                            "http://127.0.0.1:8000/user/view/${vmhandler.curUser.value.profileImage!}"),
+                                                  )
+                                                : CircleAvatar(
+                                                    radius: 50,
+                                                    backgroundImage: FileImage(File(
+                                                        vmhandler.imageFile!.path)),
+                                                  ),
+                                            Row(
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    vmhandler.userImagePicker(
+                                                        ImageSource.gallery);
+                                                  },
+                                                  child: const Text(
+                                                    '사진 수정',
+                                                    style: TextStyle(
+                                                      decoration:
+                                                          TextDecoration.underline,
+                                                      color: Colors.blue,
+                                                    ),
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    vmhandler.userImageDelete();
+                                                  },
+                                                  child: const Text(
+                                                    '기본이미지',
+                                                    style: TextStyle(
+                                                      decoration:
+                                                          TextDecoration.underline,
+                                                      color: Colors.blue,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                      TextButton(
-                                        onPressed: () {
-                                          vmhandler.userImagePicker(
-                                              ImageSource.gallery);
-                                        },
-                                        child: const Text(
-                                          '사진 수정',
-                                          style: TextStyle(
-                                            decoration:
-                                                TextDecoration.underline,
-                                            color: Colors.blue,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                          ],
+                                        );
+                                      }
+                                    }
                                   ),
                                   const SizedBox(width: 26),
                                   Expanded(
@@ -149,12 +177,12 @@ class UserInfoUpdate extends StatelessWidget {
                                             style: const TextStyle(
                                                 fontSize: 30,
                                                 fontWeight: FontWeight.bold),
-                                            nickName),
+                                            vmhandler.curUser.value.nickName),
                                         Text(
                                             style: const TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.normal),
-                                            email),
+                                            vmhandler.curUser.value.eMail),
                                       ],
                                     ),
                                   ),
@@ -177,12 +205,6 @@ class UserInfoUpdate extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 16),
                                   TextField(
-                                    controller: emailController,
-                                    decoration: const InputDecoration(
-                                        labelText: '이메일 수정'),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  TextField(
                                     controller: phoneController,
                                     decoration: const InputDecoration(
                                         labelText: '전화번호 변경'),
@@ -198,13 +220,13 @@ class UserInfoUpdate extends StatelessWidget {
                                   if (vmhandler.imageFile != null) {
                                     vmhandler.userImageInsert();
                                     vmhandler.userUpdateAll(
-                                        emailController.text.trim(),
+                                        vmhandler.curUser.value.eMail,
                                         nicknameController.text.trim(),
                                         phoneController.text.trim(),
                                         vmhandler.profileImageName!);
                                   } else {
                                     vmhandler.userUpdate(
-                                      emailController.text.trim(),
+                                      vmhandler.curUser.value.eMail,
                                       nicknameController.text.trim(),
                                       phoneController.text.trim(),
                                     );
@@ -233,4 +255,30 @@ class UserInfoUpdate extends StatelessWidget {
       );
     });
   }
-}
+
+
+
+
+  Future<Uint8List?> _fetchImage() async {
+    try {
+      final response = await http.get(
+        Uri.parse("http://127.0.0.1:8000/user/view/${vmhandler.curUser.value.profileImage!}"),
+      );
+
+      if (response.statusCode == 200) {
+        return response.bodyBytes; // 바이트 배열로 반환
+      }
+    } catch (e) {
+      print("Error fetching image: $e");
+    }
+    return null; // 에러 발생 시 null 반환
+  }
+
+
+
+
+
+
+
+
+}//End
