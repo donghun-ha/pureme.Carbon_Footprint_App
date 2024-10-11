@@ -68,7 +68,7 @@ class TabbarPage extends StatelessWidget {
                     // 각 탭에 해당하는 페이지를 나열합니다.
                     Home(), // 첫 번째 탭: 홈 페이지
                     FeedHome(), // 두 번째 탭: 피드 페이지
-                    RankPage(), // 세 번째 탭: 랭크 페이지
+                    const RankPage(), // 세 번째 탭: 랭크 페이지
                     UserInfoHome(), // 네 번째 탭: 사용자 정보 페이지
                   ],
                 ),

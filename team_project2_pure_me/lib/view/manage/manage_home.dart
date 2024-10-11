@@ -10,36 +10,153 @@ class ManageHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-                onPressed: () => Get.to(() => ManageApp()),
-                child: const Text("앱")),
-            ElevatedButton(
-                onPressed: () => Get.to(() => const ManageFeed()),
-                child: const Text("피드")),
-            ElevatedButton(
-                onPressed: () => Get.to(() => ManageUser()),
-                child: const Text("유저")),
-            ElevatedButton(
-                onPressed: () => Get.to(() => ManageReport()),
-                child: const Text("신고")),
-            ElevatedButton(
-                onPressed: () {
-                  //
-                },
-                child: const Text("테스트1")),
-            ElevatedButton(
-                onPressed: () {
-                  //
-                },
-                child: const Text("테스트2")),
-          ],
+    return Stack(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('images/main_background_plain.png'),
+            ),
+          ),
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text(
+                '관리자 페이지',
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: Colors.transparent,
+            ),
+            backgroundColor: Colors.transparent,
+            body: Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 100),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        fixedSize: const Size(200, 100),
+                        backgroundColor: const Color(0xFFFFEF9D),
+                        side: const BorderSide(color: Colors.black),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () => Get.to(() => ManageApp()),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Image.asset(
+                            'images/app.png',
+                            width: 70,
+                          ),
+                          const Text(
+                            'App',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        fixedSize: const Size(200, 100),
+                        backgroundColor: const Color(0xffFFE454),
+                        side: const BorderSide(color: Colors.black),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () => Get.to(() => const ManageFeed()),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Image.asset(
+                            'images/manageFeed.png',
+                            width: 70,
+                          ),
+                          const Text(
+                            'Feed',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        fixedSize: const Size(200, 100),
+                        backgroundColor: const Color(0xff91C1F5),
+                        side: const BorderSide(color: Colors.black),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () => Get.to(() => ManageUser()),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Image.asset(
+                            'images/manageUser.png',
+                            width: 70,
+                          ),
+                          const Text(
+                            'User',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        fixedSize: const Size(200, 100),
+                        backgroundColor: Colors.redAccent,
+                        side: const BorderSide(color: Colors.black),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () => Get.to(() => ManageReport()),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Image.asset(
+                            'images/manageReport.png',
+                            width: 70,
+                          ),
+                          const Text(
+                            'Report',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }//End

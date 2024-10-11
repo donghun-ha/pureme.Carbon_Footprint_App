@@ -219,8 +219,6 @@ def convert_to_trees_planted(total_carbon_reduction: float):
     trees_planted = total_carbon_reduction / 22  # 1 나무당 흡수하는 CO2량으로 나무 수 계산
     return trees_planted
 
-
-
 @router.get("/calculate_with_reduction")
 async def calculate_with_reduction(user_eMail: str):
     """사용자의 활동에 대한 탄소 발자국과 절감량을 계산하여 반환합니다.
@@ -259,8 +257,9 @@ async def calculate_with_reduction(user_eMail: str):
         round(total_trees_planted,2),
         round(total_carbon_footprint,2),
         round(total_carbon_reduction,2),
+        # average_comparison,
     }
-
+    
     # 결과를 JSON 형식으로 반환 (절감량 포함)
     return {
         'result': summary
@@ -340,7 +339,6 @@ async def get_rankings(limit: int = 10):
         # 해당 유저의 특정 카테고리 활동량을 저장합니다.
         user_activities[user_email][category_kind] = total_amount
 
-    print (user_activities)
     # 유저별 총 탄소 절감량을 저장할 리스트 초기화
     user_reductions: List[Dict[str, Any]] = []
 
@@ -365,3 +363,4 @@ async def get_rankings(limit: int = 10):
     return {
         'rankings': top_users
     }
+
