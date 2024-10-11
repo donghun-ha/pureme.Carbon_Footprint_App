@@ -11,12 +11,17 @@ class FeedDetail extends StatelessWidget {
   FeedDetail({super.key});
 
   final GetStorage box = GetStorage();
+
+  ///박상범 수정
+  final TextEditingController reportController = TextEditingController();
   final TextEditingController replyController = TextEditingController();
 
   final Feed feedValue = Get.arguments ?? "__";
   final feedHandler = Get.put(FeedHandler());
 
   final ConvertEmailToName convertEmailToName = ConvertEmailToName();
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +86,8 @@ class FeedDetail extends StatelessWidget {
                                         : const SizedBox.shrink(),
                                     IconButton(
                                       onPressed: () {
-                                        // 신고 로직
+                                        ///박상범 수정
+                                        reportAlart();
                                       },
                                       icon: const Icon(
                                         Icons.report_problem,
@@ -347,4 +353,35 @@ class FeedDetail extends StatelessWidget {
       ],
     );
   }
+
+  //// 박상범 수정
+  reportAlart() {
+    Get.defaultDialog(
+      title: '게시글 신고',
+      middleText: '게시글을 신고하시겠습니까?',
+      content: TextField(
+        controller: reportController,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            feedHandler.reportFeed(feedValue.feedName!, reportController.text.trim());
+            Get.back();
+          },
+          child: const Text('신고'),
+        ),
+        TextButton(
+          onPressed: () => Get.back(),
+          child: const Text('취소'),
+        ),
+      ],
+    );
+  }
+
+
+
+
+
+
+
 } // End

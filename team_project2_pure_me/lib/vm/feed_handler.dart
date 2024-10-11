@@ -180,6 +180,11 @@ class FeedHandler extends ImageHandler {
     _feed.doc(docId).update({'state': '삭제'});
   }
 
+  reportFeed(String docId, String reportReason) {
+    
+  }
+
+
   /// 댓글 추가
   /// argument = docId 댓글 작성위치
   /// content = 댓글 내용
