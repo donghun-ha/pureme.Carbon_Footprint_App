@@ -35,6 +35,7 @@ class TabbarPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    tabHandler.tabbarInit();
     return Stack(
       children: [
         // 배경 이미지를 업데이트하기 위해 Obx로 감쌉니다.

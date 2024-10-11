@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io' show Platform;
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,10 +8,6 @@ import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/feed_handler.dart';
 
 class UserHandler extends FeedHandler {
-  final String baseUrl = Platform.isAndroid 
-      ? 'http://10.0.2.2:8000' 
-      : 'http://127.0.0.1:8000';
-
   RxList<User> userList = <User>[].obs;
 
   final curUser = User(
@@ -32,13 +27,15 @@ class UserHandler extends FeedHandler {
 
   String? profileImageName;
 
-  RxBool profileImageChanged = false.obs; /// 이미지가 바뀌었음을 확인시키는 변수
+  RxBool profileImageChanged = false.obs;
+
+  /// 이미지가 바뀌었음을 확인시키는 변수
 
   /// 회원정보 수정시 이미지 이름을 바꿔야할때 필요한 변수
 
   Future<bool> loginVerify(String eMail, String password) async {
-    var url = Uri.parse(
-        "$baseUrl/user/loginVerify?eMail=$eMail&password=$password");
+    var url =
+        Uri.parse("$baseUrl/user/loginVerify?eMail=$eMail&password=$password");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -107,14 +104,12 @@ class UserHandler extends FeedHandler {
     curUser.value.eMail = eMail;
     curUser.value.phone = phone;
 
-    
     update();
   }
 
   userUpdateAll(
       String eMail, String nickName, String phone, String profileImage) async {
-    
-    await userImageDelete();    
+    await userImageDelete();
     var url = Uri.parse(
         "$baseUrl/user/updateAll?cureMail=${curUser.value.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone&&profileImage=$profileImage");
 
@@ -135,24 +130,24 @@ class UserHandler extends FeedHandler {
   //// handler.userImagePicker(ImageSource.gallery)로 실행시키세요
   userImagePicker(ImageSource imageSource) async {
     final XFile? pickedFile = await picker.pickImage(source: imageSource);
-    if(pickedFile != null){
+    if (pickedFile != null) {
       imageFile = XFile(pickedFile.path);
       List preFileName = imageFile!.path.split('/');
-      String fileExtention = preFileName[preFileName.length-1].toString().split('.')[1];
-      profileImageName = curUser.value.eMail + '.'+ fileExtention;
+      String fileExtention =
+          preFileName[preFileName.length - 1].toString().split('.')[1];
+      profileImageName = curUser.value.eMail + '.' + fileExtention;
       update();
     }
   }
 
   userImageInsert() async {
-    var request = http.MultipartRequest(
-        "POST", Uri.parse("$baseUrl/user/imageUpload"));
+    var request =
+        http.MultipartRequest("POST", Uri.parse("$baseUrl/user/imageUpload"));
     var multipartFile =
         await http.MultipartFile.fromPath('file', imageFile!.path);
-      
+
     request.files.add(multipartFile);
     request.fields['prefix'] = curUser.value.eMail;
-
 
     var response = await request.send();
     if (response.statusCode == 200) {
@@ -165,19 +160,17 @@ class UserHandler extends FeedHandler {
   userImageUpdate() {}
 
   userImageDelete() async {
-    if (curUser.value.profileImage != null){
-      final response = await http.
-          delete(Uri.parse("http://127.0.0.1:8000/user/imageDelete/${curUser.value.profileImage}"));
-      if (response.statusCode == 200){
+    if (curUser.value.profileImage != null) {
+      final response = await http.delete(Uri.parse(
+          "http://127.0.0.1:8000/user/imageDelete/${curUser.value.profileImage}"));
+      if (response.statusCode == 200) {
         curUser.value.profileImage = null;
         print("Image deleted successfully");
-      } else{
+      } else {
         print("image deletion failed");
       }
     }
   }
-
-
 
   userUpdatePwd(String password) async {
     var url = Uri.parse(

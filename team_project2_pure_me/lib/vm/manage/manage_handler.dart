@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
@@ -32,11 +32,8 @@ class ManageHandler extends GetxController {
 
   int? reportFeedIndex;
 
-  // 안드로이드를를 위한 URL
-  // String manageUrl = 'http://10.0.2.2:8000/manage';
-
-  // ios를 위한 URL
-  String manageUrl = "http://127.0.0.1:8000/manage";
+  final String manageUrl =
+      Platform.isAndroid ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
 
   final CollectionReference _manageFeed =
       FirebaseFirestore.instance.collection('post');

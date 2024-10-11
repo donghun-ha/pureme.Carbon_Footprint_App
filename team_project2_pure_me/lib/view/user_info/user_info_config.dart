@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:team_project2_pure_me/view/login_signin/login.dart';
 import 'package:team_project2_pure_me/view/user_info/user_carbon_chart.dart';
 import 'user_info_update.dart';
 import 'user_info_password.dart';
@@ -80,7 +81,8 @@ class UserInfoConfig extends StatelessWidget {
                           ),
                           const Divider(),
                           ListTile(
-                            leading: Icon(Icons.insert_chart, color: Colors.blue),
+                            leading:
+                                Icon(Icons.insert_chart, color: Colors.blue),
                             title: const Text('나의 차트'),
                             onTap: () => Get.to(() => UserCarbonChart()),
                           ),
@@ -117,12 +119,10 @@ class UserInfoConfig extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () {
-            print('야호');
             box.remove('pureme_id');
-            Get.back();
-            Get.back();
-            Get.back();
-            Get.back();
+            Get.offAll(
+              () => Login(),
+            );
           },
           child: const Text('OK'),
         ),

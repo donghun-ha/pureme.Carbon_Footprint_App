@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
@@ -11,7 +11,8 @@ import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/image_handler.dart';
 
 class FeedHandler extends ImageHandler {
-  final String defaultUrl = 'http://127.0.0.1:8000/feed';
+  final String baseUrl =
+      Platform.isAndroid ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
   final GetStorage box = GetStorage();
   final ConvertEmailToName convertEmailToName = ConvertEmailToName();
 
@@ -87,7 +88,7 @@ class FeedHandler extends ImageHandler {
     int changeLike = isLiked ? -1 : 1;
 
     var url = Uri.parse(
-        "$defaultUrl/updateLike?feedId=${curFeed[0].feedName}&userEmail=${box.read('pureme_id')}&heart=$changeLike");
+        "$baseUrl/feed/updateLike?feedId=${curFeed[0].feedName}&userEmail=${box.read('pureme_id')}&heart=$changeLike");
     final response = await http.get(url); // GET 요청
     getFeedLike();
     return !isLiked;
@@ -97,7 +98,7 @@ class FeedHandler extends ImageHandler {
   ///
   Future getFeedLike() async {
     var url = Uri.parse(
-        "$defaultUrl/getFeedLike?feedId=${curFeed[0].feedName}&userEmail=${box.read('pureme_id')}");
+        "$baseUrl/feed/getFeedLike?feedId=${curFeed[0].feedName}&userEmail=${box.read('pureme_id')}");
     final response = await http.get(url); // GET 요청
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     // [유저 아이디, 유저의 좋아요 상태 (null,0,false,true), 전체 좋아요 수]

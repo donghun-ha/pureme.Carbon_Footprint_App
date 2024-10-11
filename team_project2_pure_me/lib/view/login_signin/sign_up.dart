@@ -11,9 +11,9 @@ class SignUp extends StatelessWidget {
   final TextEditingController pwController = TextEditingController();
   final TextEditingController pwVerifyController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final validText = RegExp( r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');   // 이메일 형식 정규식으로 정함.
+  final validText = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'); // 이메일 형식 정규식으로 정함.
   final validNum = RegExp(r'^[0-9]{4,}$');
-  
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +138,6 @@ class SignUp extends StatelessWidget {
                                   child: TextField(
                                     controller: phoneController,
                                     decoration: InputDecoration(
-                                      
                                       labelText: '전화번호',
                                       hintText: '전화번호를 입력하세요.',
                                       border: OutlineInputBorder(
@@ -148,7 +147,6 @@ class SignUp extends StatelessWidget {
                                           color: Colors.black,
                                         ),
                                       ),
-                                    
                                     ),
                                   ),
                                 ),
@@ -170,12 +168,13 @@ class SignUp extends StatelessWidget {
                                           ),
                                         ),
                                         onPressed: () async {
-                                        if (nullcheck()) {
-                                          _showalibaba();
-                                          return;
-                                        }
+                                          if (nullcheck()) {
+                                            _showalibaba();
+                                            return;
+                                          }
 
-                                          String email = idController.text.trim();
+                                          String email =
+                                              idController.text.trim();
 
                                           if (email.isNotEmpty) {
                                             if (!validText.hasMatch(email)) {
@@ -184,7 +183,8 @@ class SignUp extends StatelessWidget {
                                             }
                                           }
 
-                                          String number = phoneController.text.trim();
+                                          String number =
+                                              phoneController.text.trim();
 
                                           if (number.isNotEmpty) {
                                             if (!validNum.hasMatch(number)) {
@@ -192,9 +192,9 @@ class SignUp extends StatelessWidget {
                                               return;
                                             }
                                           }
-                                          
-                                            // 아이디 중복 체크
-                                          if (idController.text     
+
+                                          // 아이디 중복 체크
+                                          if (idController.text
                                               .trim()
                                               .isNotEmpty) {
                                             await vmHandler.eMailVerify(
@@ -209,9 +209,8 @@ class SignUp extends StatelessWidget {
                                                 pwVerifyController.text.trim(),
                                                 nameController.text.trim(),
                                                 phoneController.text.trim(),
-                                               
                                               );
-                                            
+
                                               // 패스워드 중복체크
                                               if (pwCheck) {
                                                 _showDialog();
@@ -220,13 +219,10 @@ class SignUp extends StatelessWidget {
                                               }
                                             } else {
                                               _ErrorSnackBar();
-                                            
                                             }
-                                        
                                           }
-                                             
                                         },
-                                            
+
                                         // 회원가입 로직 후 뒤로가기
 
                                         child: const Text(
@@ -284,7 +280,7 @@ class SignUp extends StatelessWidget {
         TextButton(
           onPressed: () {
             Get.back();
-            Get.to(Login());
+            Get.back();
           },
           child: const Text('OK'),
         ),
@@ -316,24 +312,19 @@ class SignUp extends StatelessWidget {
     );
   }
 
-    nullcheck() {
-      if (idController.text.trim().isEmpty || pwController.text.trim().isEmpty || pwVerifyController.text.trim().isEmpty || nameController.text.trim().isEmpty || phoneController.text.trim().isEmpty) {
-        return true;
-      } else {
-        return false;
-      }
+  nullcheck() {
+    if (idController.text.trim().isEmpty ||
+        pwController.text.trim().isEmpty ||
+        pwVerifyController.text.trim().isEmpty ||
+        nameController.text.trim().isEmpty ||
+        phoneController.text.trim().isEmpty) {
+      return true;
+    } else {
+      return false;
     }
+  }
 
-    _showalibaba() {
-      Get.snackbar(
-        "경고",
-        "빈칸을 채워주세요." 
-        );
-    }
-
-  
-
-
-
-
+  _showalibaba() {
+    Get.snackbar("경고", "빈칸을 채워주세요.");
+  }
 }   // End

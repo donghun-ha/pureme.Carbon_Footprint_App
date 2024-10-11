@@ -38,10 +38,13 @@ class TabHandler extends GetxController with GetSingleTickerProviderStateMixin {
     });
   }
 
+  tabbarInit() {
+    tabController.index = 0;
+  }
+
   @override
-  void onClose() {
-    // 컨트롤러가 해제될 때 TabController도 해제합니다.
+  void dispose() {
     tabController.dispose();
-    super.onClose();
+    super.dispose();
   }
 }
