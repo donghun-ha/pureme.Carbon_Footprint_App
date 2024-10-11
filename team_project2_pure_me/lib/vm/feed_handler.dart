@@ -176,9 +176,11 @@ class FeedHandler extends ImageHandler {
 
   /// 피드 삭제
   /// state를 삭제로 변경
+
   deleteFeed(String docId) {
     _feed.doc(docId).update({'state': '삭제'});
   }
+
 
   reportFeed(String docId, String reportReason) {
     

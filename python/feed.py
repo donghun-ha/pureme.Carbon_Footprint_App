@@ -1,6 +1,9 @@
 from fastapi import APIRouter
 import pymysql
 
+### 박상범 수정
+from datetime import datetime
+
 router = APIRouter()
 
 def connect():
@@ -84,3 +87,25 @@ async def updateLike(feedId:str =None, userEmail: str = None, heart : str = None
     finally:
         conn.close()
 
+#### 박상범 수정
+@router.get("/updateReport")
+async def updateLike(feedId:str =None, userEmail: str = None, reportReason : str = None ):
+    reportTime = datetime.now
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        sql ="""
+        INSERT INTO 
+            report (user_eMail, feedId, reportTime, reportReason)
+        VALUES
+            (%s, %s, %s, %s);
+        """
+
+        curs.execute(sql, (userEmail, feedId, reportTime, reportReason))
+        conn.commit()
+        return {'result': 'OK'}
+    except Exception as e:
+        print("Error:", e)
+        return {"result": "Error"}
+    finally:
+        conn.close()
