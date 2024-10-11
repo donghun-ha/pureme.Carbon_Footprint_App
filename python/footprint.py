@@ -444,7 +444,7 @@ async def get_rankings(limit: int = 10):
         
         # 유저의 이메일과 총 절감량을 리스트에 추가합니다.
         user_reductions.append({
-            # 'user_nickName' : user_nickName,
+            'user_nickName' : user_nickName,
             'user_eMail': user_email,
             'total_reduction': round(total_carbon_reduction,2)
         })
