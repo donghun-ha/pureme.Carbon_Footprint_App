@@ -42,11 +42,17 @@ class FeedHandler extends ImageHandler {
   final replyList = <Reply>[].obs;
   final showReplyList = <Reply>[].obs;
 
+  /// 대댓글을 작성할 reply의 index
+  final replyIndex = 0.obs;
+
+  /// 대댓글과 댓글의 구분을 위함
+  final isReply = false.obs;
+
   /// user 화면에 보일 FeedList
   final userFeedList = <Feed>[].obs;
 
   /// feed의 좋아요
-  final isLike = false.obs; // 좋아요 상태
+  final isLike = true.obs; // 좋아요 상태
   final likeCount = 0.obs; // 좋아요 수
 
   @override
@@ -141,19 +147,23 @@ class FeedHandler extends ImageHandler {
     _feed.doc(docId).snapshots().listen(
       (event) {
         // print(event);
+        // 피드 객체 생성
         curFeed.value = [
           Feed.fromMap(event.data() as Map<String, dynamic>, docId)
         ];
+        // 피드 유저 이메일 -> 이름으로 변환
         curFeed[0].userName =
             convertEmailToName.changeAction(curFeed[0].authorEMail);
-        // replyList.value =
-        //     curFeed[0].reply!.map((e) => Reply.fromMap(e)).toList();
+
+        // 댓글 리스트 추가 및 댓글 작성자 이메일 -> 이름
         replyList.clear();
         for (int i = 0; i < curFeed[0].reply!.length; i++) {
           replyList.add(Reply.fromMap(curFeed[0].reply![i], i));
           replyList[i].userName =
               convertEmailToName.changeAction(replyList[i].authorEMail);
         }
+
+        // 상태가 게시인 리스트만
         showReplyList.value = replyList
             .where(
                 (reply) => reply.replyState == '게시') // state가 '게시'인 reply만 필터링
@@ -177,6 +187,7 @@ class FeedHandler extends ImageHandler {
       'content': content,
       'state': '게시',
       'writer': box.read('pureme_id'),
+      'reply': [],
       'writetime':
           DateTime.now().toString().substring(0, 19).replaceFirst(' ', 'T'),
     };
@@ -189,6 +200,30 @@ class FeedHandler extends ImageHandler {
   /// state변경
   deleteReply(String docId, int index) {
     curFeed[0].reply![index]['state'] = '삭제';
+    _feed.doc(docId).update({'reply': curFeed[0].reply});
+  }
+
+  /// 대댓글
+  addReReply(String docId, String content) {
+    Map<String, dynamic> newData = {
+      'content': content,
+      'state': '게시',
+      'writer': box.read('pureme_id'),
+      'writetime':
+          DateTime.now().toString().substring(0, 19).replaceFirst(' ', 'T'),
+    };
+
+    // reply[index]
+    curFeed[0].reply![replyIndex.value]['reply'].add(newData);
+
+    _feed.doc(docId).update({
+      'reply': curFeed[0].reply! // 리스트에 Map 추가
+    });
+  }
+
+  /// 대댓글 삭제
+  deleteRereply(String docId, int reIndex, int rereIndex) {
+    curFeed[0].reply![reIndex]['reply'].removeAt(rereIndex);
     _feed.doc(docId).update({'reply': curFeed[0].reply});
   }
 }

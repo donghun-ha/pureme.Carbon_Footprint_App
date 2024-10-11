@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:like_button/like_button.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/model/reply.dart';
+import 'package:team_project2_pure_me/vm/convert/convert_email_to_name.dart';
 import 'package:team_project2_pure_me/vm/feed_handler.dart';
 
 class FeedDetail extends StatelessWidget {
@@ -15,10 +16,13 @@ class FeedDetail extends StatelessWidget {
   final Feed feedValue = Get.arguments ?? "__";
   final feedHandler = Get.put(FeedHandler());
 
+  final ConvertEmailToName convertEmailToName = ConvertEmailToName();
+
   @override
   Widget build(BuildContext context) {
     feedHandler.detailFeed(feedValue.feedName!);
     feedHandler.getFeedLike();
+    convertEmailToName.getUserName();
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -108,23 +112,6 @@ class FeedDetail extends StatelessWidget {
                           LikeButton(
                             likeCount: feedHandler.likeCount.value, // 값을 받아와야함
                             isLiked: feedHandler.isLike.value, // 값을 받아와야함
-                            // countBuilder: (likeCount, isLiked, text) {
-                            //   var color = isLiked
-                            //       ? Colors.deepPurpleAccent
-                            //       : Colors.grey;
-                            //   Widget result;
-                            //   if (likeCount == 0) {
-                            //     result = Text(
-                            //       "love",
-                            //       style: TextStyle(color: color),
-                            //     );
-                            //   } else
-                            //     result = Text(
-                            //       text,
-                            //       style: TextStyle(color: color),
-                            //     );
-                            //   return result;
-                            // },
                             onTap: feedHandler.onLikeButtonTapped,
                           ),
                           IconButton(
@@ -196,10 +183,18 @@ class FeedDetail extends StatelessWidget {
                   keyboardType: TextInputType.text,
                   textInputAction: TextInputAction.done,
                   onSubmitted: (value) {
-                    // 추가 로직 미구현
-                    feedHandler.addReply(
-                        feedValue.feedName!, replyController.text);
-                    replyController.clear();
+                    print(feedHandler.isReply.value);
+                    if (feedHandler.isReply.value) {
+                      // 댓글 추가
+                      feedHandler.addReply(
+                          feedValue.feedName!, replyController.text);
+                      replyController.clear();
+                    } else {
+                      // 대댓글 추가
+                      feedHandler.addReReply(
+                          feedValue.feedName!, replyController.text);
+                      replyController.clear();
+                    }
                   },
                 ),
               ],
@@ -207,36 +202,100 @@ class FeedDetail extends StatelessWidget {
           ),
         ),
       ),
+    ).then(
+      (value) {
+        feedHandler.isReply.value = true;
+        feedHandler.replyIndex.value = 0;
+        replyController.clear();
+      },
     );
   }
 
   // --- Function ---
+
+  // 댓글 생성
   Widget replyList(Reply reply) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(reply.userName!),
-            Text(reply.content),
-          ],
+        // 댓글
+        GestureDetector(
+          onTap: () {
+            feedHandler.isReply.value = false;
+            feedHandler.replyIndex.value = reply.index;
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(reply.userName!),
+                  Text(reply.content),
+                  // IconButton(
+                  //   onPressed: () {
+                  //     print(reply.reply);
+                  //   },
+                  //   icon: const Icon(Icons.circle),
+                  // ),
+                ],
+              ),
+              reply.authorEMail == box.read('pureme_id')
+                  ? IconButton(
+                      onPressed: () {
+                        feedHandler.deleteReply(
+                            feedValue.feedName!, reply.index);
+                      },
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.red,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ],
+          ),
         ),
-        reply.authorEMail == box.read('pureme_id')
-            ? IconButton(
-                onPressed: () {
-                  feedHandler.deleteReply(feedValue.feedName!, reply.index);
-                },
-                icon: const Icon(
-                  Icons.delete_outline,
-                  color: Colors.red,
-                ),
-              )
-            : const SizedBox.shrink(),
+        // 대댓글
+        Padding(
+          padding: const EdgeInsets.only(left: 18),
+          child: Column(
+            children: List.generate(
+              reply.reply!.length,
+              (index) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(convertEmailToName
+                            .changeAction(reply.reply![index]['writer'])),
+                        Text(reply.reply![index]['content']),
+                      ],
+                    ),
+                    reply.reply![index]['writer'] == box.read('pureme_id')
+                        ? IconButton(
+                            onPressed: () {
+                              feedHandler.deleteRereply(
+                                  feedValue.feedName!, reply.index, index);
+                            },
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              color: Colors.red,
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ],
+                );
+              },
+            ),
+          ),
+        )
       ],
     );
   }
 
+  // 댓글 리스트 생성
   Widget buildReplyList(List<Reply> replies) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -29,6 +29,9 @@ class Reply {
   /// 수정된 시간
   DateTime? editTime;
 
+  /// 대댓글
+  List? reply;
+
   Reply({
     // this.replyName,
     // required this.feedName,
@@ -46,8 +49,15 @@ class Reply {
       : index = replyIndex,
         authorEMail = res['writer'],
         content = res['content'],
+        reply = res['reply'],
         writeTime = DateTime.parse(res['writetime']),
         replyState = res['state'];
   // deleteTime = DateTime.parse(res['deleteTime']),
   // editTime = DateTime.parse(res['editTime']);
+  Reply.rereplyFromMap(Map<String, dynamic> res, int replyIndex)
+      : index = replyIndex,
+        authorEMail = res['writer'],
+        content = res['content'],
+        writeTime = DateTime.parse(res['writetime']),
+        replyState = res['state'];
 }
