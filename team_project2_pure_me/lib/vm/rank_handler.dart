@@ -1,11 +1,15 @@
 import 'dart:convert';
-
+import 'dart:io' show Platform;
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/user_handler.dart';
 
 class RankHandler extends UserHandler {
+  final String baseUrl = Platform.isAndroid 
+      ? 'http://10.0.2.2:8000' 
+      : 'http://127.0.0.1:8000';
+
   RxList<User> rankList = <User>[].obs;
   RxInt myrank = 0.obs;
 
@@ -19,9 +23,6 @@ class RankHandler extends UserHandler {
     // fetchTotalCarbon();
   }
 
-  // final String defaultUrl = "http://127.0.0.1:8000/footprint";
-  final String defaultUrl = "http://127.0.0.1:8000/footprint";
-
   @override
   void onInit() {
     super.onInit();
@@ -32,7 +33,7 @@ class RankHandler extends UserHandler {
 
   // 랭킹 데이터 가져오기
   Future<void> fetchRank() async {
-    var url = Uri.parse("$defaultUrl/rankings");
+    var url = Uri.parse("$baseUrl/footprint/rankings");
     final response = await http.get(url); // GET 요청
 
     if (response.statusCode == 200) {
@@ -53,14 +54,14 @@ class RankHandler extends UserHandler {
       rankList.assignAll(users); // 랭킹 리스트 업데이트
     } else {
       // 에러 발생 시 처리
-      ('랭킹을 불러오는 데 실패했습니다: ${response.statusCode}');
+      print('랭킹을 불러오는 데 실패했습니다: ${response.statusCode}');
     }
   }
 
   // 탄소량 불러오는 함수
   fetchTotalCarbon() async {
     var url = Uri.parse(
-        "$defaultUrl/calculate_with_reduction?user_eMail=${curUser.value.eMail}");
+        "$baseUrl/footprint/calculate_with_reduction?user_eMail=${curUser.value.eMail}");
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
