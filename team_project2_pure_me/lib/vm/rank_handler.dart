@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:http/http.dart' as http;
-import 'package:team_project2_pure_me/vm/user_handler.dart';
+import 'package:team_project2_pure_me/vm/chart_handler.dart';
 
-class RankHandler extends UserHandler {
+class RankHandler extends ChartHandler {
   RxList<User> rankList = <User>[].obs;
   RxInt myrank = 0.obs;
 

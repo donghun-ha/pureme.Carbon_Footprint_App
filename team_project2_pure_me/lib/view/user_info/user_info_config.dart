@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:team_project2_pure_me/view/login_signin/login.dart';
+import 'package:team_project2_pure_me/view/user_info/user_carbon_chart.dart';
 import 'user_info_update.dart';
 import 'user_info_password.dart';
 
@@ -80,14 +80,17 @@ class UserInfoConfig extends StatelessWidget {
                           ),
                           const Divider(),
                           ListTile(
+                            leading: Icon(Icons.insert_chart, color: Colors.blue),
+                            title: const Text('나의 차트'),
+                            onTap: () => Get.to(() => UserCarbonChart()),
+                          ),
+                          const Divider(),
+                          ListTile(
                             leading: Image.asset('images/ranking.png',
                                 width: 24, height: 24),
                             title: const Text('로그아웃'),
                             onTap: () {
                               _showDialog();
-                            
-                              // 로그아웃 로직 구현
-                              // 예: Get.offAllNamed('/login');
                             },
                           ),
                           const Divider(),
