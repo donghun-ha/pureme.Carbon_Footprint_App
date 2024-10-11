@@ -53,7 +53,16 @@ class FeedDetail extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text("${feedHandler.curFeed[0].userName}님"),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () => Get.back(),
+                                      icon:
+                                          const Icon(Icons.arrow_back_ios_new),
+                                    ),
+                                    Text("${feedHandler.curFeed[0].userName}님"),
+                                  ],
+                                ),
                                 Row(
                                   children: [
                                     // 로그인한 이용자와 게시글의 작성자가 같을경우 보이게
@@ -175,27 +184,27 @@ class FeedDetail extends StatelessWidget {
                     ],
                   ),
                 ),
-                TextField(
-                  controller: replyController,
-                  decoration: const InputDecoration(
-                    labelText: '댓글을 입력해주세요',
-                  ),
-                  keyboardType: TextInputType.text,
-                  textInputAction: TextInputAction.done,
-                  onSubmitted: (value) {
-                    print(feedHandler.isReply.value);
-                    if (feedHandler.isReply.value) {
-                      // 댓글 추가
-                      feedHandler.addReply(
-                          feedValue.feedName!, replyController.text);
-                      replyController.clear();
-                    } else {
-                      // 대댓글 추가
-                      feedHandler.addReReply(
-                          feedValue.feedName!, replyController.text);
-                      replyController.clear();
-                    }
-                  },
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 340,
+                      child: TextField(
+                        controller: replyController,
+                        decoration: const InputDecoration(
+                          labelText: '댓글을 입력해주세요',
+                        ),
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (value) {
+                          insertReply();
+                        },
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => insertReply(),
+                      icon: const Icon(Icons.send),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -290,7 +299,7 @@ class FeedDetail extends StatelessWidget {
               },
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -304,6 +313,18 @@ class FeedDetail extends StatelessWidget {
           .map((reply) => replyList(reply))
           .toList(),
     );
+  }
+
+  insertReply() {
+    if (feedHandler.isReply.value) {
+      // 댓글 추가
+      feedHandler.addReply(feedValue.feedName!, replyController.text);
+      replyController.clear();
+    } else {
+      // 대댓글 추가
+      feedHandler.addReReply(feedValue.feedName!, replyController.text);
+      replyController.clear();
+    }
   }
 
   deleteAlert() {

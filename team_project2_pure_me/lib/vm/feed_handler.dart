@@ -46,7 +46,7 @@ class FeedHandler extends ImageHandler {
   final replyIndex = 0.obs;
 
   /// 대댓글과 댓글의 구분을 위함
-  final isReply = false.obs;
+  final isReply = true.obs;
 
   /// user 화면에 보일 FeedList
   final userFeedList = <Feed>[].obs;
@@ -214,6 +214,7 @@ class FeedHandler extends ImageHandler {
     };
 
     // reply[index]
+    print(curFeed[0].reply![replyIndex.value]['reply']);
     curFeed[0].reply![replyIndex.value]['reply'].add(newData);
 
     _feed.doc(docId).update({
