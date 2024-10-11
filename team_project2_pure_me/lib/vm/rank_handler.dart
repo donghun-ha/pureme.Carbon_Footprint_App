@@ -1,11 +1,13 @@
 import 'dart:convert';
-
+import 'dart:io' show Platform;
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/chart_handler.dart';
 
 class RankHandler extends ChartHandler {
+  final String baseUrl =
+      Platform.isAndroid ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
   RxList<User> rankList = <User>[].obs;
   RxInt myrank = 0.obs;
 
