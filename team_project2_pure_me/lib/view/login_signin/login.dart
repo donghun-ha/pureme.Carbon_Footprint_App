@@ -42,31 +42,37 @@ class Login extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          TextField(
-                            controller: idController,
-                            decoration: InputDecoration(
-                              labelText: '아이디',
-                              hintText: '이메일을 입력해주십시오.',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                                borderSide: const BorderSide(
-                                  color: Colors.black,
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: TextField(
+                              controller: idController,
+                              decoration: InputDecoration(
+                                labelText: '아이디',
+                                hintText: '이메일을 입력해주십시오.',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                          TextField(
-                            controller: pwController,
-                            decoration: InputDecoration(
-                              labelText: '비밀번호',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                                borderSide: const BorderSide(
-                                  color: Colors.black,
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: TextField(
+                              controller: pwController,
+                              decoration: InputDecoration(
+                                labelText: '비밀번호',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
+                              obscureText: true,
                             ),
-                            obscureText: true,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -100,6 +106,10 @@ class Login extends StatelessWidget {
                                 ),
                               ),
                               onPressed: () async {
+                                if (nullcheck()) {
+                                  _showalibaba();
+                                  return;
+                                }
                                 // 로그인 로직
                                 bool checkLogin = await vmHandler.loginVerify(
                                     idController.text.trim(),
@@ -155,5 +165,18 @@ class Login extends StatelessWidget {
       "입력을 안했거나 아이디, 비밀번호를 확인하세요.",
       snackPosition: SnackPosition.TOP,
     );
+  }
+
+  nullcheck() {
+    if (idController.text.trim().isEmpty ||
+        pwController.text.trim().isEmpty ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  _showalibaba() {
+    Get.snackbar("경고", "빈칸을 채워주세요.");
   }
 }

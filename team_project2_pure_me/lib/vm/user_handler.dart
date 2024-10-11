@@ -1,16 +1,18 @@
 import 'dart:convert';
-import 'dart:ffi';
-
+import 'dart:io' show Platform;
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:team_project2_pure_me/model/lev.dart';
 import 'package:team_project2_pure_me/model/user.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/feed_handler.dart';
 
 class UserHandler extends FeedHandler {
+  final String baseUrl = Platform.isAndroid 
+      ? 'http://10.0.2.2:8000' 
+      : 'http://127.0.0.1:8000';
+
   RxList<User> userList = <User>[].obs;
 
   final curUser = User(
@@ -36,7 +38,7 @@ class UserHandler extends FeedHandler {
 
   Future<bool> loginVerify(String eMail, String password) async {
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/loginVerify?eMail=$eMail&password=$password");
+        "$baseUrl/user/loginVerify?eMail=$eMail&password=$password");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -51,7 +53,7 @@ class UserHandler extends FeedHandler {
   }
 
   curUserUpdate(String eMail) async {
-    var url = Uri.parse("http://127.0.0.1:8000/user/login?eMail=$eMail");
+    var url = Uri.parse("$baseUrl/user/login?eMail=$eMail");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -61,7 +63,7 @@ class UserHandler extends FeedHandler {
   }
 
   eMailVerify(String eMail) async {
-    var url = Uri.parse("http://127.0.0.1:8000/user/eMailVerify?eMail=$eMail");
+    var url = Uri.parse("$baseUrl/user/eMailVerify?eMail=$eMail");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -76,7 +78,7 @@ class UserHandler extends FeedHandler {
       return false;
     } else {}
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/signIn?eMail=$eMail&nickname=$nickName&password=$password&phone=$phone");
+        "$baseUrl/user/signIn?eMail=$eMail&nickname=$nickName&password=$password&phone=$phone");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -95,7 +97,7 @@ class UserHandler extends FeedHandler {
 
   userUpdate(String eMail, String nickName, String phone) async {
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/update?cureMail=${curUser.value.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone");
+        "$baseUrl/user/update?cureMail=${curUser.value.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone");
     print(url);
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
@@ -114,7 +116,7 @@ class UserHandler extends FeedHandler {
     
     await userImageDelete();    
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/updateAll?cureMail=${curUser.value.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone&&profileImage=$profileImage");
+        "$baseUrl/user/updateAll?cureMail=${curUser.value.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone&&profileImage=$profileImage");
 
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
@@ -144,7 +146,7 @@ class UserHandler extends FeedHandler {
 
   userImageInsert() async {
     var request = http.MultipartRequest(
-        "POST", Uri.parse("http://127.0.0.1:8000/user/imageUpload"));
+        "POST", Uri.parse("$baseUrl/user/imageUpload"));
     var multipartFile =
         await http.MultipartFile.fromPath('file', imageFile!.path);
       
@@ -179,7 +181,7 @@ class UserHandler extends FeedHandler {
 
   userUpdatePwd(String password) async {
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/updatePW?eMail=${curUser.value.eMail}&password=$password");
+        "$baseUrl/user/updatePW?eMail=${curUser.value.eMail}&password=$password");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -191,7 +193,7 @@ class UserHandler extends FeedHandler {
   pointUpdate(int addPoint) async {
     curUser.value.point += addPoint;
     var url = Uri.parse(
-        "http://127.0.0.1:8000/user/updatepoint?eMail=${curUser.value.eMail}&point=${curUser.value.point}");
+        "$baseUrl/user/updatepoint?eMail=${curUser.value.eMail}&point=${curUser.value.point}");
     print(url);
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
