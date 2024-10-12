@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
@@ -27,12 +28,19 @@ class ManageHandler extends GetxController {
   int? searchUserIndex;
 
   //Report 에서 쓸 변수들
+    final CollectionReference _feed =
+      FirebaseFirestore.instance.collection('post');
+
+  var feedList = <Feed>[].obs;
   var reportFeedCountList = <RptCount>[].obs;
   var reportFeedListById = <Report>[].obs;
 
   int? reportFeedIndex;
 
   final String manageUrl =
+      Platform.isAndroid ? 'http://10.0.2.2:8000/manage' : 'http://127.0.0.1:8000/manage';
+
+  final String baseUrl =
       Platform.isAndroid ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
 
   final CollectionReference _manageFeed =
@@ -202,6 +210,33 @@ class ManageHandler extends GetxController {
     update();
   }
 
+  ceaseUser(String managerEMail, String ceaseReason ,int ceasePeriod)async{
+    String user_eMail = searchUserList.value[searchUserIndex!].eMail; 
+      var url = Uri.parse("$manageUrl/accountCeaseInsert?user_eMail=$user_eMail&manager_manageEMail=$managerEMail&ceaseReason=$ceaseReason&ceasePeroid=$ceasePeriod");
+      var response = await http.get(url);
+      var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+      var result = dataConvertedJSON['result'];
+      print(result);
+
+  }
+
+
+  Future<Uint8List?> fetchImage(String profileImage) async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/user/view/${profileImage}"),
+      );
+
+      if (response.statusCode == 200) {
+        return response.bodyBytes; // 바이트 배열로 반환
+      }
+    } catch (e) {
+      print("Error fetching image: $e");
+    }
+    return null; // 에러 발생 시 null 반환
+  }
+
+
 ///////////////////reportFeed에서 쓸 함수들
   ///feed가 report받은 숫자를 전부 씀
   queryReportcount() async {
@@ -245,4 +280,35 @@ class ManageHandler extends GetxController {
       queryReportReason(reportFeedCountList[idx].feedId);
     }
   }
+
+  reportFeed(String docId, String manager_manageEMail, String changeKind)async{
+    await _feed.doc(docId).update({'state': '숨김'});
+    var url = Uri.parse("$manageUrl/reportFeed?manager_manageEMail=$manager_manageEMail&feedId=$docId&changeKind=$changeKind");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    print(result);
+
+
+  }
+
+  fetchFeed(){
+    _feed
+        .where('state', isEqualTo: '게시')
+        .orderBy('writetime', descending: true)
+        .snapshots()
+        .listen(
+      (event) {
+        feedList.value = event.docs
+            .map(
+              (doc) => Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
+            )
+            .toList();
+      },
+    );
+
+  }
+
+
+
 }//End

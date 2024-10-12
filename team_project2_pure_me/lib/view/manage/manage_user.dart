@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:team_project2_pure_me/vm/manage/manage_handler.dart';
 
@@ -8,6 +9,10 @@ class ManageUser extends StatelessWidget {
 
   final vmhandler = Get.put(ManageHandler());
   final _searchController = TextEditingController();
+
+  final box = GetStorage();
+
+  final reportReasonController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -84,19 +89,60 @@ class ManageUser extends StatelessWidget {
                                       },
                                     ),
                                   ),
-
-                                  /// 이부분은 필요한 기능에 따라 버튼등을 만들어주세요.
                                   SizedBox(
                                       child: vmhandler.searchUserIndex != null
-                                          ? Card(
-                                              child: Text(vmhandler
-                                                  .searchUserList[vmhandler
-                                                      .searchUserIndex!]
-                                                  .eMail),
+                                          ? 
+                                          Card(
+                                              child: 
+                                                  Row(
+                                                    children: [
+                                                      SizedBox(
+                                                        child:
+                                                        vmhandler.searchUserList[vmhandler.searchUserIndex!].profileImage == null 
+                                                          ? CircleAvatar(
+                                                            radius: 50,
+                                                            foregroundImage: AssetImage("images/co2.png"),
+                                                            )
+                                                          : FutureBuilder(
+                                                            future: vmhandler.fetchImage(vmhandler.searchUserList[vmhandler.searchUserIndex!].profileImage!),
+                                                            builder: (context,snapshot) {
+                                                              if (snapshot.hasData){
+                                                                return CircleAvatar(
+                                                                  radius: 50,
+                                                                  foregroundImage: MemoryImage(snapshot.data!),
+                                                                  );
+                                                              }else{
+                                                                return SizedBox();
+                                                              }
+                                                              
+                                                            }
+                                                          ),
+                                                      ),
+                                                      Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text('eMail: ${vmhandler.searchUserList[vmhandler.searchUserIndex!].eMail}'),
+                                                          Text('Phone: ${vmhandler.searchUserList[vmhandler.searchUserIndex!].phone}'),
+                                                          Text('생성일: ${vmhandler.searchUserList[vmhandler.searchUserIndex!].createDate.toString().substring(0,10)}'),
+                                                          Text('포인트: ${vmhandler.searchUserList[vmhandler.searchUserIndex!].point}'),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
                                             )
                                           : null),
+                                  TextField(
+                                    controller: reportReasonController,
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: ()async{
+                                      String mEmail = await box.read('manager');
+                                      vmhandler.ceaseUser(mEmail, reportReasonController.text.trim(), 7);
+                                    }, 
+                                    child: const Text("계정 정지")
+                                  )
                                 ],
-                              ));
+                          ));
                         }
                       },
                     ),

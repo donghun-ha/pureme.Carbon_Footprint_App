@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/vm/manage/manage_handler.dart';
 
 class ManageReport extends StatelessWidget {
   ManageReport({super.key});
 
   final vmhandler = Get.put(ManageHandler());
+
+  final box = GetStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -77,13 +80,20 @@ class ManageReport extends StatelessWidget {
                                       vmhandler.reportFeedListById.length,
                                   itemBuilder: (context, index) {
                                     return Card(
-                                      child: Text(vmhandler
-                                          .reportFeedListById[index]
-                                          .reportReason),
+                                      child: Text('${vmhandler.reportFeedListById[index].reportReason}             신고자 : ${vmhandler.reportFeedListById[index].user_eMail}'),
                                     );
                                   },
                                 ),
-                              )
+                              ),
+                              ElevatedButton(
+                                onPressed: ()async{
+                                  String email = await box.read('manager');
+                                  if(vmhandler.reportFeedIndex != null){
+                                    vmhandler.reportFeed(vmhandler.reportFeedCountList[vmhandler.reportFeedIndex!].feedId, email, '숨김');
+                                  }
+                                },  
+                                child: const Text("게시글 숨김 처리")
+                              ),
                             ],
                           );
                         },

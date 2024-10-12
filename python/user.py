@@ -46,6 +46,57 @@ async def login(eMail: str = None, password: str = None):
     finally:
         conn.close()
 
+
+
+
+@router.get("/reportVerify")
+async def login(eMail: str = None):
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        sql="""
+        SELECT 
+            u.eMail, 
+            ac.ceaseReason,
+            ac.daysDifference
+        FROM 
+            user AS u
+        LEFT JOIN 
+            (SELECT 
+                user_eMail,
+                ceaseDatetime, 
+                ceasePeriod,
+                DATEDIFF(DATE_ADD(ceaseDatetime, INTERVAL ceasePeriod DAY), NOW()) AS daysDifference,
+                ceaseReason
+            FROM 
+                accountcease
+            WHERE 
+                DATE_ADD(ceaseDatetime, INTERVAL ceasePeriod DAY) > NOW()
+            ) AS ac
+        ON 
+            u.eMail = ac.user_eMail
+        WHERE 
+            u.eMail = %s;
+        """
+
+        curs.execute(sql, (eMail))
+        rows = curs.fetchall()
+        result = [{
+            'eMail': row[0], 
+            'ceaseReason' : row[1],
+            'diff' : row[2]
+            } for row in rows]
+        print(result)
+        conn.commit()
+        return {'result': result}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()
+
+
+
 @router.get("/login")
 async def login(eMail: str = None):
     conn = connect()

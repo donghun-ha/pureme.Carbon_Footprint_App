@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/view/login_signin/sign_up.dart';
+import 'package:team_project2_pure_me/view/manage/manage_home.dart';
 import 'package:team_project2_pure_me/view/tabbar_page.dart';
 import 'package:team_project2_pure_me/vm/rank_handler.dart';
 
@@ -42,6 +43,28 @@ class Login extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Radio(
+                                value: 0, 
+                                groupValue: vmHandler.manageLogin, 
+                                onChanged: (value) {
+                                  vmHandler.manageLoginChange(value);
+                                },
+                              ),
+                              Text('유저 로그인'),
+                              const SizedBox(width: 60,),
+                              Radio(
+                                value: 1, 
+                                groupValue: vmHandler.manageLogin, 
+                                onChanged: (value){
+                                  vmHandler.manageLoginChange(value);
+                                }
+                              ),
+                              Text('관리자 로그인'),
+                            ],
+                          ),
                           Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: TextField(
@@ -110,13 +133,30 @@ class Login extends StatelessWidget {
                                   _showalibaba();
                                   return;
                                 }
+                                var cease = await vmHandler.ceaseAccountVerify(idController.text.trim());
+                                if (cease.$1 != null){
+                                  showCease(cease.$2!, cease.$1!);
+                                  return;
+                                }
                                 // 로그인 로직
-                                bool checkLogin = await vmHandler.loginVerify(
+                                bool checkLogin = 
+                                    vmHandler.manageLogin == 0
+                                    ?await vmHandler.loginVerify(
                                     idController.text.trim(),
-                                    pwController.text.trim());
+                                    pwController.text.trim())
+                                    :await vmHandler.manageLoginVerify(
+                                      idController.text.trim(),
+                                      pwController.text.trim(),
+                                    )
+                                    ;
                                 if (checkLogin) {
-                                  box.write('pureme_id', idController.text);
-                                  _showDialog();
+                                  if(vmHandler.manageLogin == 0){
+                                    box.write('pureme_id', idController.text);
+                                  }else{
+                                    box.write('manager', idController.text);
+                                  }
+
+                                  _showDialog(vmHandler.manageLogin == 0);
                                 } else {
                                   errorSnackBar();
                                 }
@@ -139,7 +179,7 @@ class Login extends StatelessWidget {
             )));
   }
 
-  _showDialog() {
+  _showDialog(bool userLogin) {
     Get.defaultDialog(
       title: '로그인',
       middleText: '로그인이 완료되었습니다.',
@@ -151,7 +191,7 @@ class Login extends StatelessWidget {
             idController.text = '';
             pwController.text = '';
             Get.back();
-            Get.to(TabbarPage());
+            Get.to(() =>  userLogin? TabbarPage() : ManageHome());
           },
           child: const Text('OK'),
         ),
@@ -179,4 +219,30 @@ class Login extends StatelessWidget {
   _showalibaba() {
     Get.snackbar("경고", "빈칸을 채워주세요.");
   }
+
+showCease(String ceaseReason, int ceaseDate) {
+    Get.defaultDialog(
+      title: '귀하의 계정은 정지되었습니다.',
+      content: Column(
+        children: [
+          Text('정지 사유: $ceaseReason'),
+          Text('남은 정지일: $ceaseDate'),
+        ],
+      ),
+      backgroundColor: Colors.white,
+      barrierDismissible: false,
+      actions: [
+        TextButton(
+          onPressed: () {
+            idController.text = '';
+            pwController.text = '';
+            Get.back();
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    );
+  }
+
+
 }

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/view/manage/manage_app.dart';
 import 'package:team_project2_pure_me/view/manage/manage_feed.dart';
 import 'package:team_project2_pure_me/view/manage/manage_report.dart';
 import 'package:team_project2_pure_me/view/manage/manage_user.dart';
 
 class ManageHome extends StatelessWidget {
-  const ManageHome({super.key});
+  ManageHome({super.key});
 
+  final box = GetStorage();
   @override
   Widget build(BuildContext context) {
     return Stack(

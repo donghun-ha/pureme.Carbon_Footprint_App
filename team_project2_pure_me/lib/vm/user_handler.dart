@@ -11,6 +11,7 @@ import 'package:team_project2_pure_me/vm/feed_handler.dart';
 class UserHandler extends FeedHandler {
   RxList<User> userList = <User>[].obs;
 
+
   final curUser = User(
           eMail: '1234@gmail.com',
           nickName: '',
@@ -31,8 +32,9 @@ class UserHandler extends FeedHandler {
   RxBool profileImageChanged = false.obs;
 
   /// 이미지가 바뀌었음을 확인시키는 변수
+  /// 매니저 로그인 radioButton 을 위한 변수
+  int manageLogin = 0;
 
-  /// 회원정보 수정시 이미지 이름을 바꿔야할때 필요한 변수
 
   Future<bool> loginVerify(String eMail, String password) async {
     var url =
@@ -158,8 +160,6 @@ class UserHandler extends FeedHandler {
     }
   }
 
-  userImageUpdate() {}
-
   userImageDelete() async {
     if (curUser.value.profileImage != null) {
       final response = await http.delete(Uri.parse(
@@ -209,5 +209,34 @@ class UserHandler extends FeedHandler {
     }
     return null; // 에러 발생 시 null 반환
   }
+
+  manageLoginChange(value){
+    manageLogin = value;
+    update();
+  }
+
+  manageLoginVerify(String eMail, String password)async{
+    var url =
+        Uri.parse("$baseUrl/manage/loginVerify?eMail=$eMail&password=$password");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+
+    return result[0]['seq'] as bool ;
+
+  }
+
+  Future<(int?, String?)> ceaseAccountVerify(String eMail)async{
+    var url =
+        Uri.parse("$baseUrl/user/reportVerify?eMail=$eMail");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+      return (result[0]['diff'] as int?,result[0]['ceaseReason'] as String? );
+    }
+    // return result[0]['seq'] as bool ;
+  
+
+
 
 }

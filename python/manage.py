@@ -18,6 +18,30 @@ def connect():
     )
     return conn
 
+@router.get("/loginVerify")
+async def login(eMail: str = None, password: str = None):
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        sql = """
+        SELECT count(manageEMail)
+        FROM manager
+        WHERE manageEMail=%s
+        AND managerPw=%s
+        """
+        curs.execute(sql, (eMail, password))
+        rows = curs.fetchall()
+        result = [{'seq': row[0]==1} for row in rows]
+        conn.commit()
+        return {'result': result}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()
+
+
+
 
 @router.get("/userperday")
 async def userperday():
@@ -78,9 +102,32 @@ async def userperday(serachUserWord :str = None):
     try:
         ##### 일별 이메일 생성수
         sql = """
-        SELECT *
-        FROM user
-        WHERE eMail LIKE %s
+            SELECT 
+                u.*
+            FROM 
+                user AS u
+            LEFT JOIN 
+                (SELECT 
+                    user_eMail,
+                    DATE_ADD(ceaseDatetime, INTERVAL ceasePeriod DAY) AS endDate
+                FROM 
+                    accountcease
+                ) AS ac
+            ON 
+                u.eMail = ac.user_eMail
+            WHERE 
+                (ac.endDate IS NULL OR ac.endDate <= NOW()) 
+                AND 
+                SUBSTRING_INDEX(u.eMail, '@', 1) LIKE %s
+                AND 
+                u.eMail NOT IN (
+                    SELECT 
+                        user_eMail
+                    FROM 
+                        accountcease
+                    WHERE 
+                        DATE_ADD(ceaseDatetime, INTERVAL ceasePeriod DAY) > NOW()
+                );
         """
         # SQL에서 `LIKE` 문 사용
         curs.execute(sql, (f"%{serachUserWord}%",)) 
@@ -105,6 +152,29 @@ async def userperday(serachUserWord :str = None):
         conn.close()
 
 
+@router.get("/accountCeaseInsert")
+async def queryReportReason(user_eMail :str = None, manager_manageEMail:str = None , ceaseReason:str = None, ceasePeroid:str = None):
+    now = datetime.now()
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        
+        sql = """
+            INSERT 
+            INTO accountcease (user_eMail, manager_manageEMail, ceaseDatetime, ceaseReason, ceasePeriod)
+            VALUES (%s, %s, %s, %s, %s);
+        """
+        curs.execute(sql, (user_eMail, manager_manageEMail, now, ceaseReason, ceasePeroid))  # 
+        result = "OK"
+        conn.commit()
+        return {'result': result}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()
+
+
 
 #### 
 @router.get("/queryReportcount")
@@ -113,9 +183,19 @@ async def queryReportcount():
     curs = conn.cursor()
     try:
         sql = """
-            SELECT feedId, COUNT(feedId) AS feed_count
-            FROM report
-            GROUP BY feedId;
+                SELECT 
+                    r.feedId, 
+                    COUNT(r.feedId) AS feed_count
+                FROM 
+                    report AS r
+                LEFT JOIN 
+                    pureme.managefeed AS m ON r.feedId = m.feedID
+                WHERE 
+                    m.feedID IS NULL
+                GROUP BY 
+                    r.feedId
+                ORDER BY 
+                    feed_count DESC;
         """
 
         curs.execute(sql)  
@@ -138,14 +218,14 @@ async def queryReportReason(feedId :str = None):
     conn = connect()
     curs = conn.cursor()
     try:
-        ##### 일별 이메일 생성수
+        
         sql = """
             SELECT *
             FROM report
             WHERE feedId = %s;
         """
 
-        curs.execute(sql, feedId)  # `email_id`로 시작하는 모든 이메일 검색
+        curs.execute(sql, feedId)  # 
         rows = curs.fetchall()
         result = [{
             'user_eMail': row[0],
@@ -160,3 +240,28 @@ async def queryReportReason(feedId :str = None):
         return {"results": "Error"}
     finally:
         conn.close()
+
+@router.get("/reportFeed")
+async def queryReportReason(manager_manageEMail:str = None, feedId:str = None , changeKind:str = None):
+    now = datetime.now()
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        
+        sql = """
+            INSERT 
+            INTO managefeed (manager_manageEMail, feedId, changeDatetime, changeKind) 
+            VALUES (%s, %s, %s, %s);
+        """
+        curs.execute(sql, (manager_manageEMail, feedId, now, changeKind))  # 
+        result = "OK"
+        conn.commit()
+        return {'result': result}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()
+
+
+

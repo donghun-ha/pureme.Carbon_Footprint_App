@@ -90,7 +90,7 @@ async def updateLike(feedId:str =None, userEmail: str = None, heart : str = None
 #### 박상범 수정
 @router.get("/updateReport")
 async def updateLike(feedId:str =None, userEmail: str = None, reportReason : str = None ):
-    reportTime = datetime.now
+    reportTime = datetime.now()
     conn = connect()
     curs = conn.cursor()
     try:
