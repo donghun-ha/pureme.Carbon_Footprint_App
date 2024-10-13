@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/user.dart';
@@ -54,7 +55,8 @@ class RankHandler extends UserHandler {
   }
 
   /// 백엔드 API의 기본 URL 설정
-  final String defaultUrl = "http://127.0.0.1:8000/footprint";
+  final String defaultUrl =
+      Platform.isAndroid ? 'http://10.0.2.2:8000/footprint' : 'http://127.0.0.1:8000/footprint';
 
   /* 
   **onInit 메소드**

@@ -50,8 +50,8 @@ def connect():
         pymysql.connections.Connection: 데이터베이스 연결 객체
     """
     conn = pymysql.connect(
-        host='127.0.0.1',       # 데이터베이스 호스트 주소
-        user='root',             # 데이터베이스 사용자 이름
+        host='192.168.50.71',       # 데이터베이스 호스트 주소
+        user='user',             # 데이터베이스 사용자 이름
         password='qwer1234',     # 데이터베이스 비밀번호
         db='pureme',             # 사용할 데이터베이스 이름
         charset='utf8',          # 문자 인코딩 설정
