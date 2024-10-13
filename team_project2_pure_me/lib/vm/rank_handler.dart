@@ -1,46 +1,101 @@
 import 'dart:convert';
-import 'dart:io' show Platform;
+
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:http/http.dart' as http;
-import 'package:team_project2_pure_me/vm/chart_handler.dart';
+import 'package:team_project2_pure_me/vm/convert/convert_email_to_name.dart';
+import 'package:team_project2_pure_me/vm/user_handler.dart';
 
-class RankHandler extends ChartHandler {
+/* **RankHandler 클래스**
+
+이 클래스는 사용자들의 탄소 절감 랭킹을 관리하는 역할을 합니다.
+`UserHandler` 클래스를 상속받아 기본적인 사용자 관리 기능을 확장하였습니다.
+FastAPI 백엔드와 통신하여 랭킹 데이터와 개인의 탄소 절감량을 가져옵니다.
+
+**Author**: 하동훈
+**Date**: 2024-10-10
+
+**Error 수정**: 2024-10-12
+  수정된 부분:
+    Flutter 코드에서는 dataConvertedJSON['result']를 리스트로 취급하여 인덱스로 접근하려고 시도.
+    하지만 실제로 result는 문자열 "OK"이므로, 이를 리스트처럼 접근해 RangeError가 발생 오류 수정.
+*/
+
+class RankHandler extends UserHandler {
+  /// 이메일을 닉네임으로 변환하는 도우미 클래스 인스턴스
+  ConvertEmailToName convertEmailToName = ConvertEmailToName();
+
+  /// 전체 랭킹 리스트를 저장하는 반응형 리스트
   RxList<User> rankList = <User>[].obs;
+
+  /// 사용자의 자신의 랭킹을 저장하는 반응형 정수
   RxInt myrank = 0.obs;
 
+  /// 총 탄소 발자국을 저장하는 반응형 문자열
   RxString totalCarbonFootprint = '0'.obs;
+
+  /// 총 탄소 절감량을 저장하는 반응형 문자열
   RxString totalReducedCarbonFootprint = '0'.obs;
+
+  /// 심은 나무 수를 저장하는 반응형 문자열
   RxString treesFootprint = '0'.obs;
+
+  /// 에너지 감소량을 저장하는 반응형 문자열 (리터 단위)
   RxString totalEnergyReduction = '0'.obs;
+
+  /* **생성자**
+  /
+  RankHandler 클래스의 인스턴스가 생성될 때 자동으로 `fetchRank` 메소드를 호출하여 랭킹 데이터를 가져옵니다.
+  */
 
   RankHandler() {
     fetchRank();
-    // fetchTotalCarbon();
+    // fetchTotalCarbon(); // 필요 시 주석을 해제하여 개인 탄소 절감량을 가져올 수 있습니다.
   }
+
+  /// 백엔드 API의 기본 URL 설정
+  final String defaultUrl = "http://127.0.0.1:8000/footprint";
+
+  /* 
+  **onInit 메소드**
+  GetX의 생명주기 메소드로, 컨트롤러가 초기화될 때 호출됩니다.
+  여기서는 부모 클래스의 `onInit`을 호출하고, 개인 랭킹을 가져오는 `fetchMyRank` 메소드를 호출합니다.
+  */
 
   @override
   void onInit() {
     super.onInit();
-    fetchMyRank();
+    fetchMyRank(); // 사용자 랭킹을 가져옵니다.
   }
 
-  // 랭킹 데이터 가져오기
+  /* 
+  **fetchRank 메소드**
+  백엔드의 `/rankings` 엔드포인트로 GET 요청을 보내 현재 달의 랭킹 데이터를 가져옵니다.
+  응답받은 JSON 데이터를 `User` 모델로 변환하여 `rankList`에 저장합니다.
+  
+  **Usage**:
+  http://127.0.0.1:8000/footprint/rankings?limit=랭킹수
+  */
+
   Future<void> fetchRank() async {
+    // 이메일을 닉네임으로 변환하기 위한 데이터 미리 가져오기
     await convertEmailToName.getUserName();
 
-    var url = Uri.parse("$baseUrl/footprint/rankings");
-    final response = await http.get(url); // GET 요청
+    // 랭킹 API의 URL 구성
+    var url = Uri.parse("$defaultUrl/rankings");
+    final response = await http.get(url); // GET 요청 수행
 
     if (response.statusCode == 200) {
       // 성공적으로 응답을 받았을 때
-      // print('Response data: ${response.body}'); // 응답 데이터 확인
+      // 응답 데이터를 디코딩하여 JSON 형태로 변환
       final data = json.decode(response.body);
+
+      // JSON의 'rankings' 필드를 리스트로 가져와 User 모델로 매핑
       List<User> users = (data['rankings'] as List)
           .map((user) => User(
                 // 이메일을 닉네임으로 변환
                 nickName: convertEmailToName.changeAction(user['user_eMail']),
-                eMail: user['user_eMail'], // eMail 매핑
+                eMail: user['user_eMail'], // 이메일 매핑
                 password: '', // 패스워드는 API에서 제공되지 않으므로 빈 문자열
                 phone: '', // 핸드폰 정보가 없으므로 빈 문자열
                 createDate: DateTime.now(), // 생성일 기본값 (API에서 제공되지 않음)
@@ -48,41 +103,93 @@ class RankHandler extends ChartHandler {
                 profileImage: user['profileImage'], // 이미지가 없으면 null
               ))
           .toList();
-      rankList.assignAll(users); // 랭킹 리스트 업데이트
+
+      // 랭킹 리스트 업데이트
+      rankList.assignAll(users);
+      update();
+
+      // 랭킹 데이터가 업데이트된 후 사용자 랭킹을 가져옵니다.
+      fetchMyRank();
     } else {
-      // 에러 발생 시 처리
+      // 에러 발생 시 에러 메시지 출력
       print('랭킹을 불러오는 데 실패했습니다: ${response.statusCode}');
     }
   }
 
-  // 탄소량 불러오는 함수
-  fetchTotalCarbon() async {
+  /* **fetchTotalCarbon 메소드**
+  백엔드의 `/calculate_with_reduction` 엔드포인트로 GET 요청을 보내 사용자의 탄소 발자국과 절감량을 가져옵니다.
+  응답받은 JSON 데이터를 반응형 변수들에 저장합니다.
+  **Usage**:
+  http://127.0.0.1:8000/footprint/calculate_with_reduction?user_eMail=유저이메일
+  */
+
+  Future<void> fetchTotalCarbon() async {
+    // 개인 탄소 발자국 계산 API의 URL 구성
+    print(curUser.value.eMail);
     var url = Uri.parse(
-        "$baseUrl/footprint/calculate_with_reduction?user_eMail=${curUser.value.eMail}");
-    var response = await http.get(url);
+        "$defaultUrl/calculate_with_reduction?user_eMail=${curUser.value.eMail}");
+    var response = await http.get(url); // GET 요청 수행
 
     if (response.statusCode == 200) {
+      // 성공적으로 응답을 받았을 때
+      // 응답 데이터를 디코딩하여 JSON 형태로 변환
       final dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-      final totalFootprint = dataConvertedJSON['result'];
-      print(totalFootprint);
-      // if (totalFootprint[0] != 0.0 ) {
-      totalCarbonFootprint.value = totalFootprint[2].toString();
-      totalReducedCarbonFootprint.value = totalFootprint[3].toString();
-      treesFootprint.value = totalFootprint[1].toString();
-      totalEnergyReduction.value = totalFootprint[0].toString();
-      // } else{
-      //   totalCarbonFootprint.value = '0';
-      //   totalReducedCarbonFootprint.value = '0';
-      //   treesFootprint.value = '0';
-      //   totalEnergyReduction.value = '0';
-      // }
+
+      // JSON의 'result' 필드가 'OK'인지 확인
+      if (dataConvertedJSON['result'] == 'OK') {
+        // 'summary' 객체를 가져옴
+        final summary = dataConvertedJSON['summary'];
+
+        // 'summary'가 존재하는지 확인
+        if (summary != null) {
+          // 각 항목을 추출하여 문자열로 변환
+          final totalCarbonFootprint =
+              summary['total_carbon_footprint']?.toString();
+          final totalCarbonReduction =
+              summary['total_carbon_reduction']?.toString();
+          final totalEnergyReduction =
+              summary['total_energy_reduction']?.toString(); // 리터 단위
+          final totalTreesPlanted = summary['total_trees_planted']?.toString();
+
+          // 값들이 null이 아닌지 확인한 후 반응형 변수들에 저장
+          if (totalCarbonFootprint != null &&
+              totalCarbonReduction != null &&
+              totalEnergyReduction != null &&
+              totalTreesPlanted != null) {
+            this.totalCarbonFootprint.value = totalCarbonFootprint;
+            this.totalReducedCarbonFootprint.value = totalCarbonReduction;
+            this.treesFootprint.value = totalTreesPlanted;
+            this.totalEnergyReduction.value =
+                totalEnergyReduction; // 리터 단위로 업데이트
+          }
+        }
+      } else {
+        // 'result'가 'OK'가 아닌 경우 에러 메시지 출력
+        print("오류 발생: ${dataConvertedJSON['message']}");
+      }
     } else {
+      // HTTP 요청이 실패한 경우 에러 메시지 출력
       print("랭킹을 불러오는 데 실패했습니다: ${response.statusCode}");
     }
   }
 
+  // **fetchMyRank 메소드**
+  // 현재 사용자의 랭킹을 가져오는 메소드입니다.
+
   void fetchMyRank() {
-    // 더미 데이터로 내 랭킹 설정
-    myrank.value = 3;
+    // 현재 사용자의 이메일을 가져옵니다.
+    String currentUserEmail = curUser.value.eMail;
+    // print(curUser.value.eMail);
+
+    // 랭킹 리스트에서 사용자의 이메일을 찾아서 랭킹을 설정합니다.
+    int rankIndex =
+        rankList.indexWhere((user) => user.eMail == currentUserEmail);
+
+    // 사용자가 랭킹 리스트에 있는 경우, 랭킹을 설정합니다.
+    if (rankIndex != -1) {
+      myrank.value = rankIndex + 1; // 인덱스는 0부터 시작하므로 1을 더합니다.
+    } else {
+      myrank.value = 0; // 랭킹 리스트에 없으면 0으로 설정
+    }
   }
 }
