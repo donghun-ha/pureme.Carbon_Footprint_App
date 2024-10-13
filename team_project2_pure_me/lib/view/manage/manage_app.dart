@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:team_project2_pure_me/vm/manage/manage_handler.dart';
 
 class ManageApp extends StatelessWidget {
@@ -50,31 +51,12 @@ class ManageApp extends StatelessWidget {
                         children: [
                           /// List observing을 위한 Obx, Listview당 하나.
                           Obx(() {
-                            return SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.4,
-                              child: ListView.builder(
-                                ////
-                                itemCount: vmhandler.signInUserList
-                                    .length, //// 일, 주, 월간 사용자 생성 평균
-                                itemBuilder: (context, index) {
-                                  return Text(
-                                      "${vmhandler.signInUserList[index]}");
-                                },
-                              ),
-                            );
+                            return 
+                            _buildUserComparisonChart(vmhandler);
                           }),
                           Obx(() {
-                            return SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.4,
-                              child: ListView.builder(
-                                itemCount: vmhandler.madeFeedList
-                                    .length, //// 일, 주, 월간 사용자 피드 수 평균
-                                itemBuilder: (context, index) {
-                                  return Text(
-                                      "${vmhandler.madeFeedList[index]}");
-                                },
-                              ),
-                            );
+                            return 
+                              _buildFeedComparisonChart(vmhandler);
                           }),
                         ],
                       );
@@ -89,4 +71,68 @@ class ManageApp extends StatelessWidget {
       ],
     );
   }
-}
+
+
+
+
+  Widget _buildFeedComparisonChart(ManageHandler manageHandler) {
+    return Container(
+      height: 300,
+      child: SfCartesianChart(
+        primaryXAxis: CategoryAxis(),
+        title: ChartTitle(text: '카테고리별 탄소 발자국 비교'),
+        legend: Legend(isVisible: true),
+        series: <CartesianSeries>[
+          ColumnSeries<MapEntry<String, int>, String>(
+            dataSource: manageHandler.feedGen(),
+            xValueMapper: (MapEntry<String, int> data, _) => data.key,
+            yValueMapper: (MapEntry<String, int> data, _) => data.value,
+            name: '피드 생성수',
+          ),
+          ColumnSeries<MapEntry<String, double>, String>(
+            dataSource: manageHandler.feedGenAverage(),
+            xValueMapper: (MapEntry<String, double> data, _) => data.key,
+            yValueMapper: (MapEntry<String, double> data, _) => data.value,
+            name: '피드 생성수 평균',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserComparisonChart(ManageHandler manageHandler) {
+    return Container(
+      height: 300,
+      child: SfCartesianChart(
+        primaryXAxis: CategoryAxis(),
+        title: ChartTitle(text: '카테고리별 탄소 발자국 비교'),
+        legend: Legend(isVisible: true),
+        series: <CartesianSeries>[
+          ColumnSeries<MapEntry<String, int>, String>(
+            dataSource: manageHandler.acountGen(),
+            xValueMapper: (MapEntry<String, int> data, _) => data.key,
+            yValueMapper: (MapEntry<String, int> data, _) => data.value,
+            name: '피드 생성수',
+          ),
+          ColumnSeries<MapEntry<String, double>, String>(
+            dataSource: manageHandler.acountGenAverage(),
+            xValueMapper: (MapEntry<String, double> data, _) => data.key,
+            yValueMapper: (MapEntry<String, double> data, _) => data.value,
+            name: '피드 생성수 평균',
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+
+
+
+
+
+
+
+
+}//End

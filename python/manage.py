@@ -48,43 +48,49 @@ async def userperday():
     conn = connect()
     curs = conn.cursor()
     now = datetime.now()
-    yesterday = now - timedelta(1)
-    lastweek = now - timedelta(7)
-    lastmonth = now - timedelta(30)
     try:
         ##### 일별 이메일 생성수
         sql = """
-        SELECT count(eMail)
-        FROM user
-        WHERE createDate > %s
+            SELECT 'day' as period, COUNT(eMail) as count, (SELECT COUNT(eMail)/ DATEDIFF(max(createDate), min(createDate)) AS date_difference FROM user )
+            *
+            (SELECT daydiff FROM (SELECT COUNT(eMail), (SELECT LEAST((SELECT DATEDIFF(max(createDate), min(createDate)) AS date_difference FROM user), 1) )as daydiff FRom user) AS jj)  
+            as average 
+            FROM user
+            WHERE createDate > NOW() - INTERVAL 1 DAY
+
+            UNION ALL
+
+            SELECT 'week' as period, COUNT(eMail) as count, 
+            (SELECT COUNT(eMail)/DATEDIFF(max(createDate), min(createDate)) AS date_difference FROM user) 
+            *
+            (SELECT daydiff FROM (SELECT COUNT(eMail), (SELECT LEAST((SELECT DATEDIFF(max(createDate), min(createDate)) AS date_difference FROM user), 7) )as daydiff FRom user) AS jj)  
+            as average
+            FROM user
+            WHERE createDate > NOW() - INTERVAL 7 DAY
+
+            UNION ALL
+
+            SELECT 'month' as period, COUNT(eMail) as count, 
+            (COUNT(eMail)/DATEDIFF(max(createDate), min(createDate))) 
+            *
+            (SELECT daydiff FROM (SELECT COUNT(eMail), (SELECT LEAST((SELECT DATEDIFF(max(createDate), min(createDate)) AS date_difference FROM user), 30) )as daydiff FRom user) AS jj)  
+            as average
+            FROM user
+            WHERE createDate > NOW() - INTERVAL 30 DAY
+
+            UNION ALL
+
+            SELECT 'all' as period, COUNT(eMail) as count, COUNT(eMail) as average
+            FROM user
         """
-        curs.execute(sql, (yesterday))
-        row_days = curs.fetchall()
-        
-        #### 주간 이메일 생성수        
-        sql = """
-        SELECT count(eMail)
-        FROM user
-        WHERE createDate > %s
-        """
-        curs.execute(sql, (lastweek))
-        row_weeks = curs.fetchall()
-
-
-        ### 월간 이메일 생성수
-        sql = """
-        SELECT count(eMail)
-        FROM user
-        WHERE createDate > %s
-        """
-        curs.execute(sql, (lastmonth))
-        row_month = curs.fetchall()
-
-        ### 보내줄 row
-        rows = list(row_days + row_weeks + row_month);
-        print(rows)        
-
-        result = [{'count': row[0]} for row in rows]
+        curs.execute(sql)
+        rows = curs.fetchall()
+        print(rows)
+        result = [{
+            'period': row[0],
+            'count': row[1],
+            'average': row[2],
+            } for row in rows]
         conn.commit()
         return {'result': result}
     ### 에러나면 쓰기
@@ -178,27 +184,29 @@ async def queryReportReason(user_eMail :str = None, manager_manageEMail:str = No
 
 #### 
 @router.get("/queryReportcount")
-async def queryReportcount():
+async def queryReportcount(leastAmount : str = None):
     conn = connect()
     curs = conn.cursor()
     try:
         sql = """
-                SELECT 
-                    r.feedId, 
-                    COUNT(r.feedId) AS feed_count
-                FROM 
-                    report AS r
-                LEFT JOIN 
-                    pureme.managefeed AS m ON r.feedId = m.feedID
-                WHERE 
-                    m.feedID IS NULL
-                GROUP BY 
-                    r.feedId
-                ORDER BY 
-                    feed_count DESC;
+            SELECT *
+            FROM    (SELECT 
+                        r.feedId, 
+                        COUNT(r.feedId) AS feed_count
+                    FROM 
+                        report AS r
+                    LEFT JOIN 
+                        pureme.managefeed AS m ON r.feedId = m.feedID
+                    WHERE 
+                        m.feedID IS NULL
+                    GROUP BY 
+                        r.feedId
+                    ORDER BY 
+                        feed_count DESC) AS wow
+            WHERE feed_count >=%s
+            ;
         """
-
-        curs.execute(sql)  
+        curs.execute(sql, leastAmount)  
         rows = curs.fetchall()
         result = [{
             'feedId': row[0],

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
@@ -14,7 +15,9 @@ class ManageHandler extends GetxController {
 
   //appManage에서 쓸 리스트들
   var signInUserList = <int>[].obs;
+  var singInUserAverageList = <double>[].obs;
   var madeFeedList = <int>[].obs;
+  var madeFeedAverageList = <double>[].obs;
 
   //searchManage에서 쓸 변수들
   /// 나오는 리스트
@@ -26,12 +29,15 @@ class ManageHandler extends GetxController {
   var searchUserList = <User>[].obs;
   String serachUserWord = '';
   int? searchUserIndex;
+  int searchUserRadio = 7;
 
   //Report 에서 쓸 변수들
     final CollectionReference _feed =
       FirebaseFirestore.instance.collection('post');
 
   var feedList = <Feed>[].obs;
+
+  int rptCountAmount = 1;
   var reportFeedCountList = <RptCount>[].obs;
   var reportFeedListById = <Report>[].obs;
 
@@ -61,8 +67,40 @@ class ManageHandler extends GetxController {
     signInUserList.value = [
       result[0]['count'],
       result[1]['count'],
-      result[2]['count']
+      result[2]['count'],
+      result[3]['count']
     ];
+
+    singInUserAverageList.value = [
+      result[0]['average']+1,
+      result[1]['average']+1,
+      result[2]['average']+1,
+      result[3]['average']+1,
+    ];
+  }
+
+  acountGen(){
+    Map<String,int> aaa = {
+      'day' : signInUserList[0],
+      'week' : signInUserList[1],
+      'month' : signInUserList[2],
+      'all' : signInUserList[3],
+    };
+
+    List<MapEntry<String, int>> bbb = aaa.entries.toList();
+    return bbb;
+  }
+
+  acountGenAverage(){
+    Map<String,double> aaa = {
+      'day' : singInUserAverageList[0],
+      'week' : singInUserAverageList[1],
+      'month' : singInUserAverageList[2],
+      'all' : singInUserAverageList[3],
+    };
+
+    List<MapEntry<String, double>> bbb = aaa.entries.toList();
+    return bbb;
   }
 
   fetchFeedAmount() async {
@@ -115,14 +153,71 @@ class ManageHandler extends GetxController {
         .get();
     tempList.add(lastmonthsnp.size);
 
+    dynamic allsnp = await _manageFeed
+        .where('state', isEqualTo: '게시')
+        .orderBy('writetime', descending: true)
+        .get();
+
+
+
+    tempList.add(allsnp.size);
+    List alldocs = allsnp.docs as List;
+    List alltimes = alldocs.map((e) {
+      return DateTime.parse((e).data()['writetime']);
+    },).toList();
+      
+  Duration difference = alltimes[0].difference(alltimes[alltimes.length-1]);
+
+  int daysDifference = difference.inDays + 1;
+
+  List meanTempList =[
+    min(daysDifference, 1),
+    min(daysDifference, 7),
+    min(daysDifference, 30),
+    daysDifference,
+  ] ;
+
+
+
+
     madeFeedList.value = [
       tempList[0],
       tempList[1],
       tempList[2],
+      tempList[3],
+    ];
+    madeFeedAverageList.value = [
+      tempList[0]/meanTempList[0],
+      tempList[1]/meanTempList[1],
+      tempList[2]/meanTempList[2],
+      tempList[3]/meanTempList[3],
     ];
   }
 
-  test1() async {}
+  feedGen(){
+    Map<String,int> aaa = {
+      'day' : madeFeedList[0],
+      'week' : madeFeedList[1],
+      'month' : madeFeedList[2],
+      'all' : madeFeedList[3],
+    };
+
+    List<MapEntry<String, int>> bbb = aaa.entries.toList();
+    return bbb;
+  }
+
+  feedGenAverage(){
+    Map<String,double> aaa = {
+      'day' : madeFeedAverageList[0],
+      'week' : madeFeedAverageList[1],
+      'month' : madeFeedAverageList[2],
+      'all' : madeFeedAverageList[3],
+    };
+
+    List<MapEntry<String, double>> bbb = aaa.entries.toList();
+    return bbb;
+
+  }
 
   test2() async {
     Timestamp timestamp =
@@ -200,8 +295,7 @@ class ManageHandler extends GetxController {
   }
 
   searchUserIndexChanged(int idx) {
-    print(idx);
-    print(searchUserIndex);
+
     if (idx == searchUserIndex) {
       searchUserIndex = null;
     } else {
@@ -210,9 +304,16 @@ class ManageHandler extends GetxController {
     update();
   }
 
-  ceaseUser(String managerEMail, String ceaseReason ,int ceasePeriod)async{
+  searchUserRadioChanged(value) {
+    searchUserRadio = value;
+    update();
+  }
+
+
+
+  ceaseUser(String managerEMail, String ceaseReason)async{
     String user_eMail = searchUserList.value[searchUserIndex!].eMail; 
-      var url = Uri.parse("$manageUrl/accountCeaseInsert?user_eMail=$user_eMail&manager_manageEMail=$managerEMail&ceaseReason=$ceaseReason&ceasePeroid=$ceasePeriod");
+      var url = Uri.parse("$manageUrl/accountCeaseInsert?user_eMail=$user_eMail&manager_manageEMail=$managerEMail&ceaseReason=$ceaseReason&ceasePeroid=$searchUserRadio");
       var response = await http.get(url);
       var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
       var result = dataConvertedJSON['result'];
@@ -238,9 +339,17 @@ class ManageHandler extends GetxController {
 
 
 ///////////////////reportFeed에서 쓸 함수들
+  rptCountAmountChanged(int value){
+    rptCountAmount = value;
+    update();
+  }
+  
+  
+  
+  
   ///feed가 report받은 숫자를 전부 씀
   queryReportcount() async {
-    var url = Uri.parse("$manageUrl/queryReportcount");
+    var url = Uri.parse("$manageUrl/queryReportcount?leastAmount=$rptCountAmount");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List result = dataConvertedJSON['result'];
@@ -269,6 +378,7 @@ class ManageHandler extends GetxController {
   }
 
   /// 어떤 feed를 가져왔는지를 바꾸기 위한 함수
+  
   reportFeedIndexChanged(int idx) {
     if (idx == reportFeedIndex) {
       reportFeedIndex = null;
@@ -309,6 +419,12 @@ class ManageHandler extends GetxController {
 
   }
 
-
+  test()async{
+    var rawData =await _feed.doc(reportFeedCountList[reportFeedIndex!].feedId)
+                  .get()
+                  ;
+    var data = Feed.fromMap(rawData.data() as Map<String, dynamic>,reportFeedCountList[reportFeedIndex!].feedId);
+    return data;
+  }
 
 }//End
