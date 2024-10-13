@@ -2,17 +2,34 @@
 탄소 발자국 절감량 계산 라우터
 
 Author: 하동훈
-Date: 2024-10-07
-Usage: 탄소발자국 조회   : http://127.0.0.1:8000/footprint/select?user_id=asd
+Date: 2024-10-08~2024-10-10
+Usage:
+    - 탄소 발자국 조회:
+        http://127.0.0.1:8000/footprint/select?user_eMail=유저이메일
+    - 사용자 활동 데이터 삽입:
+        http://127.0.0.1:8000/footprint/insert?category_kind=카테고리종류&user_eMail=유저이메일&createDate=YYYY-MM-DD&amount=활동량
+    - 탄소 발자국 및 절감량 계산:
+        http://127.0.0.1:8000/footprint/calculate_with_reduction?user_eMail=유저이메일
+    - 현재 달의 랭킹 조회:
+        http://127.0.0.1:8000/footprint/rankings?limit=랭킹수
 
 이 파일은 FastAPI의 APIRouter를 사용하여 탄소 발자국을 계산하는 API 엔드포인트를 정의합니다.
 사용자의 다양한 활동 데이터를 받아 탄소 배출량, 절감량, 순 탄소 발자국을 계산하여 반환합니다.
-"""
 
-"""
 전세계 평균치 데이터로 절감량 표기
-출처 : https://www.epa.gov/ghgemissions/sources-greenhouse-gas-emissions
-        https://www.iea.org/reports/united-states-2024/executive-summary
+출처 : 
+    - https://www.epa.gov/ghgemissions/sources-greenhouse-gas-emissions
+    - https://www.iea.org/reports/united-states-2024/executive-summary
+"""
+"""
+에러 수정
+
+Date : 2024-10-11~2024-10-12
+    - 1) Main Page 와 Ranking Page 탄소 절감량이 다르게 표기되는 부분 에러 수정.
+    - 2) 절감량이 사용자가 입력하지 않은 날짜도 포함돼서 계산되는 에러 수정 
+        - ex) 10-09,10-11 입력을 하고 10-10일은 입력 하지 않았다고 가정 
+        - 'trafic'을 기준으로 일 평균 탄소 배출량인 13.02을 0으로 빼서 절감량이 13.02로 추가되는 부분 수정
+    - 3) 에너지 총 감소량 L로 표기 된 부분 계산식 오류 수정
 """
 
 from fastapi import APIRouter, HTTPException
@@ -21,11 +38,11 @@ from typing import List, Dict, Any
 from datetime import datetime
 
 # APIRouter 인스턴스를 생성하여 API 엔드포인트를 그룹화합니다.
-# 이는 FastAPI 애플리케이션의 모듈화를 돕습니다.
 router = APIRouter()
 
 def connect():
-    """MySQL 데이터베이스에 연결하는 함수입니다.
+    """
+    MySQL 데이터베이스에 연결하는 함수입니다.
     
     데이터베이스 연결 정보를 설정하고, pymysql을 사용하여 연결을 반환합니다.
     
@@ -34,52 +51,18 @@ def connect():
     """
     conn = pymysql.connect(
         host='192.168.50.71',       # 데이터베이스 호스트 주소
-        user='user',            # 데이터베이스 사용자 이름
-        password='qwer1234',    # 데이터베이스 비밀번호
-        db='pureme',            # 사용할 데이터베이스 이름
-        charset='utf8'          # 문자 인코딩 설정
+        user='user',             # 데이터베이스 사용자 이름
+        password='qwer1234',     # 데이터베이스 비밀번호
+        db='pureme',             # 사용할 데이터베이스 이름
+        charset='utf8',          # 문자 인코딩 설정
+        cursorclass=pymysql.cursors.DictCursor  # 딕셔너리 형태로 결과 반환
     )
     return conn
 
-# 각 카테리별 CARBON_FACTORS 분류
-TRANSPORT_FACTORS = {
-    'car': 0.21,
-    'public': 0.05,
-    'bicycle': -0.01,
-    'walk': -0.01
-}
-
-ENERGY_FACTORS = {
-    'electricity': 0.5,
-    'gas': 0.2
-}
-
-FOOD_FACTORS = {
-    'meat': 27,
-    'vegetarian': 5,
-    'dairy': 9,
-    'plant': 3
-}
-
-OTHER_FACTORS = {
-    'paper': -0.5,
-    'plastic': -0.4,
-    'glass': -0.3,
-    'metal': -0.6,
-    'other': -0.2
-}
-
-
-
-
 @router.get("/select")
 async def select(user_eMail: str = None, search: str = ''):
-    """사용자의 활동 데이터를 검색하여 반환합니다.
-    
-    - `user_eMail`: 사용자의 이메일 주소로 데이터를 조회하는 데 사용됩니다.
-    - `search`: 카테고리 종류를 필터링하는 데 사용되는 검색어입니다.
-    
-    데이터베이스에서 해당 사용자의 활동 데이터를 검색하고 결과를 반환합니다.
+    """
+    사용자의 활동 데이터를 검색하여 반환합니다.
     
     Args:
         user_eMail (str, optional): 사용자의 이메일 주소. 기본값은 None.
@@ -88,35 +71,39 @@ async def select(user_eMail: str = None, search: str = ''):
     Returns:
         dict: 검색된 결과를 포함하는 JSON 응답
     """
-    # 검색어에 와일드카드를 추가하여 LIKE 쿼리에 사용
     search_text = f"%{search}%"
     conn = connect()          # 데이터베이스 연결
     curs = conn.cursor()      # 커서 생성
 
-    # SQL 쿼리: 사용자 이메일과 카테고리 종류를 기반으로 데이터 검색
-    sql = "SELECT * FROM category_has_user WHERE user_eMail=%s AND category_kind LIKE %s"
-    curs.execute(sql, (user_eMail, search_text))  # 파라미터를 사용하여 SQL 인젝션 방지
-    rows = curs.fetchall()    # 모든 결과를 가져옴
-    conn.close()              # 연결 종료
+    try:
+        # SQL 쿼리: 사용자 이메일과 카테고리 종류를 기반으로 데이터 검색, category 테이블과 조인하여 genPerAmount 가져오기
+        sql = """
+            SELECT ch.category_kind, ch.amount, c.genPerAmount, ch.createDate
+            FROM category_has_user ch
+            JOIN category c ON ch.category_kind = c.kind
+            WHERE ch.user_eMail = %s AND ch.category_kind LIKE %s
+        """
+        curs.execute(sql, (user_eMail, search_text))  # 파라미터를 사용하여 SQL 인젝션 방지
+        rows = curs.fetchall()    # 모든 결과를 가져옴
+    except Exception as e:
+        # 오류 발생 시 에러 메시지 반환
+        return {'result': 'Error', 'message': str(e)}
+    finally:
+        conn.close()              # 연결 종료
     
-    return {'results': rows}   # 결과를 JSON 형식으로 반환
+    # 검색된 결과를 JSON 형식으로 반환
+    return {'result': 'OK', 'results': rows}
 
 @router.get("/insert")
 async def insert(category_kind: str = None, user_eMail: str = None, createDate: str = None, amount: str = None):
-    """새로운 사용자 활동 데이터를 데이터베이스에 추가합니다.
-    
-    - `category_kind`: 활동 카테고리 종류 (예: 'car', 'public' 등)
-    - `user_eMail`: 사용자의 이메일 주소
-    - `createDate`: 활동이 발생한 날짜 (예: '2024-10-07')
-    - `amount`: 활동량 (예: km, kWh 등)
-    
-    새로운 데이터를 `category_has_user` 테이블에 삽입합니다.
+    """
+    새로운 사용자 활동 데이터를 데이터베이스에 추가합니다.
     
     Args:
         category_kind (str, optional): 활동 카테고리 종류. 기본값은 None.
         user_eMail (str, optional): 사용자의 이메일 주소. 기본값은 None.
-        createDate (str, optional): 활동 날짜. 기본값은 None.
-        amount (str, optional): 활동량. 기본값은 None.
+        createDate (str, optional): 활동 날짜. 기본값은 None. ('YYYY-MM-DD' 형식)
+        amount (str, optional): 활동량. 기본값은 None. (float로 변환 가능)
     
     Returns:
         dict: 삽입 결과를 포함하는 JSON 응답
@@ -132,16 +119,26 @@ async def insert(category_kind: str = None, user_eMail: str = None, createDate: 
             VALUES
                 (%s, %s, %s, %s)
         """
-        curs.execute(sql, (category_kind, user_eMail, createDate, amount))  # 데이터 삽입
+        # amount는 float, createDate는 string in 'YYYY-MM-DD' format
+        amount_float = float(amount) if amount else 0.0
+        curs.execute(sql, (category_kind, user_eMail, createDate, amount_float))  # 데이터 삽입
         conn.commit()         # 변경 사항 커밋
-        conn.close()          # 연결 종료
         return {'result': 'OK'}  # 성공 응답
     except Exception as e:
-        conn.close()          # 오류 발생 시 연결 종료
+        conn.rollback()        # 오류 발생 시 롤백
         return {'result': 'Error', 'message': str(e)}  # 오류 응답
+    finally:
+        curs.close()          # 커서 닫기
+        conn.close()          # 연결 종료
 
-# 탄소 배출 계수 (단위: kg CO2)
-# 각 활동별로 탄소 배출 또는 절감 계수를 정의
+# 평균 활동 데이터 
+CARBON_AVERAGE = {
+    'trafic': 13.02,            # 일간 교통 평균 탄소량 (kg CO2)
+    'electricity': 146.9,       # 월간 평균 전기 탄소 배출량 (kg CO2)
+    'gas': 173.4,               # 월간 평균 가스 탄소 배출량 (kg CO2)
+    'meat': 7.7                 # 일간 평균 고기 탄소 배출량 (kg CO2)
+}
+
 CARBON_FACTORS = {
     'car': 0.21,                 # 자동차 주행 km당 탄소 배출량
     'public': 0.05,              # 대중교통 km당 탄소 배출량
@@ -160,172 +157,153 @@ CARBON_FACTORS = {
     'other': -0.2                # 기타 폐기물 1kg당 절감되는 탄소 배출량
 }
 
-# 평균 활동 데이터 
-# 출처 : 한국 기후,환경 네트워크
-# 출처 : 한국일보 한끼밥상
-CARBON_AVERAGE = {
-    'trafic': 13.02,            # 일간 교통 평균 탄소량 (kg CO2)
-    'electricity': 146.9,       # 월간 평균 전기 탄소 배출량 (kg CO2)
-    'gas': 173.4,               # 월간 평균 가스 탄소 배출량 (kg CO2)
-    'meat': 7.7                 # 일간 평균 고기 탄소 배출량 (kg CO2)
-}
-
-def calculate_reduction_from_average(activities: Dict[str, float]):
-    """사용자의 활동과 전 세계 평균치를 비교하여 절감량을 계산합니다.
+def calculate_reduction_from_average(activities: List[Dict[str, Any]], date_diff: int, months_diff: int):
+    """
+    사용자의 활동과 전 세계 평균치를 비교하여 절감량을 계산합니다.
     
-    - `activities`: 사용자의 활동 데이터를 딕셔너리 형태로 받습니다.
-      예: {'car': 100, 'meat': 5}
+    Args:
+        activities (List[Dict[str, Any]]): 사용자의 활동 데이터를 리스트 형태로 받습니다.
+        각 활동은 {'category_kind', 'amount', 'genPerAmount', 'createDate'} 형태
+        date_diff (int): 가입일부터 현재일까지의 일 수
+        months_diff (int): 가입일부터 현재까지의 개월 수
     
-    반환값:
-        - `total_carbon`: 총 탄소 배출량 (kg CO2)
-        - `total_reduction`: 총 탄소 절감량 (kg CO2)
-        - `average_comparison`: 활동별 절감량 비교 결과
+    Returns:
+        Tuple[float, float, Dict[str, Dict[str, float]]]: 총 탄소 배출량, 총 탄소 절감량, 활동별 절감량 비교 결과
     """
     total_carbon = 0.0          # 총 탄소 배출량 초기화
     total_reduction = 0.0       # 총 탄소 절감량 초기화
     average_comparison = {}     # 절감량 비교 결과를 저장할 딕셔너리
 
-    # 평균 교통량을 사용 (일간 교통 평균 탄소량)
-    average_traffic = CARBON_AVERAGE['trafic']
+    # 각 그룹의 기준 평균
+    trafic_categories = ['car', 'public', 'bicycle', 'walk']
+    meat_categories = ['meat', 'vegetarian', 'dairy', 'plant']
+    other_categories = ['electricity', 'gas']
 
-    # 각 활동별로 탄소 배출량과 절감량을 계산
-    for activity, amount in activities.items():
-        if activity in CARBON_FACTORS:
-            # 사용자 활동에 따른 배출량 계산
-            carbon_output = amount * CARBON_FACTORS[activity]
-            
-            # print(carbon_output)
-            # 특정 활동들(car, public, bicycle, walk)은 교통 평균량과 비교
-            if activity in ['car', 'public', 'bicycle', 'walk']:
-                average_output = average_traffic
-            else:
-                # 다른 활동들은 CARBON_AVERAGE에서 값을 가져오거나 기본값 0 사용
-                average_output = CARBON_AVERAGE.get(activity, 0)
-            
-            # 사용자 입력값과 평균치를 비교하여 절감량 계산
-            reduction = average_output - carbon_output
-            # 절감량이 음수일 경우 (배출이 더 많을 경우) 0으로 처리
-            reduction = max(0, reduction)
-            total_reduction += reduction
-            # 총 탄소 배출량에 사용자 활동에 따른 배출량 추가
-            total_carbon += carbon_output
-            
-            # 활동별 절감량 비교 결과 저장
-            average_comparison[activity] = {
-                "사용자 배출량": carbon_output,
-                "전세계 평균 배출량": average_output,
-                "절감량": reduction
-            }
+    # 그룹별 탄소 배출량 초기화
+    trafic_emission = 0.0
+    meat_emission = 0.0
+    electricity_emission = 0.0
+    gas_emission = 0.0
+
+    # 각 카테고리별 활동한 날 수를 추적하기 위한 집합
+    category_day_counts = {
+        'trafic': set(),
+        'meat': set(),
+        'electricity': set(),
+        'gas': set()
+    }
+
+    # 활동 데이터를 그룹별로 처리
+    for activity in activities:
+        category_kind = activity['category_kind']
+        amount = float(activity['amount'])
+        genPerAmount = float(activity['genPerAmount'])
+        # createDate를 문자열로 변환 (날짜 형식에 따라)
+        createDate = activity['createDate'].strftime('%Y-%m-%d') if isinstance(activity['createDate'], datetime) else activity['createDate']
+        carbon_output = amount * genPerAmount
+        total_carbon += carbon_output
+
+        if category_kind in trafic_categories:
+            trafic_emission += carbon_output
+            category_day_counts['trafic'].add(createDate)
+        elif category_kind in meat_categories:
+            meat_emission += carbon_output
+            category_day_counts['meat'].add(createDate)
+        elif category_kind == 'electricity':
+            electricity_emission += carbon_output
+            category_day_counts['electricity'].add(createDate)
+        elif category_kind == 'gas':
+            gas_emission += carbon_output
+            category_day_counts['gas'].add(createDate)
         else:
-            # 정의되지 않은 활동이 있을 경우 경고 메시지 출력
-            print(f"활동 '{activity}'에 대한 배출 계수가 없습니다.")  
+            # 기타 카테고리의 경우 (절감)
+            total_carbon -= carbon_output  # 절감량을 빼줌
+
+    # 'trafic' 카테고리 절감량 계산
+    number_of_trafic_days = len(category_day_counts['trafic'])
+    if number_of_trafic_days > 0:
+        trafic_expected = CARBON_AVERAGE['trafic'] * number_of_trafic_days
+        trafic_reduction = trafic_expected - trafic_emission
+        trafic_reduction = max(0, trafic_reduction)  # 절감량은 음수가 될 수 없음
+        total_reduction += trafic_reduction
+        average_comparison['trafic'] = {
+            "사용자 배출량": round(trafic_emission, 2),
+            "전세계 평균 배출량": round(trafic_expected, 2),
+            "절감량": round(trafic_reduction, 2)
+        }
+
+    # 'meat' 카테고리 절감량 계산
+    number_of_meat_days = len(category_day_counts['meat'])
+    if number_of_meat_days > 0:
+        meat_expected = CARBON_AVERAGE['meat'] * number_of_meat_days
+        meat_reduction = meat_expected - meat_emission
+        meat_reduction = max(0, meat_reduction)  # 절감량은 음수가 될 수 없음
+        total_reduction += meat_reduction
+        average_comparison['meat'] = {
+            "사용자 배출량": round(meat_emission, 2),
+            "전세계 평균 배출량": round(meat_expected, 2),
+            "절감량": round(meat_reduction, 2)
+        }
+
+    # 'electricity' 카테고리 절감량 계산
+    number_of_electricity_days = len(category_day_counts['electricity'])
+    if number_of_electricity_days > 0 and months_diff > 0:
+        electricity_expected = CARBON_AVERAGE['electricity'] * months_diff
+        electricity_reduction = electricity_expected - electricity_emission
+        electricity_reduction = max(0, electricity_reduction)  # 절감량은 음수가 될 수 없음
+        total_reduction += electricity_reduction
+        average_comparison['electricity'] = {
+            "사용자 배출량": round(electricity_emission, 2),
+            "전세계 평균 배출량": round(electricity_expected, 2),
+            "절감량": round(electricity_reduction, 2)
+        }
+
+    # 'gas' 카테고리 절감량 계산
+    number_of_gas_days = len(category_day_counts['gas'])
+    if number_of_gas_days > 0 and months_diff > 0:
+        gas_expected = CARBON_AVERAGE['gas'] * months_diff
+        gas_reduction = gas_expected - gas_emission
+        gas_reduction = max(0, gas_reduction)  # 절감량은 음수가 될 수 없음
+        total_reduction += gas_reduction
+        average_comparison['gas'] = {
+            "사용자 배출량": round(gas_emission, 2),
+            "전세계 평균 배출량": round(gas_expected, 2),
+            "절감량": round(gas_reduction, 2)
+        }
 
     return total_carbon, total_reduction, average_comparison
 
-def calculate_carbon_reductions(activities: Dict[str, float]):
-    """사용자의 활동과 전 세계 평균치를 비교하여 카테고리별 절감량을 계산합니다.
-    
-    - `activities`: 사용자의 활동 데이터를 딕셔너리 형태로 받습니다.
-      예: {'car': 100, 'meat': 5}
-    
-    반환값:
-        - `carbon_reductions`: 카테고리별 탄소 절감량을 담은 딕셔너리
-          예: {'transport': 15.0, 'energy': 20.0, 'food': 5.0, 'other': 0.0}
+def convert_to_energy_reduction_liters(total_carbon_reduction: float):
     """
-    # 카테고리별 절감량 초기화
-    carbon_reductions = {
-        'transport': 0.0,
-        'energy': 0.0,
-        'food': 0.0,
-        'other': 0.0
-    }
-
-    # 평균 교통량을 사용 (일간 교통 평균 탄소량)
-    average_traffic = CARBON_AVERAGE['trafic']
-
-    # 각 카테고리와 해당 활동들을 하나의 사전으로 통합
-    all_factors = {
-        'transport': TRANSPORT_FACTORS,
-        'energy': ENERGY_FACTORS,
-        'food': FOOD_FACTORS,
-        'other': OTHER_FACTORS
-    }
-
-    # 각 활동별로 탄소 배출량과 절감량을 계산
-    for activity, amount in activities.items():
-        for category, factors in all_factors.items():
-            if activity in factors:
-                # 사용자 활동에 따른 배출량 계산
-                carbon_output = amount * factors[activity]
-                
-                # 특정 활동들(car, public, bicycle, walk)은 교통 평균량과 비교
-                if activity in ['car', 'public', 'bicycle', 'walk']:
-                    average_output = average_traffic
-                else:
-                    # 다른 활동들은 CARBON_AVERAGE에서 값을 가져오거나 기본값 0 사용
-                    average_output = CARBON_AVERAGE.get(activity, 0)
-                
-                # 사용자 입력값과 평균치를 비교하여 절감량 계산
-                reduction = average_output - carbon_output
-                # 절감량이 음수일 경우 (배출이 더 많을 경우) 0으로 처리
-                reduction = max(0, reduction)
-                # 카테고리별 절감량 누적
-                carbon_reductions[category] += reduction
-                break
-        else:
-            # 정의되지 않은 활동이 있을 경우 경고 메시지 출력
-            print(f"활동 '{activity}'에 대한 배출 계수가 없습니다.")  
-
-    return carbon_reductions
-
-
-
-
-
-
-def convert_to_energy_reduction(total_carbon_reduction: float):
-    """총 탄소 발자국을 기반으로 에너지 감소량을 계산합니다.
+    총 탄소 절감량을 기반으로 에너지 감소량을 리터로 계산합니다.
     
-    - `total_carbon_reduction`: 총 탄소 절감량 (kg CO2)
+    Args:
+        total_carbon_reduction (float): 총 탄소 절감량 (kg CO2)
     
-    반환값:
-        - `energy_reduction`: 에너지 감소량 (MWh)
-    
-    참고:
-        - 변환 계수는 가정이며 실제 값은 다를 수 있습니다.
+    Returns:
+        float: 에너지 감소량 (L)
     """
-    energy_reduction = total_carbon_reduction * 0.001  # kg CO2를 MWh로 변환 (가정)
-    return energy_reduction
-
-
+    # 가솔린 1리터당 배출되는 CO2는 약 2.31kg
+    liters_reduction = total_carbon_reduction / 2.31
+    return liters_reduction
 
 def convert_to_trees_planted(total_carbon_reduction: float):
-    """총 탄소 발자국을 기반으로 심은 나무 수를 계산합니다.
+    """
+    총 탄소 발자국을 기반으로 심은 나무 수를 계산합니다.
     
-    - `total_carbon_reduction`: 총 탄소 절감량 (kg CO2)
+    Args:
+        total_carbon_reduction (float): 총 탄소 절감량 (kg CO2)
     
-    반환값:
-        - `trees_planted`: 심은 나무 수 (그루)
-    
-    참고:
-        - 1 나무가 연간 흡수하는 CO2량을 22kg으로 가정
+    Returns:
+        float: 심은 나무 수 (그루)
     """
     trees_planted = total_carbon_reduction / 22  # 1 나무당 흡수하는 CO2량으로 나무 수 계산
     return trees_planted
 
-
-
 @router.get("/calculate_with_reduction")
 async def calculate_with_reduction(user_eMail: str):
-    """사용자의 활동에 대한 탄소 발자국과 절감량을 계산하여 반환합니다.
-    
-    - `user_eMail`: 사용자의 이메일 주소
-    
-    절차:
-        1. 사용자의 활동 데이터를 데이터베이스에서 조회
-        2. 활동별 탄소 배출량과 절감량 계산
-        3. 절감량을 기반으로 에너지 감소량과 심은 나무 수 계산
-        4. 모든 결과를 JSON 형식으로 반환
+    """
+    사용자의 활동에 대한 탄소 발자국과 절감량을 계산하여 반환합니다.
     
     Args:
         user_eMail (str): 사용자의 이메일 주소
@@ -336,45 +314,83 @@ async def calculate_with_reduction(user_eMail: str):
     # 사용자의 활동 데이터를 조회
     activities_result = await select(user_eMail=user_eMail)
     
-    # 조회된 결과를 딕셔너리 형태로 변환
-    # 여기서 activity[0]은 category_kind, activity[3]은 amount를 의미
-    # 예: {'car': 100, 'meat': 5}
-    activities = {activity[0]: float(activity[3]) for activity in activities_result['results']}
+    # select 함수가 오류를 반환했는지 확인
+    if activities_result.get('result') == 'Error':
+        return activities_result
     
-    # 탄소 배출량과 절감량 계산 (전 세계 평균치와 비교)
-    total_carbon_footprint, total_carbon_reduction, average_comparison = calculate_reduction_from_average(activities)
+    # 조회된 결과를 리스트 형태로 변환
+    # 각 활동: {'category_kind', 'amount', 'genPerAmount', 'createDate'}
+    activities = activities_result.get('results', [])
     
-    # 절감량을 기반으로 에너지 감소량과 심은 나무 수 계산
-    total_energy_reduction = convert_to_energy_reduction(total_carbon_reduction)
-    total_trees_planted = convert_to_trees_planted(total_carbon_reduction)
+    if not activities:
+        return {'result': 'Error', 'message': '사용자의 활동 데이터를 찾을 수 없습니다.'}
+    
+    # 사용자 가입일 조회 (user 테이블에서)
+    conn = connect()
+    curs = conn.cursor()
+    
+    try:
+        curs.execute("SELECT createDate FROM user WHERE eMail = %s LIMIT 1;", (user_eMail,))
+        row = curs.fetchone()
+        if not row or not row.get('createDate'):
+            return {'result': 'Error', 'message': '사용자의 가입일을 찾을 수 없습니다.'}
+        join_date = row['createDate']  # 가입일 가져오기
 
-    summary = [
-        round(total_energy_reduction,2),
-        round(total_trees_planted,2),
-        round(total_carbon_footprint,2),
-        round(total_carbon_reduction,2),
-        # average_comparison,
-    ]
-    
-    # 결과를 JSON 형식으로 반환 (절감량 포함)
-    return {
-        'result': summary
-    }
+        # join_date를 datetime.date로 변환
+        if isinstance(join_date, datetime):
+            join_date = join_date.date()
+        elif isinstance(join_date, str):
+            join_date = datetime.strptime(join_date, '%Y-%m-%d').date()
+        else:
+            return {'result': 'Error', 'message': '사용자의 가입일 형식이 올바르지 않습니다.'}
+
+        # 현재 날짜와 가입일로 기간 계산
+        current_date = datetime.now().date()
+        date_diff = (current_date - join_date).days  # 가입일부터 현재일까지의 일 수
+        if date_diff < 1:
+            return {'result': 'Error', 'message': '가입일이 현재 날짜 이후입니다.'}
+
+        # 가입일부터 현재까지의 개월 수 계산
+        months_diff = (current_date.year - join_date.year) * 12 + (current_date.month - join_date.month)
+        if months_diff < 1:
+            months_diff = 1  # 최소 1개월로 설정
+
+        # 절감량 계산
+        total_carbon_footprint, total_carbon_reduction, average_comparison = calculate_reduction_from_average(
+            activities, date_diff, months_diff
+        )
+
+        # 에너지 절감량과 심은 나무 수 계산
+        total_energy_reduction = convert_to_energy_reduction_liters(total_carbon_reduction)  # 리터 단위로 변경
+        total_trees_planted = convert_to_trees_planted(total_carbon_reduction)
+
+        # 요약 정보 준비
+        summary = {
+            'total_carbon_footprint': round(total_carbon_footprint, 2),
+            'total_carbon_reduction': round(total_carbon_reduction, 2),
+            'total_energy_reduction': round(total_energy_reduction, 2),  # 리터 단위
+            'total_trees_planted': round(total_trees_planted, 2),
+            'average_comparison': average_comparison
+        }
+
+        # 결과를 JSON 형식으로 반환
+        return {
+            'result': 'OK',
+            'summary': summary
+        }
+
+    except Exception as e:
+        # 예외 발생 시 에러 메시지 반환
+        return {'result': 'Error', 'message': str(e)}
+    finally:
+        curs.close()
+        conn.close()
 
 @router.get("/rankings")
 async def get_rankings(limit: int = 10):
     """
     유저별 총 절감량을 기준으로 현재 달의 랭킹을 반환합니다.
 
-    - `limit`: 반환할 랭킹의 상위 몇 명을 가져올지 결정합니다. 기본값은 10.
-    
-    절차:
-        1. 현재 연도와 월을 가져옵니다.
-        2. 데이터베이스에서 현재 월의 활동 데이터를 조회합니다.
-        3. 유저별 총 절감량을 계산합니다.
-        4. 절감량을 기준으로 유저들을 내림차순으로 정렬합니다.
-        5. 상위 `limit`명의 유저를 선택하여 반환합니다.
-    
     Args:
         limit (int, optional): 반환할 랭킹의 상위 몇 명을 가져올지 결정합니다. 기본값은 10.
     
@@ -393,14 +409,12 @@ async def get_rankings(limit: int = 10):
     try:
         # SQL 쿼리: 현재 연도와 월에 해당하는 사용자 활동 데이터를 가져옵니다.
         sql = """
-            SELECT user.nickName, user.eMail, user_activity.category_kind, user_activity.total_amount
-            FROM user
-            INNER JOIN (
-                SELECT user_eMail, category_kind, SUM(amount) AS total_amount
-                FROM category_has_user
-                WHERE YEAR(createDate) = %s AND MONTH(createDate) = %s
-                GROUP BY user_eMail, category_kind
-            ) AS user_activity ON user.eMail = user_activity.user_eMail;
+            SELECT u.nickName, u.eMail, ch.category_kind, SUM(ch.amount) AS total_amount, c.genPerAmount, ch.createDate
+            FROM user u
+            INNER JOIN category_has_user ch ON u.eMail = ch.user_eMail
+            JOIN category c ON ch.category_kind = c.kind
+            WHERE YEAR(ch.createDate) = %s AND MONTH(ch.createDate) = %s
+            GROUP BY u.eMail, ch.category_kind, ch.createDate
         """
         # SQL 쿼리 실행
         curs.execute(sql, (current_year, current_month))
@@ -417,36 +431,77 @@ async def get_rankings(limit: int = 10):
             conn.close()
 
     # 유저별 활동 데이터를 처리하는 로직
-    user_activities: Dict[str, Dict[str, float]] = {}
+    user_activities: Dict[str, List[Dict[str, Any]]] = {}
+    user_nickNames: Dict[str, str] = {}
 
     # 쿼리 결과를 순회하며 유저별로 활동 데이터를 정리합니다.
     for row in rows:
-        user_nickName = row[0]          # 유저의 닉네임
-        user_email = row[1]               # 유저의 이메일 주소
-        category_kind = row[2]            # 활동 카테고리 종류
-        total_amount = float(row[3])      # 해당 활동 카테고리의 총 활동량
-        
+        user_nickName = row['nickName']          # 유저의 닉네임
+        user_email = row['eMail']                # 유저의 이메일 주소
+        category_kind = row['category_kind']     # 활동 카테고리 종류
+        total_amount = float(row['total_amount'])# 해당 활동 카테고리의 총 활동량
+        category_genPerAmount = float(row['genPerAmount'])  # 카테고리별 탄소 배출 계수
+        createDate = row['createDate']           # 활동 날짜
 
-        # 유저가 아직 딕셔너리에 없으면 초기화합니다.
+        # 유저가 아직 리스트에 없으면 초기화합니다.
         if user_email not in user_activities:
-            user_activities[user_email] = {}
+            user_activities[user_email] = []
+            user_nickNames[user_email] = user_nickName
 
-        # 해당 유저의 특정 카테고리 활동량을 저장합니다.
-        user_activities[user_email][category_kind] = total_amount
+        # 해당 유저의 특정 카테고리 활동을 리스트에 추가합니다.
+        user_activities[user_email].append({
+            'category_kind': category_kind,
+            'amount': total_amount,
+            'genPerAmount': category_genPerAmount,
+            'createDate': createDate
+        })
 
     # 유저별 총 탄소 절감량을 저장할 리스트 초기화
     user_reductions: List[Dict[str, Any]] = []
 
     # 각 유저의 활동 데이터를 기반으로 탄소 절감량을 계산합니다.
     for user_email, activities in user_activities.items():
-        # 탄소 배출량과 절감량 계산 (전 세계 평균치와 비교)
-        _, total_carbon_reduction, _ = calculate_reduction_from_average(activities)
-        
-        # 유저의 이메일과 총 절감량을 리스트에 추가합니다.
+        # 사용자 가입일 조회
+        try:
+            with connect() as conn_rank:
+                with conn_rank.cursor() as curs_rank:
+                    curs_rank.execute("SELECT createDate FROM user WHERE eMail = %s LIMIT 1;", (user_email,))
+                    row_rank = curs_rank.fetchone()
+                    if not row_rank or not row_rank.get('createDate'):
+                        continue  # 가입일이 없으면 스킵
+                    join_date = row_rank['createDate']
+                    if isinstance(join_date, datetime):
+                        join_date = join_date.date()
+                    elif isinstance(join_date, str):
+                        join_date = datetime.strptime(join_date, '%Y-%m-%d').date()
+                    else:
+                        continue  # 형식이 올바르지 않으면 스킵
+
+                    current_date_rank = datetime.now().date()
+                    date_diff_rank = (current_date_rank - join_date).days  # 가입일부터 현재일까지의 일 수
+                    months_diff_rank = (current_date_rank.year - join_date.year) * 12 + (current_date_rank.month - join_date.month)
+        except Exception as e:
+            continue  # 오류 발생 시 스킵
+
+        # 절감량 계산
+        if date_diff_rank < 1:
+            date_diff_rank = 1  # 최소 1일로 설정
+        if months_diff_rank < 1:
+            months_diff_rank = 1  # 최소 1개월로 설정
+
+        # 절감량 계산
+        total_carbon_footprint, total_carbon_reduction, _ = calculate_reduction_from_average(
+            activities, date_diff_rank, months_diff_rank
+        )
+
+        # 탄소 절감량 계산
+        total_reduction = total_carbon_reduction
+
+        # 결과를 리스트에 추가
         user_reductions.append({
-            'user_nickName' : user_nickName,
+            'user_nickName': user_nickNames[user_email],
             'user_eMail': user_email,
-            'total_reduction': round(total_carbon_reduction,2)
+            'total_reduction': round(total_reduction, 2)
         })
 
     # 절감량 기준으로 유저들을 내림차순으로 정렬합니다.
@@ -454,43 +509,11 @@ async def get_rankings(limit: int = 10):
 
     # 상위 `limit`명의 유저를 선택합니다.
     top_users = user_reductions[:limit]
-    # 결과를 JSON 형식으로 반환합니다.
+    print(top_users)
+
+    # 결과를 JSON 형식으로 반환.
     return {
         'rankings': top_users
     }
 
-
-
-
-
-
-
-
-@router.get("/chart")
-async def calculate_with_reduction(user_eMail: str):
-    """사용자의 활동에 대한 탄소 발자국과 절감량을 계산하여 반환합니다.
-    
-    - `user_eMail`: 사용자의 이메일 주소
-    
-    절차:
-        1. 사용자의 활동 데이터를 데이터베이스에서 조회
-        2. 활동별 탄소 배출량과 절감량 계산
-        3. 절감량을 기반으로 에너지 감소량과 심은 나무 수 계산
-        4. 모든 결과를 JSON 형식으로 반환
-    
-    Args:
-        user_eMail (str): 사용자의 이메일 주소
-    
-    Returns:
-        dict: 계산된 탄소 발자국, 절감량, 에너지 감소량, 심은 나무 수, 활동별 절감량 비교 결과를 포함하는 JSON 응답
-    """
-    # 사용자의 활동 데이터를 조회
-    activities_result = await select(user_eMail=user_eMail)
-    
-    # 조회된 결과를 딕셔너리 형태로 변환
-    # 여기서 activity[0]은 category_kind, activity[3]은 amount를 의미
-    # 예: {'car': 100, 'meat': 5}
-    activities = {activity[0]: float(activity[3]) for activity in activities_result['results']}
-
-    return {'result' : calculate_carbon_reductions(activities)}
-
+### DONE ###
