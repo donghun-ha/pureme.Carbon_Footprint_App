@@ -1,8 +1,10 @@
 import 'dart:convert';
+
 import 'dart:io' show Platform;
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/model/report.dart';
@@ -19,11 +21,15 @@ class ManageHandler extends GetxController {
   var madeFeedList = <int>[].obs;
   var madeFeedAverageList = <double>[].obs;
 
-  //searchManage에서 쓸 변수들
+  // FeedManage에서 쓸 변수들
   /// 나오는 리스트
   var searchFeedList = <Feed>[].obs;
-  String searchFeedWord = '';
   int? searchFeedIndex;
+
+  int? radioFeedIndex = 0;
+
+  int? radioChangeFeedIndex = 0;
+
 
   // searchUser에서 쓸 변수들
   var searchUserList = <User>[].obs;
@@ -175,15 +181,6 @@ class ManageHandler extends GetxController {
   print(meanTempList);
 
 
-    int daysDifference = difference.inDays + 1;
-
-    List meanTempList = [
-      min(daysDifference, 1),
-      min(daysDifference, 7),
-      min(daysDifference, 30),
-      daysDifference,
-    ];
-
     madeFeedList.value = [
       tempList[0],
       tempList[1],
@@ -238,6 +235,7 @@ class ManageHandler extends GetxController {
 
 //////FeedManage쪽에서 쓰는 함수들
   fetchFeeds() async {
+    if (radioFeedIndex == 0){
     _manageFeed
         .where('state', isEqualTo: '게시')
         .orderBy('writetime', descending: true)
@@ -252,12 +250,62 @@ class ManageHandler extends GetxController {
             .toList();
       },
     );
+  } else if(radioFeedIndex ==1){
+    _manageFeed
+        .where('state', isEqualTo: '숨김')
+        .orderBy('writetime', descending: true)
+        .snapshots()
+        .listen(
+      (event) {
+        searchFeedList.value = event.docs
+            .map(
+              (doc) =>
+                  Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
+            )
+            .toList();
+      },
+    );
+  } else if(radioFeedIndex ==2){
+    _manageFeed
+        .where('state', isEqualTo: '삭제')
+        .orderBy('writetime', descending: true)
+        .snapshots()
+        .listen(
+      (event) {
+        searchFeedList.value = event.docs
+            .map(
+              (doc) =>
+                  Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
+            )
+            .toList();
+      },
+    );
+  } else if(radioFeedIndex == 3){
+      _manageFeed
+          .orderBy('writetime', descending: true)
+          .snapshots()
+          .listen(
+        (event) {
+          searchFeedList.value = event.docs
+              .map(
+                (doc) =>
+                    Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
+              )
+              .toList();
+        },
+      );
+    }
+  }
+  feedRadioChanged(value){
+    radioFeedIndex = value;
+    searchFeedIndex = null;
+    update();
   }
 
-  // updateSearchFeedWord(String text) {
-  //   searchFeedWord = text;
-  //   update();
-  // }
+  dailogFeedRadioChanged(value){
+    radioChangeFeedIndex = value;
+    update();
+  }
 
   changeFeedIndex(int index) {
     if (index == searchFeedIndex) {
@@ -266,6 +314,10 @@ class ManageHandler extends GetxController {
       searchFeedIndex = index;
     }
     update();
+  }
+
+  changeFeedState(){
+
   }
 
 ///////////////////saerchUser에서 쓸 함수들
@@ -397,6 +449,30 @@ class ManageHandler extends GetxController {
     var result = dataConvertedJSON['result'];
     print(result);
   }
+
+  revealFeed(
+      String docId, String manager_manageEMail, String changeKind) async {
+    await _feed.doc(docId).update({'state': '게시'});
+    var url = Uri.parse(
+        "$manageUrl/reportFeed?manager_manageEMail=$manager_manageEMail&feedId=$docId&changeKind=$changeKind");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    print(result);
+  }
+
+  deleteFeed(
+    String docId, String manager_manageEMail, String changeKind
+  )async{
+    await _feed.doc(docId).update({'state': '삭제'});
+    var url = Uri.parse(
+        "$manageUrl/reportFeed?manager_manageEMail=$manager_manageEMail&feedId=$docId&changeKind=$changeKind");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    print(result);
+  }
+
 
   fetchFeed() {
     _feed
