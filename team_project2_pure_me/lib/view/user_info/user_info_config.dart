@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/view/login_signin/login.dart';
 import 'package:team_project2_pure_me/view/user_info/user_carbon_chart.dart';
+import 'package:team_project2_pure_me/view/user_info/user_donation.dart'; // UserDonation import
 import 'user_info_update.dart';
 import 'user_info_password.dart';
 
@@ -85,6 +86,14 @@ class UserInfoConfig extends StatelessWidget {
                                 color: Colors.blue),
                             title: const Text('나의 차트'),
                             onTap: () => Get.to(() => UserCarbonChart()),
+                          ),
+                          const Divider(),
+                          ListTile(
+                            leading:
+                                const Icon(Icons.favorite, color: Colors.red),
+                            title: const Text('기부하기'), // 기부하기 항목 추가
+                            onTap: () => Get.to(() =>
+                                const UserDonation()), // UserDonation으로 이동
                           ),
                           const Divider(),
                           ListTile(

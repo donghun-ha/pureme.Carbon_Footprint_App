@@ -60,6 +60,9 @@ dependencies:
   # Charts
   syncfusion_flutter_charts: ^27.1.52
 
+  # Web View
+  webview_flutter: ^4.8.0 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

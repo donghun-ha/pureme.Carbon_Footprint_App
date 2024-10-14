@@ -136,53 +136,41 @@ class ManageHandler extends GetxController {
     // .subtract(Duration(days: 30))
     // );
 
-    dynamic yesterdaysnp = await _manageFeed
-        .where('writetime', isGreaterThan: yesterday)
-        .get();
+    dynamic yesterdaysnp =
+        await _manageFeed.where('writetime', isGreaterThan: yesterday).get();
     tempList.add(yesterdaysnp.size);
 
-    dynamic lastweeksnp = await _manageFeed
-        .where('writetime', isGreaterThan: lastweek)
-        .get();
+    dynamic lastweeksnp =
+        await _manageFeed.where('writetime', isGreaterThan: lastweek).get();
     tempList.add(lastweeksnp.size);
 
-    dynamic lastmonthsnp = await _manageFeed
-        .where('writetime', isGreaterThan: lastmonth)
-        .get();
+    dynamic lastmonthsnp =
+        await _manageFeed.where('writetime', isGreaterThan: lastmonth).get();
     tempList.add(lastmonthsnp.size);
 
-    dynamic allsnp = await _manageFeed
-        .orderBy('writetime', descending: true)
-        .get();
+    dynamic allsnp =
+        await _manageFeed.orderBy('writetime', descending: true).get();
 
     tempList.add(allsnp.size);
     List alldocs = allsnp.docs as List;
-    List alltimes = alldocs.map((e) {
-      return DateTime.parse((e).data()['writetime']);
-    },).toList();
-      
-  Duration difference = alltimes[0].difference(alltimes[alltimes.length-1]);
+    List alltimes = alldocs.map(
+      (e) {
+        return DateTime.parse((e).data()['writetime']);
+      },
+    ).toList();
 
-  int daysDifference = difference.inDays;
+    Duration difference = alltimes[0].difference(alltimes[alltimes.length - 1]);
 
-  List meanTempList =[
-    daysDifference +1,
-    daysDifference~/7 +1,
-    daysDifference~/30 +1,
-    1,
-  ] ;
-
-  print(meanTempList);
-
-
-    int daysDifference = difference.inDays + 1;
+    int daysDifference = difference.inDays;
 
     List meanTempList = [
-      min(daysDifference, 1),
-      min(daysDifference, 7),
-      min(daysDifference, 30),
-      daysDifference,
+      daysDifference + 1,
+      daysDifference ~/ 7 + 1,
+      daysDifference ~/ 30 + 1,
+      1,
     ];
+
+    print(meanTempList);
 
     madeFeedList.value = [
       tempList[0],
@@ -191,10 +179,10 @@ class ManageHandler extends GetxController {
       tempList[3],
     ];
     madeFeedAverageList.value = [
-      tempList[3]/meanTempList[0],
-      tempList[3]/meanTempList[1],
-      tempList[3]/meanTempList[2],
-      tempList[3]/meanTempList[3],
+      tempList[3] / meanTempList[0],
+      tempList[3] / meanTempList[1],
+      tempList[3] / meanTempList[2],
+      tempList[3] / meanTempList[3],
     ];
   }
 
@@ -246,8 +234,7 @@ class ManageHandler extends GetxController {
       (event) {
         searchFeedList.value = event.docs
             .map(
-              (doc) =>
-                  Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
+              (doc) => Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
             )
             .toList();
       },
@@ -323,7 +310,7 @@ class ManageHandler extends GetxController {
   Future<Uint8List?> fetchImage(String profileImage) async {
     try {
       final response = await http.get(
-        Uri.parse("$baseUrl/user/view/${profileImage}"),
+        Uri.parse("$baseUrl/user/view/$profileImage"),
       );
 
       if (response.statusCode == 200) {
