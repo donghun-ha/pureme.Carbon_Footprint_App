@@ -256,6 +256,7 @@ class UserHandler extends FeedHandler {
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
+    print(result);
     return (result[0]['diff'] as int?, result[0]['ceaseReason'] as String?);
   }
   // return result[0]['seq'] as bool ;

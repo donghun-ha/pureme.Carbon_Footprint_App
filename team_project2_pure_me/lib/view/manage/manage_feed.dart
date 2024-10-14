@@ -10,7 +10,7 @@ class ManageFeed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vmhandler = Get.put(ManageHandler());
-    final searchController = TextEditingController();
+
 
 
 
@@ -33,110 +33,131 @@ class ManageFeed extends StatelessWidget {
               backgroundColor: Colors.transparent,
             ),
             //// update()를 위한 겟빌더
-            body: GetBuilder<ManageHandler>(builder: (context) {
-              /// async처리를 위한 퓨처빌더
-              return SingleChildScrollView(
-                child: FutureBuilder(
-                    future: vmhandler.fetchFeeds(),
-                    builder: (context, snapshot) {
-                      // if문: 예외처리
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Center(
-                          child: Text("Error : ${snapshot.error}"),
-                        );
-                      } else {
-                        return Obx(
-                          () {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Radio(
-                                      value: 0, 
-                                      groupValue: vmhandler.radioFeedIndex, 
-                                      onChanged: (value) {
-                                        vmhandler.feedRadioChanged(value);                                       
-                                      },
-                                    ),
-                                    const Text("게시"),
-                                    Radio(
-                                      value: 1, 
-                                      groupValue: vmhandler.radioFeedIndex, 
-                                      onChanged: (value) {
-                                        vmhandler.feedRadioChanged(value);                                       
-                                      },
-                                    ),
-                                    const Text("숨김"),
-                                    Radio(
-                                      value: 2, 
-                                      groupValue: vmhandler.radioFeedIndex, 
-                                      onChanged: (value) {
-                                        vmhandler.feedRadioChanged(value);                                       
-                                      },
-                                    ),
-                                    const Text("삭제"),
-                                  ],
-                                ),
-                                TextField(
-                                  controller: searchController,
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.4,
-                                  child: ListView.builder(
-                                    itemCount: vmhandler.searchFeedList.length,
-                                    itemBuilder: (context, index) {
-                                      return GestureDetector(
-                                          onTap: () {
-                                            vmhandler.changeFeedIndex(index);
-                                          },
-                                          child: Card(
-                                            child: Text('작성자 : ${vmhandler.searchFeedList[index].authorEMail}'),
-                                          ));
-                                    },
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GetBuilder<ManageHandler>(builder: (context) {
+                /// async처리를 위한 퓨처빌더
+                return SingleChildScrollView(
+                  child: FutureBuilder(
+                      future: vmhandler.fetchFeeds(),
+                      builder: (context, snapshot) {
+                        // if문: 예외처리
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Center(
+                            child: Text("Error : ${snapshot.error}"),
+                          );
+                        } else {
+                          return Obx(
+                            () {
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Radio(
+                                        value: 0, 
+                                        groupValue: vmhandler.radioFeedIndex, 
+                                        onChanged: (value) {
+                                          vmhandler.feedRadioChanged(value);                                       
+                                        },
+                                      ),
+                                      const Text("게시"),
+                                      Radio(
+                                        value: 1, 
+                                        groupValue: vmhandler.radioFeedIndex, 
+                                        onChanged: (value) {
+                                          vmhandler.feedRadioChanged(value);                                       
+                                        },
+                                      ),
+                                      const Text("숨김"),
+                                      Radio(
+                                        value: 2, 
+                                        groupValue: vmhandler.radioFeedIndex, 
+                                        onChanged: (value) {
+                                          vmhandler.feedRadioChanged(value);                                       
+                                        },
+                                      ),
+                                      const Text("삭제"),
+                                    ],
                                   ),
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.03,
-                                  child: vmhandler.searchFeedIndex != null
-                                      ? ElevatedButton(
-                                        onPressed: (){
-                                          Get.to(()=> ManageFeedDetail(), arguments: vmhandler.searchFeedList[vmhandler.searchFeedIndex!]);
-                                        }, 
-                                        child: const Text("게시글 보기")
-                                      )
-                                      : null,
-                                ),
-                                SizedBox(
-                                  height: 100,
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.03,
-                                  child: vmhandler.searchFeedIndex != null
-                                      ? ElevatedButton(
-                                        onPressed: (){
-                                          deleteAlert(vmhandler);
-                                        }, 
-                                        child: const Text("게시글 처리하기")
-                                      )
-                                      : null,
-                                )
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    }),
-              );
-            }),
+                                  SizedBox(
+                                    height:
+                                        MediaQuery.of(context).size.height * 0.4,
+                                    child: ListView.builder(
+                                      itemCount: vmhandler.searchFeedList.length,
+                                      itemBuilder: (context, index) {
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                      color: vmhandler.searchFeedIndex == index ? Colors.blue : Colors.transparent, 
+                                                      width: 2.0,
+                                                    ),
+                                                    borderRadius: BorderRadius.circular(8.0),
+                                          ),
+                                          child: ListTile(
+                                            onTap: () {
+                                              vmhandler.changeFeedIndex(index);
+                                            },
+                                            leading: Icon(Icons.person),
+                                            title: Text('작성자: ${vmhandler.searchFeedList[index].authorEMail}'),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 100,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height * 0.03,
+                                        child: vmhandler.searchFeedIndex != null
+                                            ? ElevatedButton(
+                                              onPressed: (){
+                                                Get.to(()=> ManageFeedDetail(), arguments: vmhandler.searchFeedList[vmhandler.searchFeedIndex!]);
+                                              }, 
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.amber[50]
+                                              ),
+                                              child: const Text("게시글 보기")
+                                            )
+                                            : null,
+                                      ),
+                                      const SizedBox( width: 40,),
+                                      SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height * 0.03,
+                                        child: vmhandler.searchFeedIndex != null
+                                            ? ElevatedButton(
+                                              onPressed: (){
+                                                deleteAlert(vmhandler);
+                                              }, 
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.amber[50]
+                                              ),
+                                              child: const Text("게시글 처리하기")
+                                            )
+                                            : null,
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              );
+                            },
+                          );
+                        }
+                      }),
+                );
+              }),
+            ),
             backgroundColor: Colors.transparent,
           ),
         ),

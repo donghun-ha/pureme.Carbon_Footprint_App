@@ -23,45 +23,48 @@ class ManageApp extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
               title: const Text(
-                'APP 관리',
+                'APP 통계',
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               backgroundColor: Colors.transparent,
             ),
 
             /// update 추적을 위한 겟빌더
-            body: GetBuilder<ManageHandler>(
-              builder: (controller) {
-                //// async를 위한 퓨처빌더
-                return FutureBuilder(
-                  ///signInUserList, madeFeedList 를 가져오는 함수
-                  future: vmhandler.fetchAppManage(),
-                  builder: (ccc, snapshot) {
-                    //// if문: 예외처리들
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text("Error : ${snapshot.error}"),
-                      );
-                    } else {
-                      return Column(
-                        children: [
-                          /// List observing을 위한 Obx, Listview당 하나.
-                          Obx(() {
-                            return _buildUserComparisonChart(vmhandler);
-                          }),
-                          Obx(() {
-                            return _buildFeedComparisonChart(vmhandler);
-                          }),
-                        ],
-                      );
-                    }
-                  },
-                );
-              },
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GetBuilder<ManageHandler>(
+                builder: (controller) {
+                  //// async를 위한 퓨처빌더
+                  return FutureBuilder(
+                    ///signInUserList, madeFeedList 를 가져오는 함수
+                    future: vmhandler.fetchAppManage(),
+                    builder: (ccc, snapshot) {
+                      //// if문: 예외처리들
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text("Error : ${snapshot.error}"),
+                        );
+                      } else {
+                        return Column(
+                          children: [
+                            /// List observing을 위한 Obx, Listview당 하나.
+                            Obx(() {
+                              return _buildUserComparisonChart(vmhandler);
+                            }),
+                            Obx(() {
+                              return _buildFeedComparisonChart(vmhandler);
+                            }),
+                          ],
+                        );
+                      }
+                    },
+                  );
+                },
+              ),
             ),
             backgroundColor: Colors.transparent,
           ),
