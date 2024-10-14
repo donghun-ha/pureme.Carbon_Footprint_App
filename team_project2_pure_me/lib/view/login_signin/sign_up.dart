@@ -64,7 +64,7 @@ class SignUp extends StatelessWidget {
                                     controller: idController,
                                     decoration: InputDecoration(
                                       labelText: '이메일',
-                                      hintText: '이메일을 입력하세요.',
+                                      hintText: 'Example@naver.com',
                                       border: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(20.0),
@@ -138,7 +138,7 @@ class SignUp extends StatelessWidget {
                                     controller: phoneController,
                                     decoration: InputDecoration(
                                       labelText: '전화번호',
-                                      hintText: '전화번호를 입력하세요.',
+                                      hintText: 'ex) 01012345678',
                                       border: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(20.0),
@@ -177,7 +177,7 @@ class SignUp extends StatelessWidget {
 
                                           if (email.isNotEmpty) {
                                             if (!validText.hasMatch(email)) {
-                                              ___showali();
+                                              ___eshowali();
                                               return;
                                             }
                                           }
@@ -306,7 +306,7 @@ class SignUp extends StatelessWidget {
   ___showali() {
     Get.snackbar(
       "경고",
-      "형식이 올바르지 않습니다.",
+      "전화번호 형식이 올바르지 않습니다.",
       snackPosition: SnackPosition.TOP,
     );
   }
@@ -325,5 +325,13 @@ class SignUp extends StatelessWidget {
 
   _showalibaba() {
     Get.snackbar("경고", "빈칸을 채워주세요.");
+  }
+
+  ___eshowali() {
+    Get.snackbar(
+      "경고",
+      "이메일 형식이 올바르지 않습니다.",
+      snackPosition: SnackPosition.TOP,
+    );
   }
 }   // End
