@@ -113,10 +113,14 @@ class UserInfoConfig extends StatelessWidget {
   _showDialog() {
     Get.defaultDialog(
       title: '로그아웃',
-      middleText: '로그아웃이 완료되었습니다.',
+      middleText: '로그아웃을 하시겠습니까?',
       backgroundColor: Colors.white,
       barrierDismissible: false,
       actions: [
+        TextButton(
+          onPressed: () => Get.back(),
+          child: const Text('아니오'),
+        ),
         TextButton(
           onPressed: () {
             box.remove('pureme_id');
@@ -124,7 +128,7 @@ class UserInfoConfig extends StatelessWidget {
               () => Login(),
             );
           },
-          child: const Text('OK'),
+          child: const Text('예'),
         ),
       ],
     );

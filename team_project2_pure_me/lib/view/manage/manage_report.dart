@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
-import 'package:team_project2_pure_me/view/feed/feed_detail.dart';
 import 'package:team_project2_pure_me/view/manage/manage_feed_detial.dart';
 import 'package:team_project2_pure_me/vm/manage/manage_handler.dart';
 
@@ -57,11 +56,26 @@ class ManageReport extends StatelessWidget {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Radio(value: 1, groupValue: vmhandler.rptCountAmount, onChanged: (value) => vmhandler.rptCountAmountChanged(value!),),
+                                  Radio(
+                                    value: 1,
+                                    groupValue: vmhandler.rptCountAmount,
+                                    onChanged: (value) =>
+                                        vmhandler.rptCountAmountChanged(value!),
+                                  ),
                                   const Text('신고수 : 1'),
-                                  Radio(value: 10, groupValue: vmhandler.rptCountAmount, onChanged: (value) => vmhandler.rptCountAmountChanged(value!),),
+                                  Radio(
+                                    value: 10,
+                                    groupValue: vmhandler.rptCountAmount,
+                                    onChanged: (value) =>
+                                        vmhandler.rptCountAmountChanged(value!),
+                                  ),
                                   const Text('신고수 : 10'),
-                                  Radio(value: 50, groupValue: vmhandler.rptCountAmount, onChanged: (value) => vmhandler.rptCountAmountChanged(value!),),
+                                  Radio(
+                                    value: 50,
+                                    groupValue: vmhandler.rptCountAmount,
+                                    onChanged: (value) =>
+                                        vmhandler.rptCountAmountChanged(value!),
+                                  ),
                                   const Text('신고수 : 50'),
                                 ],
                               ),
@@ -94,7 +108,8 @@ class ManageReport extends StatelessWidget {
                                       vmhandler.reportFeedListById.length,
                                   itemBuilder: (context, index) {
                                     return Card(
-                                      child: Text('${vmhandler.reportFeedListById[index].reportReason}             신고자 : ${vmhandler.reportFeedListById[index].user_eMail}'),
+                                      child: Text(
+                                          '${vmhandler.reportFeedListById[index].reportReason}             신고자 : ${vmhandler.reportFeedListById[index].user_eMail}'),
                                     );
                                   },
                                 ),
@@ -103,28 +118,32 @@ class ManageReport extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   ElevatedButton(
-                                    onPressed: ()async{
-                                      String email = await box.read('manager');
-                                      if(vmhandler.reportFeedIndex != null){
-                                        Feed feed = await vmhandler.test();
-                                        print(feed.authorEMail);
-                                        Get.to(
-                                          () => ManageFeedDetail(),
-                                          arguments: feed
-                                        );
-                                      }
-                                    },  
-                                    child: const Text("게시글 보러 가기")
-                                  ),
+                                      onPressed: () async {
+                                        // String email =
+                                        //     await box.read('manager');
+                                        if (vmhandler.reportFeedIndex != null) {
+                                          Feed feed = await vmhandler.test();
+                                          print(feed.authorEMail);
+                                          Get.to(() => ManageFeedDetail(),
+                                              arguments: feed);
+                                        }
+                                      },
+                                      child: const Text("게시글 보러 가기")),
                                   ElevatedButton(
-                                    onPressed: ()async{
-                                      String email = await box.read('manager');
-                                      if(vmhandler.reportFeedIndex != null){
-                                        vmhandler.reportFeed(vmhandler.reportFeedCountList[vmhandler.reportFeedIndex!].feedId, email, '숨김');
-                                      }
-                                    },  
-                                    child: const Text("게시글 숨김 처리")
-                                  ),
+                                      onPressed: () async {
+                                        String email =
+                                            await box.read('manager');
+                                        if (vmhandler.reportFeedIndex != null) {
+                                          vmhandler.reportFeed(
+                                              vmhandler
+                                                  .reportFeedCountList[vmhandler
+                                                      .reportFeedIndex!]
+                                                  .feedId,
+                                              email,
+                                              '숨김');
+                                        }
+                                      },
+                                      child: const Text("게시글 숨김 처리")),
                                 ],
                               ),
                             ],

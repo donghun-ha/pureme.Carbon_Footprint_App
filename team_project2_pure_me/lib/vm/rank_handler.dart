@@ -6,7 +6,7 @@ import 'package:team_project2_pure_me/model/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/chart_handler.dart';
 import 'package:team_project2_pure_me/vm/convert/convert_email_to_name.dart';
-import 'package:team_project2_pure_me/vm/user_handler.dart';
+// import 'package:team_project2_pure_me/vm/user_handler.dart';
 
 /* **RankHandler 클래스**
 

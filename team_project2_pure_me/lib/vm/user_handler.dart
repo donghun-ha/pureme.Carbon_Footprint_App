@@ -83,6 +83,7 @@ class UserHandler extends FeedHandler {
         "$baseUrl/user/signIn?eMail=$eMail&nickname=$nickName&password=$password&phone=$phone");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    // ignore: unused_local_variable
     var result = dataConvertedJSON['result'];
 
     return true;
@@ -103,6 +104,7 @@ class UserHandler extends FeedHandler {
     print(url);
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    // ignore: unused_local_variable
     var result = dataConvertedJSON['result'];
 
     curUser.value.nickName = nickName;
@@ -120,6 +122,7 @@ class UserHandler extends FeedHandler {
 
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    // ignore: unused_local_variable
     var result = dataConvertedJSON['result'];
 
     curUser.value.profileImage = profileImage;
@@ -180,6 +183,7 @@ class UserHandler extends FeedHandler {
         "$baseUrl/user/updatePW?eMail=${curUser.value.eMail}&password=$password");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    // ignore: unused_local_variable
     var result = dataConvertedJSON['result'];
 
     ///
@@ -193,6 +197,7 @@ class UserHandler extends FeedHandler {
     print(url);
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    // ignore: unused_local_variable
     var result = dataConvertedJSON['result'];
   }
 

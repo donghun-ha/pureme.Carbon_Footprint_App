@@ -89,6 +89,7 @@ class FeedHandler extends ImageHandler {
 
     var url = Uri.parse(
         "$baseUrl/feed/updateLike?feedId=${curFeed[0].feedName}&userEmail=${box.read('pureme_id')}&heart=$changeLike");
+    // ignore: unused_local_variable
     final response = await http.get(url); // GET 요청
     getFeedLike();
     return !isLiked;
@@ -182,17 +183,14 @@ class FeedHandler extends ImageHandler {
   }
 
   //// 박상범 추가, Feed를 Report함
-  reportFeed(String eMail, String docId, String reportReason)async{
+  reportFeed(String eMail, String docId, String reportReason) async {
     var url = Uri.parse(
         "$baseUrl/feed/updateReport?feedId=$docId&userEmail=$eMail&reportReason=$reportReason");
     final response = await http.get(url); // GET 요청
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
     return result;
-
-    
   }
-
 
   /// 댓글 추가
   /// argument = docId 댓글 작성위치
