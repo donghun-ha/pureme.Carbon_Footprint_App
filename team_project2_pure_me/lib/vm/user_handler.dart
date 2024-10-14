@@ -34,6 +34,8 @@ class UserHandler extends FeedHandler {
 
   RxBool profileImageChanged = false.obs;
 
+  bool userProfileImageChanged = false;
+
   /// 이미지가 바뀌었음을 확인시키는 변수
   /// 매니저 로그인 radioButton 을 위한 변수
   int manageLogin = 0;
@@ -125,7 +127,12 @@ class UserHandler extends FeedHandler {
     // ignore: unused_local_variable
     var result = dataConvertedJSON['result'];
 
-    curUser.value.profileImage = profileImage;
+    if(profileImage == 'null'){
+      curUser.value.profileImage = null;
+    }else{
+      curUser.value.profileImage = profileImage;
+    }
+    
     print(curUser.value.profileImage);
     curUser.value.nickName = nickName;
     curUser.value.eMail = eMail;
@@ -144,6 +151,7 @@ class UserHandler extends FeedHandler {
       String fileExtention =
           preFileName[preFileName.length - 1].toString().split('.')[1];
       profileImageName = curUser.value.eMail + '.' + fileExtention;
+
       update();
     }
   }
@@ -165,6 +173,16 @@ class UserHandler extends FeedHandler {
     }
   }
 
+  
+
+  userImageNull(){
+    imageFile = null;
+    userProfileImageChanged = true;
+    update();
+  }
+
+
+
   userImageDelete() async {
     if (curUser.value.profileImage != null) {
       final response = await http.delete(
@@ -176,6 +194,8 @@ class UserHandler extends FeedHandler {
         print("image deletion failed");
       }
     }
+
+
   }
 
   userUpdatePwd(String password) async {
