@@ -41,6 +41,37 @@ def connect():
     )
     return conn
 
+# 각 카테리별 CARBON_FACTORS 분류
+TRANSPORT_FACTORS = {
+    'car': 0.21,
+    'public': 0.05,
+    'bicycle': -0.01,
+    'walk': -0.01
+}
+
+ENERGY_FACTORS = {
+    'electricity': 0.5,
+    'gas': 0.2
+}
+
+FOOD_FACTORS = {
+    'meat': 27,
+    'vegetarian': 5,
+    'dairy': 9,
+    'plant': 3
+}
+
+OTHER_FACTORS = {
+    'paper': -0.5,
+    'plastic': -0.4,
+    'glass': -0.3,
+    'metal': -0.6,
+    'other': -0.2
+}
+
+
+
+
 @router.get("/select")
 async def select(user_eMail: str = None, search: str = ''):
     """사용자의 활동 데이터를 검색하여 반환합니다.
@@ -191,6 +222,13 @@ def calculate_reduction_from_average(activities: Dict[str, float]):
 
     return total_carbon, total_reduction, average_comparison
 
+
+
+
+
+
+
+
 def convert_to_energy_reduction(total_carbon_reduction: float):
     """총 탄소 발자국을 기반으로 에너지 감소량을 계산합니다.
     
@@ -205,6 +243,8 @@ def convert_to_energy_reduction(total_carbon_reduction: float):
     energy_reduction = total_carbon_reduction * 0.001  # kg CO2를 MWh로 변환 (가정)
     return energy_reduction
 
+
+
 def convert_to_trees_planted(total_carbon_reduction: float):
     """총 탄소 발자국을 기반으로 심은 나무 수를 계산합니다.
     
@@ -218,6 +258,8 @@ def convert_to_trees_planted(total_carbon_reduction: float):
     """
     trees_planted = total_carbon_reduction / 22  # 1 나무당 흡수하는 CO2량으로 나무 수 계산
     return trees_planted
+
+
 
 @router.get("/calculate_with_reduction")
 async def calculate_with_reduction(user_eMail: str):
@@ -334,7 +376,6 @@ async def get_rankings(limit: int = 10):
         # 유저가 아직 딕셔너리에 없으면 초기화합니다.
         if user_email not in user_activities:
             user_activities[user_email] = {}
-        print({row})
 
         # 해당 유저의 특정 카테고리 활동량을 저장합니다.
         user_activities[user_email][category_kind] = total_amount
@@ -363,4 +404,90 @@ async def get_rankings(limit: int = 10):
     return {
         'rankings': top_users
     }
+
+
+def calculate_carbon_reductions(activities: Dict[str, float]):
+    """사용자의 활동과 전 세계 평균치를 비교하여 카테고리별 절감량을 계산합니다.
+    
+    - `activities`: 사용자의 활동 데이터를 딕셔너리 형태로 받습니다.
+      예: {'car': 100, 'meat': 5}
+    
+    반환값:
+        - `carbon_reductions`: 카테고리별 탄소 절감량을 담은 딕셔너리
+          예: {'transport': 15.0, 'energy': 20.0, 'food': 5.0, 'other': 0.0}
+    """
+    # 카테고리별 절감량 초기화
+    carbon_reductions = {
+        'transport': 0.0,
+        'energy': 0.0,
+        'food': 0.0,
+        'other': 0.0
+    }
+
+    # 평균 교통량을 사용 (일간 교통 평균 탄소량)
+    average_traffic = CARBON_AVERAGE['trafic']
+
+    # 각 카테고리와 해당 활동들을 하나의 사전으로 통합
+    all_factors = {
+        'transport': TRANSPORT_FACTORS,
+        'energy': ENERGY_FACTORS,
+        'food': FOOD_FACTORS,
+        'other': OTHER_FACTORS
+    }
+
+    # 각 활동별로 탄소 배출량과 절감량을 계산
+    for activity, amount in activities.items():
+        for category, factors in all_factors.items():
+            if activity in factors:
+                # 사용자 활동에 따른 배출량 계산
+                carbon_output = amount * factors[activity]
+                
+                # 특정 활동들(car, public, bicycle, walk)은 교통 평균량과 비교
+                if activity in ['car', 'public', 'bicycle', 'walk']:
+                    average_output = average_traffic
+                else:
+                    # 다른 활동들은 CARBON_AVERAGE에서 값을 가져오거나 기본값 0 사용
+                    average_output = CARBON_AVERAGE.get(activity, 0)
+                
+                # 사용자 입력값과 평균치를 비교하여 절감량 계산
+                reduction = average_output - carbon_output
+                # 절감량이 음수일 경우 (배출이 더 많을 경우) 0으로 처리
+                reduction = max(0, reduction)
+                # 카테고리별 절감량 누적
+                carbon_reductions[category] += reduction
+                break
+        else:
+            # 정의되지 않은 활동이 있을 경우 경고 메시지 출력
+            print(f"활동 '{activity}'에 대한 배출 계수가 없습니다.")  
+
+    return carbon_reductions
+
+
+@router.get("/chart")
+async def calculate_with_reduction(user_eMail: str):
+    """사용자의 활동에 대한 탄소 발자국과 절감량을 계산하여 반환합니다.
+    
+    - `user_eMail`: 사용자의 이메일 주소
+    
+    절차:
+        1. 사용자의 활동 데이터를 데이터베이스에서 조회
+        2. 활동별 탄소 배출량과 절감량 계산
+        3. 절감량을 기반으로 에너지 감소량과 심은 나무 수 계산
+        4. 모든 결과를 JSON 형식으로 반환
+    
+    Args:
+        user_eMail (str): 사용자의 이메일 주소
+    
+    Returns:
+        dict: 계산된 탄소 발자국, 절감량, 에너지 감소량, 심은 나무 수, 활동별 절감량 비교 결과를 포함하는 JSON 응답
+    """
+    # 사용자의 활동 데이터를 조회
+    activities_result = await select(user_eMail=user_eMail)
+    
+    # 조회된 결과를 딕셔너리 형태로 변환
+    # 여기서 activity[0]은 category_kind, activity[3]은 amount를 의미
+    # 예: {'car': 100, 'meat': 5}
+    activities = {activity[0]: float(activity[3]) for activity in activities_result['results']}
+
+    return {'result' : calculate_carbon_reductions(activities)}
 

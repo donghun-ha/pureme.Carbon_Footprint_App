@@ -1,11 +1,14 @@
 import 'dart:convert';
-
+import 'dart:io' show Platform;
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:http/http.dart' as http;
+import 'package:team_project2_pure_me/vm/convert/convert_email_to_name.dart';
 import 'package:team_project2_pure_me/vm/user_handler.dart';
+import 'chart_handler.dart';
 
-class RankHandler extends UserHandler {
+class RankHandler extends ChartHandler {
+  // ConvertEmailToName convertEmailToName = ConvertEmailToName();
   RxList<User> rankList = <User>[].obs;
   RxInt myrank = 0.obs;
 
@@ -19,9 +22,6 @@ class RankHandler extends UserHandler {
     // fetchTotalCarbon();
   }
 
-  // final String defaultUrl = "http://127.0.0.1:8000/footprint";
-  final String defaultUrl = "http://127.0.0.1:8000/footprint";
-
   @override
   void onInit() {
     super.onInit();
@@ -32,7 +32,8 @@ class RankHandler extends UserHandler {
 
   // 랭킹 데이터 가져오기
   Future<void> fetchRank() async {
-    var url = Uri.parse("$defaultUrl/rankings");
+    await convertEmailToName.getUserName();
+    var url = Uri.parse("$baseUrl/footprint/rankings");
     final response = await http.get(url); // GET 요청
 
     if (response.statusCode == 200) {
@@ -41,8 +42,9 @@ class RankHandler extends UserHandler {
       final data = json.decode(response.body);
       List<User> users = (data['rankings'] as List)
           .map((user) => User(
+                // 이메일을 닉네임으로 변환
+                nickName: convertEmailToName.changeAction(user['user_eMail']),
                 eMail: user['user_eMail'], // eMail 매핑
-                nickName: user['user_nickName'] ?? '', // 닉네임
                 password: '', // 패스워드는 API에서 제공되지 않으므로 빈 문자열
                 phone: '', // 핸드폰 정보가 없으므로 빈 문자열
                 createDate: DateTime.now(), // 생성일 기본값 (API에서 제공되지 않음)
@@ -53,14 +55,14 @@ class RankHandler extends UserHandler {
       rankList.assignAll(users); // 랭킹 리스트 업데이트
     } else {
       // 에러 발생 시 처리
-      ('랭킹을 불러오는 데 실패했습니다: ${response.statusCode}');
+      print('랭킹을 불러오는 데 실패했습니다: ${response.statusCode}');
     }
   }
 
   // 탄소량 불러오는 함수
   fetchTotalCarbon() async {
     var url = Uri.parse(
-        "$defaultUrl/calculate_with_reduction?user_eMail=${curUser.value.eMail}");
+        "$baseUrl/footprint/calculate_with_reduction?user_eMail=${curUser.value.eMail}");
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -93,4 +95,5 @@ class RankHandler extends UserHandler {
     fetchMyRank();
     // fetchTotalCarbon();
   }
+
 }

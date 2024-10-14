@@ -3,13 +3,11 @@ import 'package:get/get.dart';
 import 'package:team_project2_pure_me/vm/rank_handler.dart';
 
 class RankPage extends StatelessWidget {
-  RankPage({super.key}) {
-    Get.put(RankHandler());
-  }
+  const RankPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final RankHandler rankHandler = Get.find<RankHandler>();
+    final RankHandler rankHandler = Get.put(RankHandler());
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -28,7 +26,7 @@ class RankPage extends StatelessWidget {
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 5,
-                        blurRadius: 7,
+                        blurRadius: 10,
                         offset: const Offset(0, 3),
                       ),
                     ],
@@ -48,8 +46,8 @@ class RankPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Image.asset('images/ranking.png',
-                                width: 24, height: 24),
-                            const SizedBox(width: 8),
+                                width: 35, height: 35),
+                            const SizedBox(width: 15),
                             const Text(
                               '이번달 환경지킴이 랭킹',
                               style: TextStyle(
@@ -63,21 +61,19 @@ class RankPage extends StatelessWidget {
                       Obx(() => ListView.separated(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: rankHandler.rankList.length > 9
-                                ? 9
+                            itemCount: rankHandler.rankList.length > 10
+                                ? 10
                                 : rankHandler.rankList.length,
                             separatorBuilder: (context, index) =>
                                 const Divider(),
                             itemBuilder: (context, index) {
                               final user = rankHandler.rankList[index];
-                              print(user.nickName);
                               return ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: _getColor(index),
                                   child: Text('${index + 1}'),
                                 ),
-                                title: Text(user.eMail),
-                                subtitle: Text('Point: ${user.point}'),
+                                title: Text(user.nickName),
                                 trailing: Text('${(user.point)} KG',
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -130,9 +126,9 @@ class RankPage extends StatelessWidget {
   Color _getColor(int index) {
     switch (index) {
       case 0:
-        return const Color.fromARGB(167, 253, 245, 12);
+        return const Color(0xFFFFCC00);
       case 1:
-        return const Color.fromARGB(255, 13, 13, 13);
+        return const Color(0xFFC0C0C0);
       case 2:
         return Colors.brown[300]!;
       default:

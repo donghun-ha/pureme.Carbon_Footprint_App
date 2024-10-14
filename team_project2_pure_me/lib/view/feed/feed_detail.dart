@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:like_button/like_button.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/model/reply.dart';
 import 'package:team_project2_pure_me/vm/feed_handler.dart';
@@ -14,19 +15,29 @@ class FeedDetail extends StatelessWidget {
   final Feed feedValue = Get.arguments ?? "__";
   final feedHandler = Get.put(FeedHandler());
 
-  @override
-  Widget build(BuildContext context) {
-    feedHandler.detailFeed(feedValue.feedName!);
-    return Container(
+@override
+Widget build(BuildContext context) {
+  feedHandler.detailFeed(feedValue.feedName!);
+  feedHandler.getFeedLike();
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('나의 피드'),
+      leading: IconButton(
+        onPressed: () => Get.back(),
+        icon: const Icon(Icons.arrow_back_ios),
+      ),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+    ),
+    extendBodyBehindAppBar: true,
+    body: Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: AssetImage('images/background_id.png'), // 배경 이미지
+          image: AssetImage('images/background_id.png'),
         ),
       ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Obx(
+      child: Obx(
           () => Center(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(25, 100, 25, 25),
@@ -103,6 +114,28 @@ class FeedDetail extends StatelessWidget {
                       Row(
                         // 하트랑 댓글 들어갈 자리
                         children: [
+                          LikeButton(
+                            likeCount: feedHandler.likeCount.value, // 값을 받아와야함
+                            isLiked: feedHandler.isLike.value, // 값을 받아와야함
+                            // countBuilder: (likeCount, isLiked, text) {
+                            //   var color = isLiked
+                            //       ? Colors.deepPurpleAccent
+                            //       : Colors.grey;
+                            //   Widget result;
+                            //   if (likeCount == 0) {
+                            //     result = Text(
+                            //       "love",
+                            //       style: TextStyle(color: color),
+                            //     );
+                            //   } else
+                            //     result = Text(
+                            //       text,
+                            //       style: TextStyle(color: color),
+                            //     );
+                            //   return result;
+                            // },
+                            onTap: feedHandler.onLikeButtonTapped,
+                          ),
                           IconButton(
                             onPressed: () =>
                                 replyBottomSheet(context, feedHandler),

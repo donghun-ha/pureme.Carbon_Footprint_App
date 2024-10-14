@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
@@ -5,10 +7,11 @@ import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
 import 'package:team_project2_pure_me/model/reply.dart';
 import 'package:team_project2_pure_me/vm/convert/convert_email_to_name.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/image_handler.dart';
 
 class FeedHandler extends ImageHandler {
+  final String defaultUrl = 'http://10.0.2.2:8000/feed';
   final GetStorage box = GetStorage();
   final ConvertEmailToName convertEmailToName = ConvertEmailToName();
 
@@ -42,6 +45,10 @@ class FeedHandler extends ImageHandler {
   /// user 화면에 보일 FeedList
   final userFeedList = <Feed>[].obs;
 
+  /// feed의 좋아요
+  final isLike = false.obs; // 좋아요 상태
+  final likeCount = 0.obs; // 좋아요 수
+
   @override
   void onInit() {
     super.onInit();
@@ -61,6 +68,37 @@ class FeedHandler extends ImageHandler {
             .toList();
       },
     );
+  }
+
+  /// 좋아요 버튼 작동시
+  ///
+  Future<bool> onLikeButtonTapped(bool isLiked) async {
+    // !isLiked 가 true 일때 1추가
+    // !isLiked 가 false 일때 -1추가
+    // print(!isLiked);
+    // print(curFeed[0].feedName);
+    // print(box.read('pureme_id'));
+    int changeLike = isLiked ? -1 : 1;
+
+    var url = Uri.parse(
+        "$defaultUrl/updateLike?feedId=${curFeed[0].feedName}&userEmail=${box.read('pureme_id')}&heart=$changeLike");
+    final response = await http.get(url); // GET 요청
+    getFeedLike();
+    return !isLiked;
+  }
+
+  /// 좋아요 정보 가져오기
+  ///
+  Future getFeedLike() async {
+    var url = Uri.parse(
+        "$defaultUrl/getFeedLike?feedId=${curFeed[0].feedName}&userEmail=${box.read('pureme_id')}");
+    final response = await http.get(url); // GET 요청
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    // [유저 아이디, 유저의 좋아요 상태 (null,0,false,true), 전체 좋아요 수]
+    var result = dataConvertedJSON['result'];
+
+    isLike.value = result[1] > 0 ? true : false;
+    likeCount.value = result[2] ?? 0;
   }
 
   /// 피드 추가

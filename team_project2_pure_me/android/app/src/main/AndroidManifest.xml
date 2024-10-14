@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.team_project2_pure_me.app">
+    
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
     <application
         android:label="team_project2_pure_me"
         android:name="${applicationName}"
