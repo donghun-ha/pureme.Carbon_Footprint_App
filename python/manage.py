@@ -18,49 +18,79 @@ def connect():
     )
     return conn
 
+@router.get("/loginVerify")
+async def login(eMail: str = None, password: str = None):
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        sql = """
+        SELECT count(manageEMail)
+        FROM manager
+        WHERE manageEMail=%s
+        AND managerPw=%s
+        """
+        curs.execute(sql, (eMail, password))
+        rows = curs.fetchall()
+        result = [{'seq': row[0]==1} for row in rows]
+        conn.commit()
+        return {'result': result}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()
+
+
+
 
 @router.get("/userperday")
 async def userperday():
     conn = connect()
     curs = conn.cursor()
     now = datetime.now()
-    yesterday = now - timedelta(1)
-    lastweek = now - timedelta(7)
-    lastmonth = now - timedelta(30)
     try:
         ##### 일별 이메일 생성수
         sql = """
-        SELECT count(eMail)
-        FROM user
-        WHERE createDate > %s
+            SELECT 'day' as period, COUNT(eMail) as count, (SELECT COUNT(eMail)/ DATEDIFF(max(createDate), min(createDate)) AS date_difference FROM user )
+            *
+            (SELECT daydiff FROM (SELECT COUNT(eMail), (SELECT LEAST((SELECT DATEDIFF(max(createDate), min(createDate)) AS date_difference FROM user), 1) )as daydiff FRom user) AS jj)  
+            as average 
+            FROM user
+            WHERE createDate > NOW() - INTERVAL 1 DAY
+
+            UNION ALL
+
+            SELECT 'week' as period, COUNT(eMail) as count, 
+            (SELECT COUNT(eMail)/DATEDIFF(max(createDate), min(createDate)) AS date_difference FROM user) 
+            *
+            (SELECT daydiff FROM (SELECT COUNT(eMail), (SELECT LEAST((SELECT DATEDIFF(max(createDate), min(createDate)) AS date_difference FROM user), 7) )as daydiff FRom user) AS jj)  
+            as average
+            FROM user
+            WHERE createDate > NOW() - INTERVAL 7 DAY
+
+            UNION ALL
+
+            SELECT 'month' as period, COUNT(eMail) as count, 
+            (COUNT(eMail)/DATEDIFF(max(createDate), min(createDate))) 
+            *
+            (SELECT daydiff FROM (SELECT COUNT(eMail), (SELECT LEAST((SELECT DATEDIFF(max(createDate), min(createDate)) AS date_difference FROM user), 30) )as daydiff FRom user) AS jj)  
+            as average
+            FROM user
+            WHERE createDate > NOW() - INTERVAL 30 DAY
+
+            UNION ALL
+
+            SELECT 'all' as period, COUNT(eMail) as count, COUNT(eMail) as average
+            FROM user
         """
-        curs.execute(sql, (yesterday))
-        row_days = curs.fetchall()
-        
-        #### 주간 이메일 생성수        
-        sql = """
-        SELECT count(eMail)
-        FROM user
-        WHERE createDate > %s
-        """
-        curs.execute(sql, (lastweek))
-        row_weeks = curs.fetchall()
-
-
-        ### 월간 이메일 생성수
-        sql = """
-        SELECT count(eMail)
-        FROM user
-        WHERE createDate > %s
-        """
-        curs.execute(sql, (lastmonth))
-        row_month = curs.fetchall()
-
-        ### 보내줄 row
-        rows = list(row_days + row_weeks + row_month);
-        print(rows)        
-
-        result = [{'count': row[0]} for row in rows]
+        curs.execute(sql)
+        rows = curs.fetchall()
+        print(rows)
+        result = [{
+            'period': row[0],
+            'count': row[1],
+            'average': row[2],
+            } for row in rows]
         conn.commit()
         return {'result': result}
     ### 에러나면 쓰기
@@ -78,9 +108,32 @@ async def userperday(serachUserWord :str = None):
     try:
         ##### 일별 이메일 생성수
         sql = """
-        SELECT *
-        FROM user
-        WHERE eMail LIKE %s
+            SELECT 
+                u.*
+            FROM 
+                user AS u
+            LEFT JOIN 
+                (SELECT 
+                    user_eMail,
+                    DATE_ADD(ceaseDatetime, INTERVAL ceasePeriod DAY) AS endDate
+                FROM 
+                    accountcease
+                ) AS ac
+            ON 
+                u.eMail = ac.user_eMail
+            WHERE 
+                (ac.endDate IS NULL OR ac.endDate <= NOW()) 
+                AND 
+                SUBSTRING_INDEX(u.eMail, '@', 1) LIKE %s
+                AND 
+                u.eMail NOT IN (
+                    SELECT 
+                        user_eMail
+                    FROM 
+                        accountcease
+                    WHERE 
+                        DATE_ADD(ceaseDatetime, INTERVAL ceasePeriod DAY) > NOW()
+                );
         """
         # SQL에서 `LIKE` 문 사용
         curs.execute(sql, (f"%{serachUserWord}%",)) 
@@ -105,20 +158,55 @@ async def userperday(serachUserWord :str = None):
         conn.close()
 
 
+@router.get("/accountCeaseInsert")
+async def queryReportReason(user_eMail :str = None, manager_manageEMail:str = None , ceaseReason:str = None, ceasePeroid:str = None):
+    now = datetime.now()
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        
+        sql = """
+            INSERT 
+            INTO accountcease (user_eMail, manager_manageEMail, ceaseDatetime, ceaseReason, ceasePeriod)
+            VALUES (%s, %s, %s, %s, %s);
+        """
+        curs.execute(sql, (user_eMail, manager_manageEMail, now, ceaseReason, ceasePeroid))  # 
+        result = "OK"
+        conn.commit()
+        return {'result': result}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()
+
+
 
 #### 
 @router.get("/queryReportcount")
-async def queryReportcount():
+async def queryReportcount(leastAmount : str = None):
     conn = connect()
     curs = conn.cursor()
     try:
         sql = """
-            SELECT feedId, COUNT(feedId) AS feed_count
-            FROM report
-            GROUP BY feedId;
+            SELECT *
+            FROM    (SELECT 
+                        r.feedId, 
+                        COUNT(r.feedId) AS feed_count
+                    FROM 
+                        report AS r
+                    LEFT JOIN 
+                        pureme.managefeed AS m ON r.feedId = m.feedID
+                    WHERE 
+                        m.feedID IS NULL
+                    GROUP BY 
+                        r.feedId
+                    ORDER BY 
+                        feed_count DESC) AS wow
+            WHERE feed_count >=%s
+            ;
         """
-
-        curs.execute(sql)  
+        curs.execute(sql, leastAmount)  
         rows = curs.fetchall()
         result = [{
             'feedId': row[0],
@@ -138,14 +226,14 @@ async def queryReportReason(feedId :str = None):
     conn = connect()
     curs = conn.cursor()
     try:
-        ##### 일별 이메일 생성수
+        
         sql = """
             SELECT *
             FROM report
             WHERE feedId = %s;
         """
 
-        curs.execute(sql, feedId)  # `email_id`로 시작하는 모든 이메일 검색
+        curs.execute(sql, feedId)  # 
         rows = curs.fetchall()
         result = [{
             'user_eMail': row[0],
@@ -160,3 +248,28 @@ async def queryReportReason(feedId :str = None):
         return {"results": "Error"}
     finally:
         conn.close()
+
+@router.get("/reportFeed")
+async def queryReportReason(manager_manageEMail:str = None, feedId:str = None , changeKind:str = None):
+    now = datetime.now()
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        
+        sql = """
+            INSERT 
+            INTO managefeed (manager_manageEMail, feedId, changeDatetime, changeKind) 
+            VALUES (%s, %s, %s, %s);
+        """
+        curs.execute(sql, (manager_manageEMail, feedId, now, changeKind))  # 
+        result = "OK"
+        conn.commit()
+        return {'result': result}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()
+
+
+

@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
@@ -11,7 +11,8 @@ import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/image_handler.dart';
 
 class FeedHandler extends ImageHandler {
-  final String defaultUrl = 'http://10.0.2.2:8000/feed';
+  final String baseUrl =
+      Platform.isAndroid ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
   final GetStorage box = GetStorage();
   final ConvertEmailToName convertEmailToName = ConvertEmailToName();
 
@@ -42,11 +43,17 @@ class FeedHandler extends ImageHandler {
   final replyList = <Reply>[].obs;
   final showReplyList = <Reply>[].obs;
 
+  /// 대댓글을 작성할 reply의 index
+  final replyIndex = 0.obs;
+
+  /// 대댓글과 댓글의 구분을 위함
+  final isReply = true.obs;
+
   /// user 화면에 보일 FeedList
   final userFeedList = <Feed>[].obs;
 
   /// feed의 좋아요
-  final isLike = false.obs; // 좋아요 상태
+  final isLike = true.obs; // 좋아요 상태
   final likeCount = 0.obs; // 좋아요 수
 
   @override
@@ -81,7 +88,7 @@ class FeedHandler extends ImageHandler {
     int changeLike = isLiked ? -1 : 1;
 
     var url = Uri.parse(
-        "$defaultUrl/updateLike?feedId=${curFeed[0].feedName}&userEmail=${box.read('pureme_id')}&heart=$changeLike");
+        "$baseUrl/feed/updateLike?feedId=${curFeed[0].feedName}&userEmail=${box.read('pureme_id')}&heart=$changeLike");
     final response = await http.get(url); // GET 요청
     getFeedLike();
     return !isLiked;
@@ -91,7 +98,7 @@ class FeedHandler extends ImageHandler {
   ///
   Future getFeedLike() async {
     var url = Uri.parse(
-        "$defaultUrl/getFeedLike?feedId=${curFeed[0].feedName}&userEmail=${box.read('pureme_id')}");
+        "$baseUrl/feed/getFeedLike?feedId=${curFeed[0].feedName}&userEmail=${box.read('pureme_id')}");
     final response = await http.get(url); // GET 요청
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     // [유저 아이디, 유저의 좋아요 상태 (null,0,false,true), 전체 좋아요 수]
@@ -141,19 +148,23 @@ class FeedHandler extends ImageHandler {
     _feed.doc(docId).snapshots().listen(
       (event) {
         // print(event);
+        // 피드 객체 생성
         curFeed.value = [
           Feed.fromMap(event.data() as Map<String, dynamic>, docId)
         ];
+        // 피드 유저 이메일 -> 이름으로 변환
         curFeed[0].userName =
             convertEmailToName.changeAction(curFeed[0].authorEMail);
-        // replyList.value =
-        //     curFeed[0].reply!.map((e) => Reply.fromMap(e)).toList();
+
+        // 댓글 리스트 추가 및 댓글 작성자 이메일 -> 이름
         replyList.clear();
         for (int i = 0; i < curFeed[0].reply!.length; i++) {
           replyList.add(Reply.fromMap(curFeed[0].reply![i], i));
           replyList[i].userName =
               convertEmailToName.changeAction(replyList[i].authorEMail);
         }
+
+        // 상태가 게시인 리스트만
         showReplyList.value = replyList
             .where(
                 (reply) => reply.replyState == '게시') // state가 '게시'인 reply만 필터링
@@ -165,9 +176,23 @@ class FeedHandler extends ImageHandler {
 
   /// 피드 삭제
   /// state를 삭제로 변경
+
   deleteFeed(String docId) {
     _feed.doc(docId).update({'state': '삭제'});
   }
+
+  //// 박상범 추가, Feed를 Report함
+  reportFeed(String eMail, String docId, String reportReason)async{
+    var url = Uri.parse(
+        "$baseUrl/feed/updateReport?feedId=$docId&userEmail=$eMail&reportReason=$reportReason");
+    final response = await http.get(url); // GET 요청
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    return result;
+
+    
+  }
+
 
   /// 댓글 추가
   /// argument = docId 댓글 작성위치
@@ -177,6 +202,7 @@ class FeedHandler extends ImageHandler {
       'content': content,
       'state': '게시',
       'writer': box.read('pureme_id'),
+      'reply': [],
       'writetime':
           DateTime.now().toString().substring(0, 19).replaceFirst(' ', 'T'),
     };
@@ -189,6 +215,31 @@ class FeedHandler extends ImageHandler {
   /// state변경
   deleteReply(String docId, int index) {
     curFeed[0].reply![index]['state'] = '삭제';
+    _feed.doc(docId).update({'reply': curFeed[0].reply});
+  }
+
+  /// 대댓글
+  addReReply(String docId, String content) {
+    Map<String, dynamic> newData = {
+      'content': content,
+      'state': '게시',
+      'writer': box.read('pureme_id'),
+      'writetime':
+          DateTime.now().toString().substring(0, 19).replaceFirst(' ', 'T'),
+    };
+
+    // reply[index]
+    print(curFeed[0].reply![replyIndex.value]['reply']);
+    curFeed[0].reply![replyIndex.value]['reply'].add(newData);
+
+    _feed.doc(docId).update({
+      'reply': curFeed[0].reply! // 리스트에 Map 추가
+    });
+  }
+
+  /// 대댓글 삭제
+  deleteRereply(String docId, int reIndex, int rereIndex) {
+    curFeed[0].reply![reIndex]['reply'].removeAt(rereIndex);
     _feed.doc(docId).update({'reply': curFeed[0].reply});
   }
 }

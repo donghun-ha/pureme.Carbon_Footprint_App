@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, File, UploadFile, Form
 import pymysql
 from datetime import datetime
 
@@ -45,6 +45,57 @@ async def login(eMail: str = None, password: str = None):
         return {"results": "Error"}
     finally:
         conn.close()
+
+
+
+
+@router.get("/reportVerify")
+async def login(eMail: str = None):
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        sql="""
+        SELECT 
+            u.eMail, 
+            ac.ceaseReason,
+            ac.daysDifference
+        FROM 
+            user AS u
+        LEFT JOIN 
+            (SELECT 
+                user_eMail,
+                ceaseDatetime, 
+                ceasePeriod,
+                DATEDIFF(DATE_ADD(ceaseDatetime, INTERVAL ceasePeriod DAY), NOW()) AS daysDifference,
+                ceaseReason
+            FROM 
+                accountcease
+            WHERE 
+                DATE_ADD(ceaseDatetime, INTERVAL ceasePeriod DAY) > NOW()
+            ) AS ac
+        ON 
+            u.eMail = ac.user_eMail
+        WHERE 
+            u.eMail = %s;
+        """
+
+        curs.execute(sql, (eMail))
+        rows = curs.fetchall()
+        result = [{
+            'eMail': row[0], 
+            'ceaseReason' : row[1],
+            'diff' : row[2]
+            } for row in rows]
+        print(result)
+        conn.commit()
+        return {'result': result}
+    except Exception as e:
+        print("Error:", e)
+        return {"results": "Error"}
+    finally:
+        conn.close()
+
+
 
 @router.get("/login")
 async def login(eMail: str = None):
@@ -215,21 +266,61 @@ async def login(eMail: str = None, point :str = None):
 
 
 
-@router.post("/imageUpload")
-async def upload_file(file : UploadFile = File(...)):
+# @router.post("/imageUpload")
+# async def upload_file(file : UploadFile = File(...)):
 
+#     try:
+#         file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+#         with open(file_path, "wb") as buffer: ## "wb" : write binarry
+#             shutil.copyfileobj(file.file, buffer)
+#         return{'result' : 'OK'}
+
+#     except Exception as e:
+#         print("Error:", e)
+#         return({"reslut" : "Error"})
+    
+
+@router.post("/imageUpload")
+async def upload_file(
+    file: UploadFile = File(...),
+    prefix: str = Form(...)  # POST 요청에서 prefix라는 변수 받기
+):
     try:
-        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
-        with open(file_path, "wb") as buffer: ## "wb" : write binarry
+        # prefix를 이용해 새로운 파일명 생성
+        file_extension = os.path.splitext(file.filename)[1]
+        print(file_extension)
+        new_filename = f"{prefix}.{file.filename.split('.')[1]}"
+
+        file_path = os.path.join(UPLOAD_FOLDER, new_filename)
+
+        # 파일 저장
+        with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-        return{'result' : 'OK'}
+        return {'result': 'OK', 'filename': new_filename}
 
     except Exception as e:
         print("Error:", e)
-        return({"reslut" : "Error"})
+        return {"result": "Error"}
+    
+
+@router.delete("/imageDelete/{file_name}")
+async def delete_file(file_name : str):
+    try:
+        file_path = os.path.join(UPLOAD_FOLDER, file_name)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        return {"result" : "OK"}
+    except Exception as e:
+        print("Error:", e)
+        return {"result" : "Error"}
+
+
+
+
 
 @router.get("/view/{file_name}")
 async def get_file(file_name: str):
+    print("이거왜안돼지")
     file_path = os.path.join(UPLOAD_FOLDER, file_name)
     if os.path.exists(file_path):
         return FileResponse(path=file_path, filename=file_name)

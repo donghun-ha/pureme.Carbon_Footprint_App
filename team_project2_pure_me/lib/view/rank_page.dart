@@ -108,9 +108,10 @@ class RankPage extends StatelessWidget {
                                 style: const TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.bold)),
                             Text(
-                                '내 포인트: ${rankHandler.rankList.isNotEmpty && rankHandler.myrank.value > 0 && rankHandler.myrank.value <= rankHandler.rankList.length ? rankHandler.rankList[rankHandler.myrank.value - 1].point : 0}점',
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                              '내 포인트: ${rankHandler.rankList.isNotEmpty && rankHandler.myrank.value > 0 && rankHandler.myrank.value <= rankHandler.rankList.length ? rankHandler.rankList[rankHandler.myrank.value - 1].point : 0}점',
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
                           ],
                         )),
                   ),

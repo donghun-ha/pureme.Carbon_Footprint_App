@@ -29,6 +29,9 @@ class Reply {
   /// 수정된 시간
   DateTime? editTime;
 
+/// 대댓글
+  List? reply;
+  
   Reply({
     // this.replyName,
     // required this.feedName,

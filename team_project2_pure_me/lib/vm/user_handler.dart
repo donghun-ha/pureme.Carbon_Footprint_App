@@ -1,6 +1,8 @@
 import 'dart:convert';
-import 'dart:io' show Platform;
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:team_project2_pure_me/model/lev.dart';
 import 'package:team_project2_pure_me/model/user.dart';
@@ -8,9 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/feed_handler.dart';
 
 class UserHandler extends FeedHandler {
-  final String baseUrl = Platform.isAndroid 
-      ? 'http://10.0.2.2:8000' 
-      : 'http://127.0.0.1:8000';
+  final String baseUrl =
+      Platform.isAndroid ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
 
   RxList<User> userList = <User>[].obs;
 
@@ -31,11 +32,15 @@ class UserHandler extends FeedHandler {
 
   String? profileImageName;
 
-  /// 회원정보 수정시 이미지 이름을 바꿔야할때 필요한 변수
+  RxBool profileImageChanged = false.obs;
+
+  /// 이미지가 바뀌었음을 확인시키는 변수
+  /// 매니저 로그인 radioButton 을 위한 변수
+  int manageLogin = 0;
 
   Future<bool> loginVerify(String eMail, String password) async {
-    var url = Uri.parse(
-        "$baseUrl/user/loginVerify?eMail=$eMail&password=$password");
+    var url =
+        Uri.parse("$baseUrl/user/loginVerify?eMail=$eMail&password=$password");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -43,10 +48,6 @@ class UserHandler extends FeedHandler {
 
     if (ver) {
       await curUserUpdate(eMail);
-      // print(curUser.eMail);
-      // print(curUser.point);
-      // await pointUpdate(1);
-      // print(curUser.point);
       return true;
     } else {
       return false;
@@ -107,11 +108,13 @@ class UserHandler extends FeedHandler {
     curUser.value.nickName = nickName;
     curUser.value.eMail = eMail;
     curUser.value.phone = phone;
+
     update();
   }
 
   userUpdateAll(
       String eMail, String nickName, String phone, String profileImage) async {
+    await userImageDelete();
     var url = Uri.parse(
         "$baseUrl/user/updateAll?cureMail=${curUser.value.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone&&profileImage=$profileImage");
 
@@ -124,24 +127,33 @@ class UserHandler extends FeedHandler {
     curUser.value.nickName = nickName;
     curUser.value.eMail = eMail;
     curUser.value.phone = phone;
+    profileImageChanged.value = !profileImageChanged.value;
+    print(profileImageChanged.value);
     update();
   }
 
   //// handler.userImagePicker(ImageSource.gallery)로 실행시키세요
   userImagePicker(ImageSource imageSource) async {
     final XFile? pickedFile = await picker.pickImage(source: imageSource);
-    imageFile = XFile(pickedFile!.path);
-    List preFileName = imageFile!.path.split('/');
-    profileImageName = preFileName[preFileName.length - 1];
-    update();
+    if (pickedFile != null) {
+      imageFile = XFile(pickedFile.path);
+      List preFileName = imageFile!.path.split('/');
+      String fileExtention =
+          preFileName[preFileName.length - 1].toString().split('.')[1];
+      profileImageName = curUser.value.eMail + '.' + fileExtention;
+      update();
+    }
   }
 
   userImageInsert() async {
-    var request = http.MultipartRequest(
-        "POST", Uri.parse("$baseUrl/user/imageUpload"));
+    var request =
+        http.MultipartRequest("POST", Uri.parse("$baseUrl/user/imageUpload"));
     var multipartFile =
         await http.MultipartFile.fromPath('file', imageFile!.path);
+
     request.files.add(multipartFile);
+    request.fields['prefix'] = curUser.value.eMail;
+
     var response = await request.send();
     if (response.statusCode == 200) {
       print('success');
@@ -150,7 +162,18 @@ class UserHandler extends FeedHandler {
     }
   }
 
-  userImageUpdate(String fileName) {}
+  userImageDelete() async {
+    if (curUser.value.profileImage != null) {
+      final response = await http.delete(
+          Uri.parse("$baseUrl/user/imageDelete/${curUser.value.profileImage}"));
+      if (response.statusCode == 200) {
+        curUser.value.profileImage = null;
+        print("Image deleted successfully");
+      } else {
+        print("image deletion failed");
+      }
+    }
+  }
 
   userUpdatePwd(String password) async {
     var url = Uri.parse(
@@ -172,4 +195,43 @@ class UserHandler extends FeedHandler {
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
   }
+
+  Future<Uint8List?> fetchImage() async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/user/view/${curUser.value.profileImage!}"),
+      );
+
+      if (response.statusCode == 200) {
+        return response.bodyBytes; // 바이트 배열로 반환
+      }
+    } catch (e) {
+      print("Error fetching image: $e");
+    }
+    return null; // 에러 발생 시 null 반환
+  }
+
+  manageLoginChange(value) {
+    manageLogin = value;
+    update();
+  }
+
+  manageLoginVerify(String eMail, String password) async {
+    var url = Uri.parse(
+        "$baseUrl/manage/loginVerify?eMail=$eMail&password=$password");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+
+    return result[0]['seq'] as bool;
+  }
+
+  Future<(int?, String?)> ceaseAccountVerify(String eMail) async {
+    var url = Uri.parse("$baseUrl/user/reportVerify?eMail=$eMail");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    return (result[0]['diff'] as int?, result[0]['ceaseReason'] as String?);
+  }
+  // return result[0]['seq'] as bool ;
 }
