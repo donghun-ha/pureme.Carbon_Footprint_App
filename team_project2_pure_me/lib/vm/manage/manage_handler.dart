@@ -72,10 +72,10 @@ class ManageHandler extends GetxController {
     ];
 
     singInUserAverageList.value = [
-      result[0]['average']+1,
-      result[1]['average']+1,
-      result[2]['average']+1,
-      result[3]['average']+1,
+      result[0]['average'],
+      result[1]['average'],
+      result[2]['average'],
+      result[3]['average'],
     ];
   }
 
@@ -136,25 +136,21 @@ class ManageHandler extends GetxController {
     // );
 
     dynamic yesterdaysnp = await _manageFeed
-        .where('state', isEqualTo: '게시')
         .where('writetime', isGreaterThan: yesterday)
         .get();
     tempList.add(yesterdaysnp.size);
 
     dynamic lastweeksnp = await _manageFeed
-        .where('state', isEqualTo: '게시')
         .where('writetime', isGreaterThan: lastweek)
         .get();
     tempList.add(lastweeksnp.size);
 
     dynamic lastmonthsnp = await _manageFeed
-        .where('state', isEqualTo: '게시')
         .where('writetime', isGreaterThan: lastmonth)
         .get();
     tempList.add(lastmonthsnp.size);
 
     dynamic allsnp = await _manageFeed
-        .where('state', isEqualTo: '게시')
         .orderBy('writetime', descending: true)
         .get();
 
@@ -168,14 +164,16 @@ class ManageHandler extends GetxController {
       
   Duration difference = alltimes[0].difference(alltimes[alltimes.length-1]);
 
-  int daysDifference = difference.inDays + 1;
+  int daysDifference = difference.inDays;
 
   List meanTempList =[
-    min(daysDifference, 1),
-    min(daysDifference, 7),
-    min(daysDifference, 30),
-    daysDifference,
+    daysDifference +1,
+    daysDifference~/7 +1,
+    daysDifference~/30 +1,
+    1,
   ] ;
+
+  print(meanTempList);
 
 
 
@@ -187,9 +185,9 @@ class ManageHandler extends GetxController {
       tempList[3],
     ];
     madeFeedAverageList.value = [
-      tempList[0]/meanTempList[0],
-      tempList[1]/meanTempList[1],
-      tempList[2]/meanTempList[2],
+      tempList[3]/meanTempList[0],
+      tempList[3]/meanTempList[1],
+      tempList[3]/meanTempList[2],
       tempList[3]/meanTempList[3],
     ];
   }
@@ -234,29 +232,27 @@ class ManageHandler extends GetxController {
   }
 
 //////FeedManage쪽에서 쓰는 함수들
-  searchFeed(String searchFeedword) async {
-    if (searchFeedword.isEmpty) {
-      _manageFeed
-          .where('state', isEqualTo: '게시')
-          .orderBy('writetime', descending: true)
-          .snapshots()
-          .listen(
-        (event) {
-          searchFeedList.value = event.docs
-              .map(
-                (doc) =>
-                    Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
-              )
-              .toList();
-        },
-      );
-    } else {}
+  fetchFeeds() async {
+    _manageFeed
+        .where('state', isEqualTo: '게시')
+        .orderBy('writetime', descending: true)
+        .snapshots()
+        .listen(
+      (event) {
+        searchFeedList.value = event.docs
+            .map(
+              (doc) =>
+                  Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
+            )
+            .toList();
+      },
+    );
   }
 
-  updateSearchFeedWord(String text) {
-    searchFeedWord = text;
-    update();
-  }
+  // updateSearchFeedWord(String text) {
+  //   searchFeedWord = text;
+  //   update();
+  // }
 
   changeFeedIndex(int index) {
     if (index == searchFeedIndex) {
@@ -318,7 +314,6 @@ class ManageHandler extends GetxController {
       var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
       var result = dataConvertedJSON['result'];
       print(result);
-
   }
 
 
@@ -341,6 +336,7 @@ class ManageHandler extends GetxController {
 ///////////////////reportFeed에서 쓸 함수들
   rptCountAmountChanged(int value){
     rptCountAmount = value;
+    reportFeedListById.value = [];
     update();
   }
   

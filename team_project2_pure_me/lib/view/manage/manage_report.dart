@@ -67,7 +67,7 @@ class ManageReport extends StatelessWidget {
                               ),
                               SizedBox(
                                 height:
-                                    MediaQuery.of(context).size.height * 0.4,
+                                    MediaQuery.of(context).size.height * 0.35,
                                 child: ListView.builder(
                                   itemCount:
                                       vmhandler.reportFeedCountList.length,
@@ -88,7 +88,7 @@ class ManageReport extends StatelessWidget {
                               ),
                               SizedBox(
                                 height:
-                                    MediaQuery.of(context).size.height * 0.4,
+                                    MediaQuery.of(context).size.height * 0.35,
                                 child: ListView.builder(
                                   itemCount:
                                       vmhandler.reportFeedListById.length,

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
@@ -130,14 +130,14 @@ class FeedHandler extends ImageHandler {
   /// 피드 추가시 사진추가 밑 사진주소 가져오기
   ///
   preparingImage(String imageName) async {
-    final firebaseStorage = FirebaseStorage.instance
-        .ref()
-        .child('image/') // 폴더 이름
-        .child(imageName);
-    await firebaseStorage.putFile(imgFile!); // 이미지 저장
+    // final firebaseStorage = FirebaseStorage.instance
+    //     .ref()
+    //     .child('image/') // 폴더 이름
+    //     .child(imageName);
+    // await firebaseStorage.putFile(imgFile!); // 이미지 저장
 
-    String downloadURL = await firebaseStorage.getDownloadURL();
-    return downloadURL;
+    // String downloadURL = await firebaseStorage.getDownloadURL();
+    // return downloadURL;
   }
 
   /// 피드 상새내용

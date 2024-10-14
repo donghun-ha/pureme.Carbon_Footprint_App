@@ -33,7 +33,7 @@ class ManageFeed extends StatelessWidget {
               /// async처리를 위한 퓨처빌더
               return SingleChildScrollView(
                 child: FutureBuilder(
-                    future: vmhandler.searchFeed(vmhandler.searchFeedWord),
+                    future: vmhandler.fetchFeeds(),
                     builder: (context, snapshot) {
                       // if문: 예외처리
                       if (snapshot.connectionState == ConnectionState.waiting) {

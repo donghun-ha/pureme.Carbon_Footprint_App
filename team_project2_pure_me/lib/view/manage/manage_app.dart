@@ -73,6 +73,31 @@ class ManageApp extends StatelessWidget {
   }
 
 
+  Widget _buildUserComparisonChart(ManageHandler manageHandler) {
+    return Container(
+      height: 300,
+      child: SfCartesianChart(
+        primaryXAxis: CategoryAxis(),
+        title: ChartTitle(text: '회원가입하는 유저 수'),
+        legend: Legend(isVisible: true),
+        series: <CartesianSeries>[
+          ColumnSeries<MapEntry<String, int>, String>(
+            dataSource: manageHandler.acountGen(),
+            xValueMapper: (MapEntry<String, int> data, _) => data.key,
+            yValueMapper: (MapEntry<String, int> data, _) => data.value,
+            name: '유저 생성수',
+          ),
+          ColumnSeries<MapEntry<String, double>, String>(
+            dataSource: manageHandler.acountGenAverage(),
+            xValueMapper: (MapEntry<String, double> data, _) => data.key,
+            yValueMapper: (MapEntry<String, double> data, _) => data.value,
+            name: '유저 생성수 평균',
+          ),
+        ],
+      ),
+    );
+  }
+
 
 
   Widget _buildFeedComparisonChart(ManageHandler manageHandler) {
@@ -80,7 +105,7 @@ class ManageApp extends StatelessWidget {
       height: 300,
       child: SfCartesianChart(
         primaryXAxis: CategoryAxis(),
-        title: ChartTitle(text: '카테고리별 탄소 발자국 비교'),
+        title: ChartTitle(text: '피드 생성수'),
         legend: Legend(isVisible: true),
         series: <CartesianSeries>[
           ColumnSeries<MapEntry<String, int>, String>(
@@ -91,31 +116,6 @@ class ManageApp extends StatelessWidget {
           ),
           ColumnSeries<MapEntry<String, double>, String>(
             dataSource: manageHandler.feedGenAverage(),
-            xValueMapper: (MapEntry<String, double> data, _) => data.key,
-            yValueMapper: (MapEntry<String, double> data, _) => data.value,
-            name: '피드 생성수 평균',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUserComparisonChart(ManageHandler manageHandler) {
-    return Container(
-      height: 300,
-      child: SfCartesianChart(
-        primaryXAxis: CategoryAxis(),
-        title: ChartTitle(text: '카테고리별 탄소 발자국 비교'),
-        legend: Legend(isVisible: true),
-        series: <CartesianSeries>[
-          ColumnSeries<MapEntry<String, int>, String>(
-            dataSource: manageHandler.acountGen(),
-            xValueMapper: (MapEntry<String, int> data, _) => data.key,
-            yValueMapper: (MapEntry<String, int> data, _) => data.value,
-            name: '피드 생성수',
-          ),
-          ColumnSeries<MapEntry<String, double>, String>(
-            dataSource: manageHandler.acountGenAverage(),
             xValueMapper: (MapEntry<String, double> data, _) => data.key,
             yValueMapper: (MapEntry<String, double> data, _) => data.value,
             name: '피드 생성수 평균',

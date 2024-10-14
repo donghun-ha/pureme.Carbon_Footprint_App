@@ -4,8 +4,9 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:http/http.dart' as http;
+import 'package:team_project2_pure_me/vm/chart_handler.dart';
 import 'package:team_project2_pure_me/vm/convert/convert_email_to_name.dart';
-import 'package:team_project2_pure_me/vm/user_handler.dart';
+
 
 /* **RankHandler 클래스**
 
@@ -22,7 +23,7 @@ FastAPI 백엔드와 통신하여 랭킹 데이터와 개인의 탄소 절감량
     하지만 실제로 result는 문자열 "OK"이므로, 이를 리스트처럼 접근해 RangeError가 발생 오류 수정.
 */
 
-class RankHandler extends UserHandler {
+class RankHandler extends ChartHandler {
   /// 이메일을 닉네임으로 변환하는 도우미 클래스 인스턴스
   ConvertEmailToName convertEmailToName = ConvertEmailToName();
 
