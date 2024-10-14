@@ -40,7 +40,7 @@ class _HomeState extends State<Home> {
   void onStepCountError(error) {
     print('onStepCountError: $error');
     setState(() {
-      _steps = 'Step Count not available';
+      _steps = '아직 걸음 데이터가 없습니다.';
     });
   }
 
