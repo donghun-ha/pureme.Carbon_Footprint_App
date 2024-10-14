@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:http/http.dart' as http;
+import 'package:team_project2_pure_me/vm/chart_handler.dart';
 import 'package:team_project2_pure_me/vm/convert/convert_email_to_name.dart';
 import 'package:team_project2_pure_me/vm/user_handler.dart';
 
@@ -30,7 +31,7 @@ import 'package:team_project2_pure_me/vm/user_handler.dart';
 	•	이제 로그인 후 curUser가 올바르게 업데이트되면, RankHandler가 자동으로 랭킹 데이터를 다시 가져와 myrank가 정확하게 설정됩니다.
 */
 
-class RankHandler extends UserHandler {
+class RankHandler extends ChartHandler {
   /// 이메일을 닉네임으로 변환하는 도우미 클래스 인스턴스
   ConvertEmailToName convertEmailToName = ConvertEmailToName();
 

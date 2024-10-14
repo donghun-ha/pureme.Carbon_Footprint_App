@@ -51,12 +51,10 @@ class ManageApp extends StatelessWidget {
                         children: [
                           /// List observing을 위한 Obx, Listview당 하나.
                           Obx(() {
-                            return 
-                            _buildUserComparisonChart(vmhandler);
+                            return _buildUserComparisonChart(vmhandler);
                           }),
                           Obx(() {
-                            return 
-                              _buildFeedComparisonChart(vmhandler);
+                            return _buildFeedComparisonChart(vmhandler);
                           }),
                         ],
                       );
@@ -72,16 +70,13 @@ class ManageApp extends StatelessWidget {
     );
   }
 
-
-
-
   Widget _buildFeedComparisonChart(ManageHandler manageHandler) {
-    return Container(
+    return SizedBox(
       height: 300,
       child: SfCartesianChart(
-        primaryXAxis: CategoryAxis(),
-        title: ChartTitle(text: '카테고리별 탄소 발자국 비교'),
-        legend: Legend(isVisible: true),
+        primaryXAxis: const CategoryAxis(),
+        title: const ChartTitle(text: '카테고리별 탄소 발자국 비교'),
+        legend: const Legend(isVisible: true),
         series: <CartesianSeries>[
           ColumnSeries<MapEntry<String, int>, String>(
             dataSource: manageHandler.feedGen(),
@@ -101,12 +96,12 @@ class ManageApp extends StatelessWidget {
   }
 
   Widget _buildUserComparisonChart(ManageHandler manageHandler) {
-    return Container(
+    return SizedBox(
       height: 300,
       child: SfCartesianChart(
-        primaryXAxis: CategoryAxis(),
-        title: ChartTitle(text: '카테고리별 탄소 발자국 비교'),
-        legend: Legend(isVisible: true),
+        primaryXAxis: const CategoryAxis(),
+        title: const ChartTitle(text: '카테고리별 탄소 발자국 비교'),
+        legend: const Legend(isVisible: true),
         series: <CartesianSeries>[
           ColumnSeries<MapEntry<String, int>, String>(
             dataSource: manageHandler.acountGen(),
@@ -124,15 +119,4 @@ class ManageApp extends StatelessWidget {
       ),
     );
   }
-
-
-
-
-
-
-
-
-
-
-
 }//End

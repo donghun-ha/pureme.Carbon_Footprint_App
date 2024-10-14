@@ -254,4 +254,36 @@ class Home extends StatelessWidget {
       }),
     );
   }
-}
+
+  Widget _buildStepCounter() {
+    return SizedBox(
+      height: 300,
+      child: Card(
+        elevation: 3,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                '오늘의 걸음 수',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 12),
+              Text(
+                _steps,
+                style:
+                    const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: requestPermission,
+                child: Text('걸음 수 갱신', style: TextStyle(fontSize: 12)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}// END

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:team_project2_pure_me/vm/chart_handler.dart';
-import 'package:team_project2_pure_me/vm/rank_handler.dart';
+import '../../vm/rank_handler.dart';
 
 class UserCarbonChart extends StatelessWidget {
   final chartHandler = Get.put(RankHandler());
@@ -133,22 +132,20 @@ class UserCarbonChart extends StatelessWidget {
 //     );
 //   }
 
-//   Widget _buildAdditionalInfo() {
-//     return Padding(
-//       padding: const EdgeInsets.all(16.0),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Text(
-//             '에너지 절감량: ${chartHandler.getFormattedValue(chartHandler.chartTtotalEnergyReduction.value)} MWh', 
-//             style: TextStyle(fontWeight: FontWeight.bold)
-//           ),
-//           Text(
-//             '심은 나무 수: ${chartHandler.getFormattedValue(chartHandler.treesPlanted.value)} 그루', 
-//             style: TextStyle(fontWeight: FontWeight.bold)
-//           ),
-//         ],
-//       ),
-//     );
-//   }
+  Widget _buildAdditionalInfo() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+              '에너지 절감량: ${chartHandler.getFormattedValue(chartHandler.chartTtotalEnergyReduction.value)} MWh',
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(
+              '심은 나무 수: ${chartHandler.getFormattedValue(chartHandler.treesPlanted.value)} 그루',
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
 }

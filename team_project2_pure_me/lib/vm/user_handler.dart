@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
@@ -9,6 +10,9 @@ import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/feed_handler.dart';
 
 class UserHandler extends FeedHandler {
+  final String baseUrl =
+      Platform.isAndroid ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
+
   RxList<User> userList = <User>[].obs;
 
   final curUser = User(

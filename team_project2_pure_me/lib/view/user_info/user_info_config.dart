@@ -81,8 +81,8 @@ class UserInfoConfig extends StatelessWidget {
                           ),
                           const Divider(),
                           ListTile(
-                            leading:
-                                Icon(Icons.insert_chart, color: Colors.blue),
+                            leading: const Icon(Icons.insert_chart,
+                                color: Colors.blue),
                             title: const Text('나의 차트'),
                             onTap: () => Get.to(() => UserCarbonChart()),
                           ),
