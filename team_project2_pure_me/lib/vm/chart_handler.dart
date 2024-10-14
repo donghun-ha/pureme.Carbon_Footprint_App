@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:team_project2_pure_me/vm/rank_handler.dart';
-import 'dart:io' show Platform;
+// import 'package:team_project2_pure_me/vm/rank_handler.dart';
+// import 'dart:io' show Platform;
 import 'package:team_project2_pure_me/vm/user_handler.dart';
 
 class ChartHandler extends UserHandler {

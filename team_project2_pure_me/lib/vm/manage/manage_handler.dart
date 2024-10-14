@@ -32,7 +32,7 @@ class ManageHandler extends GetxController {
   int searchUserRadio = 7;
 
   //Report 에서 쓸 변수들
-    final CollectionReference _feed =
+  final CollectionReference _feed =
       FirebaseFirestore.instance.collection('post');
 
   var feedList = <Feed>[].obs;
@@ -43,8 +43,9 @@ class ManageHandler extends GetxController {
 
   int? reportFeedIndex;
 
-  final String manageUrl =
-      Platform.isAndroid ? 'http://10.0.2.2:8000/manage' : 'http://127.0.0.1:8000/manage';
+  final String manageUrl = Platform.isAndroid
+      ? 'http://10.0.2.2:8000/manage'
+      : 'http://127.0.0.1:8000/manage';
 
   final String baseUrl =
       Platform.isAndroid ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
@@ -79,24 +80,24 @@ class ManageHandler extends GetxController {
     ];
   }
 
-  acountGen(){
-    Map<String,int> aaa = {
-      'day' : signInUserList[0],
-      'week' : signInUserList[1],
-      'month' : signInUserList[2],
-      'all' : signInUserList[3],
+  acountGen() {
+    Map<String, int> aaa = {
+      'day': signInUserList[0],
+      'week': signInUserList[1],
+      'month': signInUserList[2],
+      'all': signInUserList[3],
     };
 
     List<MapEntry<String, int>> bbb = aaa.entries.toList();
     return bbb;
   }
 
-  acountGenAverage(){
-    Map<String,double> aaa = {
-      'day' : singInUserAverageList[0],
-      'week' : singInUserAverageList[1],
-      'month' : singInUserAverageList[2],
-      'all' : singInUserAverageList[3],
+  acountGenAverage() {
+    Map<String, double> aaa = {
+      'day': singInUserAverageList[0],
+      'week': singInUserAverageList[1],
+      'month': singInUserAverageList[2],
+      'all': singInUserAverageList[3],
     };
 
     List<MapEntry<String, double>> bbb = aaa.entries.toList();
@@ -154,8 +155,6 @@ class ManageHandler extends GetxController {
         .orderBy('writetime', descending: true)
         .get();
 
-
-
     tempList.add(allsnp.size);
     List alldocs = allsnp.docs as List;
     List alltimes = alldocs.map((e) {
@@ -176,7 +175,14 @@ class ManageHandler extends GetxController {
   print(meanTempList);
 
 
+    int daysDifference = difference.inDays + 1;
 
+    List meanTempList = [
+      min(daysDifference, 1),
+      min(daysDifference, 7),
+      min(daysDifference, 30),
+      daysDifference,
+    ];
 
     madeFeedList.value = [
       tempList[0],
@@ -192,29 +198,28 @@ class ManageHandler extends GetxController {
     ];
   }
 
-  feedGen(){
-    Map<String,int> aaa = {
-      'day' : madeFeedList[0],
-      'week' : madeFeedList[1],
-      'month' : madeFeedList[2],
-      'all' : madeFeedList[3],
+  feedGen() {
+    Map<String, int> aaa = {
+      'day': madeFeedList[0],
+      'week': madeFeedList[1],
+      'month': madeFeedList[2],
+      'all': madeFeedList[3],
     };
 
     List<MapEntry<String, int>> bbb = aaa.entries.toList();
     return bbb;
   }
 
-  feedGenAverage(){
-    Map<String,double> aaa = {
-      'day' : madeFeedAverageList[0],
-      'week' : madeFeedAverageList[1],
-      'month' : madeFeedAverageList[2],
-      'all' : madeFeedAverageList[3],
+  feedGenAverage() {
+    Map<String, double> aaa = {
+      'day': madeFeedAverageList[0],
+      'week': madeFeedAverageList[1],
+      'month': madeFeedAverageList[2],
+      'all': madeFeedAverageList[3],
     };
 
     List<MapEntry<String, double>> bbb = aaa.entries.toList();
     return bbb;
-
   }
 
   test2() async {
@@ -291,7 +296,6 @@ class ManageHandler extends GetxController {
   }
 
   searchUserIndexChanged(int idx) {
-
     if (idx == searchUserIndex) {
       searchUserIndex = null;
     } else {
@@ -305,17 +309,16 @@ class ManageHandler extends GetxController {
     update();
   }
 
-
-
-  ceaseUser(String managerEMail, String ceaseReason)async{
-    String user_eMail = searchUserList.value[searchUserIndex!].eMail; 
-      var url = Uri.parse("$manageUrl/accountCeaseInsert?user_eMail=$user_eMail&manager_manageEMail=$managerEMail&ceaseReason=$ceaseReason&ceasePeroid=$searchUserRadio");
-      var response = await http.get(url);
-      var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-      var result = dataConvertedJSON['result'];
-      print(result);
+  ceaseUser(String managerEMail, String ceaseReason) async {
+    // ignore: invalid_use_of_protected_member
+    String user_eMail = searchUserList.value[searchUserIndex!].eMail;
+    var url = Uri.parse(
+        "$manageUrl/accountCeaseInsert?user_eMail=$user_eMail&manager_manageEMail=$managerEMail&ceaseReason=$ceaseReason&ceasePeroid=$searchUserRadio");
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    print(result);
   }
-
 
   Future<Uint8List?> fetchImage(String profileImage) async {
     try {
@@ -332,20 +335,17 @@ class ManageHandler extends GetxController {
     return null; // 에러 발생 시 null 반환
   }
 
-
 ///////////////////reportFeed에서 쓸 함수들
-  rptCountAmountChanged(int value){
+  rptCountAmountChanged(int value) {
     rptCountAmount = value;
     reportFeedListById.value = [];
     update();
   }
-  
-  
-  
-  
+
   ///feed가 report받은 숫자를 전부 씀
   queryReportcount() async {
-    var url = Uri.parse("$manageUrl/queryReportcount?leastAmount=$rptCountAmount");
+    var url =
+        Uri.parse("$manageUrl/queryReportcount?leastAmount=$rptCountAmount");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List result = dataConvertedJSON['result'];
@@ -374,7 +374,7 @@ class ManageHandler extends GetxController {
   }
 
   /// 어떤 feed를 가져왔는지를 바꾸기 위한 함수
-  
+
   reportFeedIndexChanged(int idx) {
     if (idx == reportFeedIndex) {
       reportFeedIndex = null;
@@ -387,18 +387,18 @@ class ManageHandler extends GetxController {
     }
   }
 
-  reportFeed(String docId, String manager_manageEMail, String changeKind)async{
+  reportFeed(
+      String docId, String manager_manageEMail, String changeKind) async {
     await _feed.doc(docId).update({'state': '숨김'});
-    var url = Uri.parse("$manageUrl/reportFeed?manager_manageEMail=$manager_manageEMail&feedId=$docId&changeKind=$changeKind");
+    var url = Uri.parse(
+        "$manageUrl/reportFeed?manager_manageEMail=$manager_manageEMail&feedId=$docId&changeKind=$changeKind");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
     print(result);
-
-
   }
 
-  fetchFeed(){
+  fetchFeed() {
     _feed
         .where('state', isEqualTo: '게시')
         .orderBy('writetime', descending: true)
@@ -412,15 +412,13 @@ class ManageHandler extends GetxController {
             .toList();
       },
     );
-
   }
 
-  test()async{
-    var rawData =await _feed.doc(reportFeedCountList[reportFeedIndex!].feedId)
-                  .get()
-                  ;
-    var data = Feed.fromMap(rawData.data() as Map<String, dynamic>,reportFeedCountList[reportFeedIndex!].feedId);
+  test() async {
+    var rawData =
+        await _feed.doc(reportFeedCountList[reportFeedIndex!].feedId).get();
+    var data = Feed.fromMap(rawData.data() as Map<String, dynamic>,
+        reportFeedCountList[reportFeedIndex!].feedId);
     return data;
   }
-
 }//End

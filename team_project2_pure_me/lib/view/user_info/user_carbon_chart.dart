@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:team_project2_pure_me/vm/rank_handler.dart';
 
 class UserCarbonChart extends StatelessWidget {
   final chartHandler = Get.put(RankHandler());
-
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +59,7 @@ class UserCarbonChart extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             '${chartHandler.curUser.value.nickName}님의 탄소 발자국',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -74,11 +73,11 @@ class UserCarbonChart extends StatelessWidget {
     return Container(
       height: 300,
       child: SfCircularChart(
-        title: ChartTitle(
+        title: const ChartTitle(
           text: '탄소 발자국 분석',
           textStyle: TextStyle(fontWeight: FontWeight.bold),
         ),
-        legend: Legend(
+        legend: const Legend(
           isVisible: true,
           overflowMode: LegendItemOverflowMode.wrap,
         ),
@@ -87,7 +86,7 @@ class UserCarbonChart extends StatelessWidget {
             dataSource: chartHandler.getSortedCarbonData(),
             xValueMapper: (MapEntry<String, double> data, _) => data.key,
             yValueMapper: (MapEntry<String, double> data, _) => data.value,
-            dataLabelSettings: DataLabelSettings(isVisible: true),
+            dataLabelSettings: const DataLabelSettings(isVisible: true),
           )
         ],
       ),
@@ -102,11 +101,11 @@ class UserCarbonChart extends StatelessWidget {
         children: [
           Text(
             '총 탄소 발자국: ${chartHandler.getFormattedValue(chartHandler.chartTotalCarbonFootprint.value)} kg CO2',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           Text(
             '총 절감량: ${chartHandler.getFormattedValue(chartHandler.totalCarbonReduction.value)} kg CO2',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -117,9 +116,9 @@ class UserCarbonChart extends StatelessWidget {
     return Container(
       height: 300,
       child: SfCartesianChart(
-        primaryXAxis: CategoryAxis(),
-        title: ChartTitle(text: '카테고리별 탄소 발자국 비교'),
-        legend: Legend(isVisible: true),
+        primaryXAxis: const CategoryAxis(),
+        title: const ChartTitle(text: '카테고리별 탄소 발자국 비교'),
+        legend: const Legend(isVisible: true),
         series: <CartesianSeries>[
           ColumnSeries<MapEntry<String, double>, String>(
             dataSource: chartHandler.getSortedCarbonData(),
@@ -146,13 +145,11 @@ class UserCarbonChart extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '에너지 절감량: ${chartHandler.getFormattedValue(chartHandler.chartTtotalEnergyReduction.value)} MWh', 
-            style: TextStyle(fontWeight: FontWeight.bold)
-          ),
+              '에너지 절감량: ${chartHandler.getFormattedValue(chartHandler.chartTtotalEnergyReduction.value)} MWh',
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           Text(
-            '심은 나무 수: ${chartHandler.getFormattedValue(chartHandler.treesPlanted.value)} 그루', 
-            style: TextStyle(fontWeight: FontWeight.bold)
-          ),
+              '심은 나무 수: ${chartHandler.getFormattedValue(chartHandler.treesPlanted.value)} 그루',
+              style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );

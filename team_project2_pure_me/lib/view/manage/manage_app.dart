@@ -51,12 +51,10 @@ class ManageApp extends StatelessWidget {
                         children: [
                           /// List observing을 위한 Obx, Listview당 하나.
                           Obx(() {
-                            return 
-                            _buildUserComparisonChart(vmhandler);
+                            return _buildUserComparisonChart(vmhandler);
                           }),
                           Obx(() {
-                            return 
-                              _buildFeedComparisonChart(vmhandler);
+                            return _buildFeedComparisonChart(vmhandler);
                           }),
                         ],
                       );
@@ -101,7 +99,7 @@ class ManageApp extends StatelessWidget {
 
 
   Widget _buildFeedComparisonChart(ManageHandler manageHandler) {
-    return Container(
+    return SizedBox(
       height: 300,
       child: SfCartesianChart(
         primaryXAxis: CategoryAxis(),
