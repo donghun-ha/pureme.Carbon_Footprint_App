@@ -254,4 +254,4 @@ class Home extends StatelessWidget {
       }),
     );
   }
-}
+}// END

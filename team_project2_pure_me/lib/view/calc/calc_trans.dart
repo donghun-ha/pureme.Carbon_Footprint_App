@@ -6,6 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/vm/calc/calc_handler.dart';
 import 'package:http/http.dart' as http;
 
+// ignore: must_be_immutable
 class CalcTrans extends StatelessWidget {
   CalcTrans({super.key});
   final TextEditingController transController = TextEditingController();

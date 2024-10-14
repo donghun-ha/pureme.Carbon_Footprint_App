@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+// import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,7 +8,7 @@ import 'package:team_project2_pure_me/view/feed/feed_detail.dart';
 import 'package:team_project2_pure_me/view/feed/feed_insert.dart';
 import 'package:team_project2_pure_me/vm/rank_handler.dart';
 import 'user_info_config.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 
 class UserInfoHome extends StatelessWidget {
   UserInfoHome({super.key});
@@ -67,30 +67,34 @@ class UserInfoHome extends StatelessWidget {
                                             CrossAxisAlignment.start,
                                         children: [
                                           FutureBuilder(
-                                            future: vmhandler.fetchImage(),
-                                            builder: (context,snapshot) {
-                                            if (snapshot.connectionState == ConnectionState.waiting) {
-                                              return const Center(
-                                                child: CircularProgressIndicator(),
-                                              );
-                                            } else if (snapshot.hasError) {
-                                              return Center(
-                                                child: Text("Error : ${snapshot.error}"),
-                                              );
-                                            }else{
-                                              return CircleAvatar(
-                                                radius: 65,
-                                                backgroundImage: vmhandler.curUser
-                                                            .value.profileImage ==
-                                                        null
-                                                    ? const AssetImage(
-                                                        'images/co2.png')
-                                                    : MemoryImage(
-                                                      snapshot.data!
-                                                    ),
-                                              );}
-                                            }
-                                          ),
+                                              future: vmhandler.fetchImage(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.waiting) {
+                                                  return const Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  );
+                                                } else if (snapshot.hasError) {
+                                                  return Center(
+                                                    child: Text(
+                                                        "Error : ${snapshot.error}"),
+                                                  );
+                                                } else {
+                                                  return CircleAvatar(
+                                                    radius: 65,
+                                                    backgroundImage: vmhandler
+                                                                .curUser
+                                                                .value
+                                                                .profileImage ==
+                                                            null
+                                                        ? const AssetImage(
+                                                            'images/co2.png')
+                                                        : MemoryImage(
+                                                            snapshot.data!),
+                                                  );
+                                                }
+                                              }),
                                           const SizedBox(width: 22),
                                           Expanded(
                                             child: Column(
@@ -104,7 +108,7 @@ class UserInfoHome extends StatelessWidget {
                                                     GestureDetector(
                                                       onTap: () {
                                                         Get.to(() =>
-                                                                UserInfoConfig());
+                                                            UserInfoConfig());
                                                       },
                                                       child: Image.asset(
                                                           'images/settings.png',
@@ -129,7 +133,8 @@ class UserInfoHome extends StatelessWidget {
                                                 ),
                                                 const SizedBox(height: 8),
                                                 Text(
-                                                  vmhandler.curUser.value.nickName,
+                                                  vmhandler
+                                                      .curUser.value.nickName,
                                                   style: const TextStyle(
                                                       fontSize: 25,
                                                       fontWeight:
@@ -238,12 +243,4 @@ class UserInfoHome extends StatelessWidget {
           ));
     });
   }
-
-
-
-
-
-
-
-
 }//End

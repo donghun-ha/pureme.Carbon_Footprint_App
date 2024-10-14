@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:team_project2_pure_me/view/login_signin/login.dart';
 import 'package:team_project2_pure_me/vm/user_handler.dart';
 
 class SignUp extends StatelessWidget {

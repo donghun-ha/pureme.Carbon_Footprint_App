@@ -6,6 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/calc/calc_handler.dart';
 
+// ignore: must_be_immutable
 class CalcElec extends StatelessWidget {
   CalcElec({super.key});
   final TextEditingController electricController = TextEditingController();
