@@ -1,3 +1,15 @@
+buildscript {
+    ext.kotlin_version = '1.8.0' // 또는 원하는 Kotlin 버전
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.6.0' // 또는 원하는 Android Gradle Plugin 버전
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
 plugins {
     id "com.android.application"
     // START: FlutterFire Configuration
@@ -28,7 +40,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace = "com.team_project2_pure_me.app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdkVersion 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -41,8 +53,8 @@ android {
         applicationId = "com.team_project2_pure_me.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdkVersion 26
+        targetSdkVersion 34
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
     }

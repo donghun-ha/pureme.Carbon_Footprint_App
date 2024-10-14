@@ -2,249 +2,74 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/view/calc/calc_home.dart';
 import 'package:team_project2_pure_me/vm/rank_handler.dart';
+import 'package:pedometer/pedometer.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-class Home extends StatelessWidget {
-  Home({super.key});
+class Home extends StatefulWidget {
+  const Home({super.key});
 
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   final handler = Get.put(RankHandler());
+  late Stream<StepCount> _stepCountStream;
+  String _steps = '0';
+
+  @override
+  void initState() {
+    super.initState();
+    requestPermission();
+  }
+
+  Future<void> requestPermission() async {
+    if (await Permission.activityRecognition.request().isGranted) {
+      initPlatformState();
+    } else {
+      print("Activity Recognition 권한이 거부되었습니다.");
+    }
+  }
+
+  void onStepCount(StepCount event) {
+    setState(() {
+      _steps = event.steps.toString();
+    });
+  }
+
+  void onStepCountError(error) {
+    print('onStepCountError: $error');
+    setState(() {
+        _steps = '  [ 3 ]  ';
+
+     //  _steps = '       [0] 걸음 \n "이제 걸어야 할\n         시간!"';
+    });
+  }
+
+  void initPlatformState() {
+    _stepCountStream = Pedometer.stepCountStream;
+    _stepCountStream.listen(onStepCount).onError(onStepCountError);
+
+    if (!mounted) return;
+  }
 
   @override
   Widget build(BuildContext context) {
     handler.fetchTotalCarbon();
     return Scaffold(
       backgroundColor: Colors.transparent,
-      // 필요한 변수: curUser, curTotalCarbon
-      // 필요 함수: curUser는 로그인시 이미 바뀌어서 상관없지만
-      // curTotalCarbon 바꾸기 위한 vmhandler.fetchTotalCarbon 한번 불러줘야함
-      // 나무 계산식, 에너지 계산식 등은 총 탄소량 curTotalCarbon 전부 계산가능하므로
-      // view쪽에서 추가바람.
-      // 나머지 글씨들은 전부
-      body: GetBuilder<RankHandler>(builder: (controllor) {
+      body: GetBuilder<RankHandler>(builder: (controller) {
         return Obx(
           () {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(30, 100, 30, 0),
+              padding: const EdgeInsets.fromLTRB(25, 80, 25, 0),
               child: Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: DecoratedBox(
-                        decoration: const BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 10,
-                              offset: Offset(0, -3),
-                            )
-                          ],
-                        ),
-                        child: Card(
-                          elevation: 3,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Card(
-                                  elevation: 1.5,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          controllor.curUser.value.nickName,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const Text('비기너'),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        "총 ${controllor.totalReducedCarbonFootprint.value} KG",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      const Text(
-                                        '탄소량을 줄이는 활동을 하셨습니다!',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Image.asset(
-                                  'images/earth.png',
-                                  width: 100,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        '총 ${controllor.totalCarbonFootprint.value} KG',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ), // 탄소량 출력
-                                      const Text('탄소량을 배출했습니다!'),
-                                    ],
-                                  ),
-                                ),
-                                IntrinsicHeight(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Image.asset(
-                                            'images/bioenergy.png',
-                                            width: 40,
-                                          ),
-                                          const Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Text(
-                                              '총 에너지\n감소량',
-                                              style: TextStyle(fontSize: 12),
-                                            ),
-                                          ),
-                                          Text(
-                                            "${controllor.totalEnergyReduction.value} L",
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ), // 총에너지 감소량
-                                        ],
-                                      ),
-                                      const VerticalDivider(
-                                        thickness: 2,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 28.0),
-                                        child: Row(
-                                          children: [
-                                            Image.asset(
-                                              'images/tree.png',
-                                              width: 40,
-                                            ),
-                                            const Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text(
-                                                '심은\n나무 수',
-                                                style: TextStyle(fontSize: 12),
-                                              ),
-                                            ),
-                                            Text(
-                                              '${controllor.treesFootprint.value} 그루',
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ), // 총에너지 감소량
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 54),
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.65,
-                        height: 213,
-                        child: DecoratedBox(
-                          decoration: const BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 10,
-                                offset: Offset(0, -3),
-                              )
-                            ],
-                          ),
-                          child: Card(
-                            elevation: 3,
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(16, 16, 0, 16),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          // 오늘의 탄소 발자국은 0Kg!\n
-                                          Text(
-                                            '지속 가능한 지구를 위해\n함께 노력해요!',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Color(0xff808080),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 25),
-                                      child: Image.asset(
-                                        'images/co2.png',
-                                        width: 50,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(18.0),
-                                  child: TextButton(
-                                    style: TextButton.styleFrom(
-                                      backgroundColor: const Color(0xFFFFEF9D),
-                                      side:
-                                          const BorderSide(color: Colors.black),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      Get.to(() => const CalcHome());
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Image.asset(
-                                          'images/footprint.png',
-                                          width: 60,
-                                        ),
-                                        const Text(
-                                          '   탄소 발자국 계산하기',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    _buildUserInfoCard(controller),
+                    const SizedBox(height: 20),
+                    _buildBottomSection(controller),
                   ],
                 ),
               ),
@@ -254,4 +79,318 @@ class Home extends StatelessWidget {
       }),
     );
   }
-}// END
+
+  Widget _buildUserInfoCard(RankHandler controller) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: Card(
+        elevation: 23,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Card(
+                elevation: 1.5,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        controller.curUser.value.nickName,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Text('비기너'),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [const Text('지금까지', style: const TextStyle(fontSize: 25)), const SizedBox(height: 5),
+                    Text(
+                      "[ ${controller.totalReducedCarbonFootprint.value} KG ]",
+                      style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    ),
+                    const Text('탄소량을 줄이는 활동을 하셨습니다!', style: const TextStyle(fontSize: 20)), const SizedBox(height: 10),
+                  ],
+                ),
+              ),
+              Image.asset(
+                'images/earth.png',
+                width: 100,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Text(
+                      '총 탄소배출량 :  ${controller.totalCarbonFootprint.value} KG ', 
+                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
+              IntrinsicHeight(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Row(
+                      children: [
+                        Image.asset('images/bioenergy.png', width: 40),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('총 에너지\n감소량', style: TextStyle(fontSize: 12)),
+                        ),
+                        Text(
+                          "${controller.totalEnergyReduction.value} L",
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const VerticalDivider(thickness: 2),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 3.0),
+                      child: Row(
+                        children: [
+                          Image.asset('images/tree.png', width: 40),
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text('심은\n나무 수', style: TextStyle(fontSize: 12)),
+                          ),
+                          Text(
+                            '${controller.treesFootprint.value} 그루',
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomSection(RankHandler controller) {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildCarbonFootprintCalculator(controller),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _buildStepCounter(),
+        ),
+      ],
+    );
+  }
+
+ Widget _buildCarbonFootprintCalculator(RankHandler controller) {
+  return SizedBox(
+    height: 340, 
+    child: Card( 
+      elevation: 25,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), 
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: const BoxDecoration(
+              color: Color(0xFFFFEF9D),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Row(
+              children: [
+                Image.asset('images/co2.png', width: 50),
+                const SizedBox(width: 10),
+                const Expanded(
+                  child: Text(
+                    '지속 가능한 \n지구를 위해\n함께 해요  :)',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFFFFEF9D).withOpacity(0.3),
+                      ),
+                      child: Center(
+                        child: Material(
+                          elevation: 8,
+                          shape: const CircleBorder(),
+                          color: const Color(0xFFFFEF9D),
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: () {
+                              Get.to(() => const CalcHome())!
+                                  .then((value) => controller.fetchTotalCarbon());
+                            },
+                            child: Container(
+                              width: 160,
+                              height: 160,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset('images/footprint.png', width: 60),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    '탄소 발자국\n계산하기',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+
+Widget _buildStepCounter() {
+  return SizedBox(
+    height: 340,
+    child: Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Column(
+        children: [
+          Container(
+            height:95,
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 117, 199, 120),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              
+            ),
+            
+              child: const Center(
+                    child: Text(
+      '오늘의 걸음 수',
+      style: TextStyle(
+        fontSize: 22, 
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+    ),
+  ),
+),
+
+
+          Expanded(
+  child: Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 180,
+              height: 180,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Colors.green.shade200, Colors.green.shade600],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.green.withOpacity(0.3),
+                    spreadRadius: 5,
+                    blurRadius: 10,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 150,
+              height: 150,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                border: Border.all(color: Colors.green.shade300, width: 4),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _steps.isEmpty ? '0' : _steps,
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green.shade700,
+                      ),
+                    ),
+                    Text(
+                      '걸음',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.green.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        
+        
+      ],
+    ),
+  ),
+)
+        ],
+      ),
+    ),
+  );
+}}

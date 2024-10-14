@@ -212,7 +212,7 @@ class CalcTrans extends StatelessWidget {
 
   giveData(CalcHandler vmHandler) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/footprint/insert?category_kind=${vmHandler.transDropdownEn[vmHandler.currentTranIndex]}&user_eMail=${box.read('pureme_id')}&createDate=${DateTime.now()}&amount=${transController.text.trim()}');
+        'http://10.0.2.2:8000/footprint/insert?category_kind=${vmHandler.transDropdownEn[vmHandler.currentTranIndex]}&user_eMail=${box.read('pureme_id')}&createDate=${DateTime.now()}&amount=${transController.text.trim()}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     result = dataConvertedJSON['message'];
