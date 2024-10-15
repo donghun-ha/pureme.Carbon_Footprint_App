@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
-import 'package:team_project2_pure_me/view/manage/manage_feed_detial.dart';
+import 'package:team_project2_pure_me/view/manage/manage_feed_detail.dart';
 import 'package:team_project2_pure_me/vm/manage/manage_handler.dart';
 
 class ManageReport extends StatelessWidget {
