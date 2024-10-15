@@ -130,7 +130,8 @@ class FeedDetail extends StatelessWidget {
                                 likeCount:
                                     feedHandler.likeCount.value, // 값을 받아와야함
                                 isLiked: feedHandler.isLike.value, // 값을 받아와야함
-                                onTap: feedHandler.onLikeButtonTapped,
+                                onTap: (value) =>
+                                    feedHandler.onLikeButtonTapped(value),
                               ),
                               IconButton(
                                 onPressed: () =>
@@ -187,6 +188,7 @@ class FeedDetail extends StatelessWidget {
                   color: Colors.black,
                 ),
                 Expanded(
+                  // 댓글리스트
                   child: ListView(
                     children: [
                       buildReplyList(feedHandler.replyList),
@@ -250,12 +252,6 @@ class FeedDetail extends StatelessWidget {
                 children: [
                   Text(reply.userName!),
                   Text(reply.content),
-                  // IconButton(
-                  //   onPressed: () {
-                  //     print(reply.reply);
-                  //   },
-                  //   icon: const Icon(Icons.circle),
-                  // ),
                 ],
               ),
               reply.authorEMail == box.read('pureme_id')

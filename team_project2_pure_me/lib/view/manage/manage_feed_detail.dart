@@ -21,8 +21,6 @@ class ManageFeedDetail extends StatelessWidget {
 
   final ConvertEmailToName convertEmailToName = ConvertEmailToName();
 
-
-
   @override
   Widget build(BuildContext context) {
     feedHandler.detailFeed(feedValue.feedName!);
@@ -68,35 +66,6 @@ class ManageFeedDetail extends StatelessWidget {
                                     Text("${feedHandler.curFeed[0].userName}님"),
                                   ],
                                 ),
-                                Row(
-                                  children: [
-                                    // 로그인한 이용자와 게시글의 작성자가 같을경우 보이게
-                                    box.read("pureme_id") ==
-                                            feedValue.authorEMail
-                                        ? IconButton(
-                                            onPressed: () {
-                                              // 삭제로직
-                                              deleteAlert();
-                                            },
-                                            icon: const Icon(
-                                              Icons.delete_outline,
-                                              color: Colors.red,
-                                            ),
-                                          )
-                                        : 
-                                    IconButton(
-                                      onPressed: () {
-                                        ///박상범 수정
-                                        reportAlart();
-                                      },
-                                      icon: const Icon(
-                                        Icons.report_problem,
-                                        color:
-                                            Color.fromARGB(255, 220, 184, 23),
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ],
                             ),
                           ),
@@ -106,17 +75,17 @@ class ManageFeedDetail extends StatelessWidget {
                         width: double.infinity,
                         height: MediaQuery.of(context).size.height * 0.21,
                         color: Colors.grey[300],
-                        child:
-                            FutureBuilder(
-                              future: feedHandler.detailFeed(feedValue.feedName!),
-                              builder: (context, snapshot) {
-                                if (feedHandler.curFeed[0].feedImagePath.isEmpty){
-                                  return SizedBox.shrink();                                  
-                                }else{
-                                  return Image.network(feedHandler.curFeed[0].feedImagePath);
-                                }
+                        child: FutureBuilder(
+                            future: feedHandler.detailFeed(feedValue.feedName!),
+                            builder: (context, snapshot) {
+                              if (feedHandler
+                                  .curFeed[0].feedImagePath.isEmpty) {
+                                return const SizedBox.shrink();
+                              } else {
+                                return Image.network(
+                                    feedHandler.curFeed[0].feedImagePath);
                               }
-                            ),
+                            }),
                       ),
                       Text(
                         '${feedHandler.curFeed[0].writeTime.year}-${feedHandler.curFeed[0].writeTime.month.toString().padLeft(2, '0')}-${feedHandler.curFeed[0].writeTime.day.toString().padLeft(2, '0')} ${feedHandler.curFeed[0].writeTime.hour.toString().padLeft(2, '0')}:${feedHandler.curFeed[0].writeTime.minute.toString().padLeft(2, '0')}',
@@ -379,26 +348,30 @@ class ManageFeedDetail extends StatelessWidget {
             Text('게시자 eMail : ${feedHandler.curFeed[0].authorEMail}'),
             const Divider(),
             const Text('신고 사유(최대 20)'),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             //// 텍스트필드쪽 데코레이션
             Container(
               height: 100,
               width: 200,
               decoration: BoxDecoration(
                 border: Border.all(
-                  width: 1.0, 
+                  width: 1.0,
                 ),
-                borderRadius: BorderRadius.circular(4.0), 
+                borderRadius: BorderRadius.circular(4.0),
               ),
               child: TextField(
                 controller: reportController,
-                maxLength: 20, /// MySQL의 틀에 맞춰 최대갯수 20개로 제한함
+                maxLength: 20,
+
+                /// MySQL의 틀에 맞춰 최대갯수 20개로 제한함
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
-                  counterText: '', 
-                  contentPadding: EdgeInsets.all(8.0), 
+                  counterText: '',
+                  contentPadding: EdgeInsets.all(8.0),
                 ),
               ),
             )
@@ -407,28 +380,31 @@ class ManageFeedDetail extends StatelessWidget {
       ),
       actions: [
         TextButton(
-          onPressed: ()async{
+          onPressed: () async {
             /// 신고자 이메일
             String eMail = box.read("pureme_id");
-            if (reportController.text.trim().isEmpty){
+            if (reportController.text.trim().isEmpty) {
               /// null값 처리
               Get.snackbar(
-                '경고', 
+                '경고',
                 '신고사유를 입력해주세요',
                 backgroundColor: Colors.red,
                 colorText: Colors.yellow,
-                );
+              );
               return;
             }
-            String result =await feedHandler.reportFeed(eMail ,feedValue.feedName!, reportController.text.trim());
+            String result = await feedHandler.reportFeed(
+                eMail, feedValue.feedName!, reportController.text.trim());
             //////// 완료 로직: 텍스트필드 제거
             reportController.clear();
             //// 신고는 한게시글당 하나만 가능하기 때문에 그를 위한 로직
-            if (result == 'OK'){
+            if (result == 'OK') {
               Get.back();
-              Get.back(); /// 신고하면 그즉시 피드화면으로 나가지도록 로직 구현
+              Get.back();
+
+              /// 신고하면 그즉시 피드화면으로 나가지도록 로직 구현
               reportComplete();
-            } else{
+            } else {
               Get.back();
               reportFailed();
             }
@@ -443,14 +419,14 @@ class ManageFeedDetail extends StatelessWidget {
     );
   }
 
-/// 신고 성공시 띄우는 Dialog
-  reportComplete(){
+  /// 신고 성공시 띄우는 Dialog
+  reportComplete() {
     Get.defaultDialog(
       title: '신고 완료',
       middleText: '정상적으로 신고되었습니다.',
       actions: [
         TextButton(
-          onPressed: ()async{
+          onPressed: () async {
             Get.back();
           },
           child: const Text('확인'),
@@ -459,14 +435,14 @@ class ManageFeedDetail extends StatelessWidget {
     );
   }
 
-/// 신고 실패시 띄우는 Dialog
-  reportFailed(){
+  /// 신고 실패시 띄우는 Dialog
+  reportFailed() {
     Get.defaultDialog(
       title: '신고 실패',
       middleText: '이전에 한번 신고하셨습니다.',
       actions: [
         TextButton(
-          onPressed: ()async{
+          onPressed: () async {
             Get.back();
           },
           child: const Text('확인'),
@@ -474,10 +450,4 @@ class ManageFeedDetail extends StatelessWidget {
       ],
     );
   }
-
-
-
-
-
-
 } // End

@@ -6,15 +6,11 @@ import 'package:get/get_rx/get_rx.dart';
 import 'package:health/health.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:team_project2_pure_me/model/lev.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/feed_handler.dart';
 
 class UserHandler extends FeedHandler {
-  final String baseUrl =
-      Platform.isAndroid ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
-
   RxList<User> userList = <User>[].obs;
 
   final curUser = User(
@@ -27,12 +23,13 @@ class UserHandler extends FeedHandler {
           profileImage: 'sample.png')
       .obs; // fetch해오기 위한 User class
 
-  List<Lev> levList = <Lev>[].obs;
   int curLev = 0; // point를 통해 계산한 레벨을 저장할 변수
 
   bool eMailUnique = false; // 회원가입시 이메일 확인을 위한 변수
 
-  String? profileImageName; /// 
+  String? profileImageName;
+
+  ///
 
   RxBool profileImageChanged = false.obs;
 
@@ -49,15 +46,15 @@ class UserHandler extends FeedHandler {
   Future<void> requestHealthPermission() async {
     // 권한 상태 확인
     var status = await Permission.sensors.status;
-    print(status);
+    // print(status);
 
     if (status.isDenied) {
       // 권한 요청
       if (await Permission.sensors.request().isGranted) {
-        print("Health permission granted");
+        // print("Health permission granted");
         healthStep();
       } else {
-        print("Health permission denied");
+        // print("Health permission denied");
       }
     } else if (status.isGranted) {
       healthStep();
@@ -97,7 +94,7 @@ class UserHandler extends FeedHandler {
     // start, end // date
     int? steps = await Health().getTotalStepsInInterval(midnight, now);
     step.value = steps ?? 0;
-    print(steps);
+    // print(steps);
   }
 
   Future<bool> loginVerify(String eMail, String password) async {
@@ -140,15 +137,13 @@ class UserHandler extends FeedHandler {
       String phone) async {
     if (password != passwordVerify) {
       return false;
-    } else {}
-    var url = Uri.parse(
-        "$baseUrl/user/signIn?eMail=$eMail&nickname=$nickName&password=$password&phone=$phone");
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    // ignore: unused_local_variable
-    var result = dataConvertedJSON['result'];
+    } else {
+      var url = Uri.parse(
+          "$baseUrl/user/signIn?eMail=$eMail&nickname=$nickName&password=$password&phone=$phone");
+      await http.get(url);
 
-    return true;
+      return true;
+    }
   }
 
   fetchUserLev() {
@@ -163,11 +158,8 @@ class UserHandler extends FeedHandler {
   userUpdate(String eMail, String nickName, String phone) async {
     var url = Uri.parse(
         "$baseUrl/user/update?cureMail=${curUser.value.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone");
-    print(url);
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    // ignore: unused_local_variable
-    var result = dataConvertedJSON['result'];
+    // print(url);
+    await http.get(url);
 
     curUser.value.nickName = nickName;
     curUser.value.eMail = eMail;
@@ -182,23 +174,20 @@ class UserHandler extends FeedHandler {
     var url = Uri.parse(
         "$baseUrl/user/updateAll?cureMail=${curUser.value.eMail}&eMail=$eMail&nickname=$nickName&phone=$phone&&profileImage=$profileImage");
 
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    // ignore: unused_local_variable
-    var result = dataConvertedJSON['result'];
+    await http.get(url);
 
-    if(profileImage == 'null'){
+    if (profileImage == 'null') {
       curUser.value.profileImage = null;
-    }else{
+    } else {
       curUser.value.profileImage = profileImage;
     }
-    
-    print(curUser.value.profileImage);
+
+    // print(curUser.value.profileImage);
     curUser.value.nickName = nickName;
     curUser.value.eMail = eMail;
     curUser.value.phone = phone;
     profileImageChanged.value = !profileImageChanged.value;
-    print(profileImageChanged.value);
+    // print(profileImageChanged.value);
     update();
   }
 
@@ -210,7 +199,7 @@ class UserHandler extends FeedHandler {
       List preFileName = imageFile!.path.split('/');
       String fileExtention =
           preFileName[preFileName.length - 1].toString().split('.')[1];
-      profileImageName ='${curUser.value.eMail}.$fileExtention';
+      profileImageName = '${curUser.value.eMail}.$fileExtention';
 
       update();
     }
@@ -225,23 +214,20 @@ class UserHandler extends FeedHandler {
     request.files.add(multipartFile);
     request.fields['prefix'] = curUser.value.eMail;
 
-    var response = await request.send();
-    if (response.statusCode == 200) {
-      print('success');
-    } else {
-      print("error");
-    }
+    await request.send();
+    // var response = await request.send();
+    // if (response.statusCode == 200) {
+    //   // print('success');
+    // } else {
+    //   // print("error");
+    // }
   }
 
-  
-
-  userImageNull(){
+  userImageNull() {
     imageFile = null;
     userProfileImageChanged = true;
     update();
   }
-
-
 
   userImageDelete() async {
     if (curUser.value.profileImage != null) {
@@ -249,13 +235,11 @@ class UserHandler extends FeedHandler {
           Uri.parse("$baseUrl/user/imageDelete/${curUser.value.profileImage}"));
       if (response.statusCode == 200) {
         curUser.value.profileImage = null;
-        print("Image deleted successfully");
+        // print("Image deleted successfully");
       } else {
-        print("image deletion failed");
+        // print("image deletion failed");
       }
     }
-
-
   }
 
   userUpdatePwd(String password) async {
@@ -274,7 +258,7 @@ class UserHandler extends FeedHandler {
     curUser.value.point += addPoint;
     var url = Uri.parse(
         "$baseUrl/user/updatepoint?eMail=${curUser.value.eMail}&point=${curUser.value.point}");
-    print(url);
+    // print(url);
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     // ignore: unused_local_variable
@@ -282,15 +266,17 @@ class UserHandler extends FeedHandler {
   }
 
   Future<Uint8List?> fetchImage() async {
-    if(curUser.value.profileImage!=null){
+    if (curUser.value.profileImage != null) {
       final response = await http.get(
         Uri.parse("$baseUrl/user/view/${curUser.value.profileImage!}"),
       );
 
       if (response.statusCode == 200) {
         return response.bodyBytes; // 바이트 배열로 반환
+      } else {
+        return null;
       }
-    }else{
+    } else {
       return null; // 에러 발생 시 null 반환
     }
   }

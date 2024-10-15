@@ -16,11 +16,6 @@ class UserInfoHome extends StatelessWidget {
   final vmhandler = Get.put(RankHandler());
   final box = GetStorage();
 
-  // 더미 데이터
-
-  final int level = 3;
-  final List<String> posts = List.generate(6, (index) => 'Post ${index + 1}');
-
   @override
   Widget build(BuildContext context) {
     vmhandler.fetchFeed();
@@ -220,19 +215,6 @@ class UserInfoHome extends StatelessWidget {
                                             ), // 이미지 변경
                                           ),
                                         );
-                                        // Container(
-                                        //   decoration: BoxDecoration(
-                                        //       color: Colors.grey[300],
-                                        //       borderRadius: BorderRadius.circular(10),
-                                        //       image: const DecorationImage(
-                                        //           image: AssetImage('images/earth.png'),
-                                        //           fit: BoxFit.cover)),
-                                        //   child: Center(
-                                        //       child: Text(posts[index],
-                                        //           style: const TextStyle(
-                                        //               color: Colors.white,
-                                        //               fontWeight: FontWeight.bold))),
-                                        // );
                                       },
                                     )
                                   : const SizedBox(
@@ -251,4 +233,4 @@ class UserInfoHome extends StatelessWidget {
           ));
     });
   }
-}//End
+} //End

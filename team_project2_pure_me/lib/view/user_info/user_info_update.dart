@@ -12,7 +12,6 @@ class UserInfoUpdate extends StatelessWidget {
   UserInfoUpdate({super.key});
 
   // 더미 데이터
-  final int level = 3;
 
   final vmhandler = Get.put(RankHandler());
   final box = GetStorage();
@@ -86,7 +85,7 @@ class UserInfoUpdate extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   FutureBuilder(
-                                      future: _fetchImage(),
+                                      future: vmhandler.fetchImage(),
                                       builder: (context, snapshot) {
                                         if (snapshot.connectionState ==
                                             ConnectionState.waiting) {
@@ -172,12 +171,6 @@ class UserInfoUpdate extends StatelessWidget {
                                         const SizedBox(height: 5),
                                         Row(
                                           children: [
-                                            Text(
-                                                style: const TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight:
-                                                        FontWeight.normal),
-                                                'Level $level'),
                                             const SizedBox(width: 8),
                                             Image.asset('images/sprout.png',
                                                 width: 24, height: 24),
@@ -228,6 +221,7 @@ class UserInfoUpdate extends StatelessWidget {
                               padding: const EdgeInsets.all(16.0),
                               child: ElevatedButton(
                                 onPressed: () {
+                                  // 이미지피커를 눌러서 이미지파일을 골랐거나, 이미지가 원래 있는데 기본이미지로 바꿨을 경우
                                   if (vmhandler.imageFile != null ||
                                       (vmhandler.curUser.value.profileImage !=
                                               null &&
@@ -274,21 +268,21 @@ class UserInfoUpdate extends StatelessWidget {
     });
   }
 
-  Future<Uint8List?> _fetchImage() async {
-    try {
-      final response = await http.get(
-        Uri.parse(
-            "http://127.0.0.1:8000/user/view/${vmhandler.curUser.value.profileImage!}"),
-      );
+  // Future<Uint8List?> _fetchImage() async {
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse(
+  //           "http://127.0.0.1:8000/user/view/${vmhandler.curUser.value.profileImage!}"),
+  //     );
 
-      if (response.statusCode == 200) {
-        return response.bodyBytes; // 바이트 배열로 반환
-      }
-    } catch (e) {
-      print("Error fetching image: $e");
-    }
-    return null; // 에러 발생 시 null 반환
-  }
+  //     if (response.statusCode == 200) {
+  //       return response.bodyBytes; // 바이트 배열로 반환
+  //     }
+  //   } catch (e) {
+  //     print("Error fetching image: $e");
+  //   }
+  //   return null; // 에러 발생 시 null 반환
+  // }
 
   _showDialog() {
     Get.defaultDialog(

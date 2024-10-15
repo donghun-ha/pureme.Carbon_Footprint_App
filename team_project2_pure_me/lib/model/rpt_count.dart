@@ -1,18 +1,14 @@
 /// manage_report 에 쓰일 report count를 위한 모델
-class RptCount{
+class RptCount {
   String feedId;
-  int feed_count;
+  int feedCount;
 
   RptCount({
     required this.feedId,
-    required this.feed_count,
+    required this.feedCount,
   });
 
   factory RptCount.fromMap(Map<String, dynamic> res) {
-    return RptCount(
-        feedId: res['feedId'],
-        feed_count: res['feed_count']
-    );
+    return RptCount(feedId: res['feedId'], feedCount: res['feed_count']);
   }
-
 }

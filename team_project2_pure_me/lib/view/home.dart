@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:team_project2_pure_me/view/calc/calc_home.dart';
 import 'package:team_project2_pure_me/vm/rank_handler.dart';
-// import 'package:permission_handler/permission_handler.dart';
 
 class Home extends StatelessWidget {
   Home({super.key});

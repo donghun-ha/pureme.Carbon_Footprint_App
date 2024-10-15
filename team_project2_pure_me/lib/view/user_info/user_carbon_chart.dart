@@ -4,6 +4,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:team_project2_pure_me/vm/rank_handler.dart';
 
 class UserCarbonChart extends StatelessWidget {
+  UserCarbonChart({super.key});
+
   final chartHandler = Get.put(RankHandler());
 
   @override
@@ -70,7 +72,7 @@ class UserCarbonChart extends StatelessWidget {
   }
 
   Widget _buildCarbonFootprintChart() {
-    return Container(
+    return SizedBox(
       height: 300,
       child: SfCircularChart(
         title: const ChartTitle(
@@ -113,7 +115,7 @@ class UserCarbonChart extends StatelessWidget {
   }
 
   Widget _buildCategoryComparisonChart() {
-    return Container(
+    return SizedBox(
       height: 300,
       child: SfCartesianChart(
         primaryXAxis: const CategoryAxis(),

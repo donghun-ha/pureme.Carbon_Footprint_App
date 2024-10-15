@@ -6,14 +6,12 @@ import 'package:team_project2_pure_me/view/manage/manage_home.dart';
 import 'package:team_project2_pure_me/view/tabbar_page.dart';
 import 'package:team_project2_pure_me/vm/rank_handler.dart';
 
-// ignore: must_be_immutable
 class Login extends StatelessWidget {
   Login({super.key});
 
   final GetStorage box = GetStorage();
   final TextEditingController idController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
-  late String? result = '__';
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +52,7 @@ class Login extends StatelessWidget {
                                   vmHandler.manageLoginChange(value);
                                 },
                               ),
-                              Text('유저 로그인'),
+                              const Text('유저 로그인'),
                               const SizedBox(
                                 width: 60,
                               ),
@@ -64,7 +62,7 @@ class Login extends StatelessWidget {
                                   onChanged: (value) {
                                     vmHandler.manageLoginChange(value);
                                   }),
-                              Text('관리자 로그인'),
+                              const Text('관리자 로그인'),
                             ],
                           ),
                           Padding(
@@ -135,9 +133,10 @@ class Login extends StatelessWidget {
                                   _showalibaba();
                                   return;
                                 }
-                                if (vmHandler.manageLogin == 0){
-                                  var cease = await vmHandler.ceaseAccountVerify(
-                                      idController.text.trim());
+                                if (vmHandler.manageLogin == 0) {
+                                  var cease =
+                                      await vmHandler.ceaseAccountVerify(
+                                          idController.text.trim());
                                   if (cease.$1 != null) {
                                     showCease(cease.$2!, cease.$1!);
                                     return;
@@ -225,14 +224,20 @@ class Login extends StatelessWidget {
   showCease(String ceaseReason, int ceaseDate) {
     Get.defaultDialog(
       title: '계정 정지됨',
-
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('귀하의 계정은 정지되었습니다.', style: TextStyle(fontWeight: FontWeight.bold),),
-          const SizedBox(height: 5,),
+          const Text(
+            '귀하의 계정은 정지되었습니다.',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
           Text('정지 사유: $ceaseReason'),
-          const SizedBox(height: 5,),
+          const SizedBox(
+            height: 5,
+          ),
           Text('남은 정지일: $ceaseDate'),
         ],
       ),
