@@ -284,6 +284,10 @@ class Home extends StatelessWidget {
                 ),
               ),
             ),
+            IconButton(
+              onPressed: () => handler.healthStep(),
+              icon: const Icon(Icons.refresh),
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
