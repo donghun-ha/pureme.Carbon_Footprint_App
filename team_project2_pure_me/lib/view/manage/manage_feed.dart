@@ -59,7 +59,7 @@ class ManageFeed extends StatelessWidget {
                             child: TextField(
                               controller: _searchController,
                               decoration: const InputDecoration(
-                                labelText: "유저 검색"
+                                labelText: "유저로 검색"
                               ),                            
                             ),
                           )
@@ -114,7 +114,7 @@ class ManageFeed extends StatelessWidget {
                                       ),
                                       SizedBox(
                                         height:
-                                            MediaQuery.of(context).size.height * 0.4,
+                                            MediaQuery.of(context).size.height * 0.3,
                                         child: ListView.builder(
                                           itemCount: vmhandler.searchFeedList.length,
                                           itemBuilder: (context, index) {
@@ -138,8 +138,72 @@ class ManageFeed extends StatelessWidget {
                                         ),
                                       ),
                                       SizedBox(
-                                        height: 100,
+                                        height: Get.height*0.34,
+                                        child: vmhandler.searchFeedIndex != null? Card(
+                                          child: FutureBuilder(
+                                            future: vmhandler.fetchImage(vmhandler.searchFeedList[vmhandler.searchFeedIndex!].imageName), 
+                                            builder: (context, snapshot) {
+                                            if (snapshot.connectionState == ConnectionState.waiting) {
+                                              return const Center(
+                                                child: CircularProgressIndicator(),
+                                              );
+                                            } else if (snapshot.hasError) {
+                                              return Center(
+                                                child: Text("Error : ${snapshot.error}"),
+                                              );
+                                            } else{
+                                              return Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      const SizedBox(width: 8,),
+                                                      SizedBox(
+                                                        width: Get.width*0.3,
+                                                        height: Get.width*0.21,
+                                                        child: Image.network(
+                                                          vmhandler.searchFeedList[vmhandler.searchFeedIndex!].feedImagePath,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 15,
+                                                      ),
+                                                      SizedBox(
+                                                        width: Get.width*0.7-47,
+                                                        child: Column(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            Text('작성자: ${vmhandler.searchFeedList[vmhandler.searchFeedIndex!].authorEMail}'),
+                                                            Text('feedId: ${vmhandler.searchFeedList[vmhandler.searchFeedIndex!].feedName}'),
+                                                            Text('게시일: ${vmhandler.searchFeedList[vmhandler.searchFeedIndex!].writeTime.toString().substring(0,10)}'),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const Divider(),
+                                                  const Text('내용'),
+                                                  const Divider(),
+                                                  Text(
+                                                    vmhandler.searchFeedList[vmhandler.searchFeedIndex!].content,
+                                                    softWrap: true,  // 자동 줄바꿈을 허용
+                                                    maxLines: null,  
+                                                    overflow: TextOverflow.visible,  // 텍스트가 잘리지 않고 모두 표시되도록 설정
+                                                  )
+
+                                                ],
+                                              );
+                                            }
+                                            },
+                                          ),
+                                        ) :null
                                       ),
+                                      SizedBox(height: Get.height*0.01,),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
@@ -224,6 +288,7 @@ class ManageFeed extends StatelessWidget {
 
             Get.back();
             vmhandler.dailogFeedRadioChanged(0);
+            vmhandler.changeFeedIndex(vmhandler.searchFeedIndex!);
           },
           child: const Text('처리'),
         ),

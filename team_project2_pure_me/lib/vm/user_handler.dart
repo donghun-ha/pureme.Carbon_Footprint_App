@@ -282,7 +282,7 @@ class UserHandler extends FeedHandler {
   }
 
   Future<Uint8List?> fetchImage() async {
-    try {
+    if(curUser.value.profileImage!=null){
       final response = await http.get(
         Uri.parse("$baseUrl/user/view/${curUser.value.profileImage!}"),
       );
@@ -290,10 +290,9 @@ class UserHandler extends FeedHandler {
       if (response.statusCode == 200) {
         return response.bodyBytes; // 바이트 배열로 반환
       }
-    } catch (e) {
-      print("Error fetching image: $e");
+    }else{
+      return null; // 에러 발생 시 null 반환
     }
-    return null; // 에러 발생 시 null 반환
   }
 
   manageLoginChange(value) {
@@ -316,7 +315,6 @@ class UserHandler extends FeedHandler {
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
-    print(result);
     return (result[0]['diff'] as int?, result[0]['ceaseReason'] as String?);
   }
 }

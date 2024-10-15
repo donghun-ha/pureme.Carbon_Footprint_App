@@ -385,7 +385,7 @@ class ManageHandler extends GetxController {
     var result = dataConvertedJSON['result'];
   }
 
-/////// FeedDetail쪽 이미지를 불러오는 함수.. 자꾸 이미지가 없어서 그걸 바꿔줌
+/////// USER쪽 이미지를 불러오는 함수.. 자꾸 이미지가 없어서 그걸 바꿔줌
   Future<Uint8List?> fetchImage(String profileImage) async {
     final response = await http.get(
       Uri.parse("$baseUrl/user/view/$profileImage"),
@@ -393,6 +393,7 @@ class ManageHandler extends GetxController {
 
     if (response.statusCode == 200) {
       return response.bodyBytes; // 바이트 배열로 반환
+      
     }
     return null; // 에러 발생 시 null 반환
   }

@@ -260,6 +260,14 @@ class ManageUser extends StatelessWidget {
                                                     onPressed: ()async{
                                                       String mEmail = await box.read('manager');
                                                       vmhandler.ceaseUser(mEmail, reportReasonController.text.trim());
+                                                      Get.defaultDialog(
+                                                        title: '계정 정지',
+                                                        middleText: '계정 정지가 완료되었습니다.',
+                                                        actions: [
+                                                          ElevatedButton(onPressed: () {Get.back(); vmhandler.update();}, child: const  Text("확인"))
+                                                        ]
+                                                      );
+                                                      reportReasonController.clear();
                                                     }, 
                                                     style: ElevatedButton.styleFrom(
                                                       backgroundColor: Colors.amber[50]
