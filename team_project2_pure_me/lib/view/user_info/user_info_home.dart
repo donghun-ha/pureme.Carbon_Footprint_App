@@ -81,17 +81,22 @@ class UserInfoHome extends StatelessWidget {
                                                         "Error : ${snapshot.error}"),
                                                   );
                                                 } else {
-                                                  return CircleAvatar(
-                                                    radius: 65,
-                                                    backgroundImage: vmhandler
-                                                                .curUser
-                                                                .value
-                                                                .profileImage ==
-                                                            null
-                                                        ? const AssetImage(
-                                                            'images/co2.png')
-                                                        : MemoryImage(
-                                                            snapshot.data!),
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: CircleAvatar(
+                                                      radius: 65,
+                                                      backgroundImage: vmhandler
+                                                                  .curUser
+                                                                  .value
+                                                                  .profileImage ==
+                                                              null
+                                                          ? const AssetImage(
+                                                              'images/useru.jpg')
+                                                          : MemoryImage(
+                                                              snapshot.data!),
+                                                    ),
                                                   );
                                                 }
                                               }),
@@ -117,34 +122,38 @@ class UserInfoHome extends StatelessWidget {
                                                     ),
                                                   ],
                                                 ),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'Level $level',
-                                                      style: const TextStyle(
-                                                          fontSize: 18),
-                                                    ),
-                                                    const SizedBox(width: 8),
-                                                    Image.asset(
-                                                        'images/sprout.png',
-                                                        width: 24,
-                                                        height: 24),
-                                                  ],
-                                                ),
                                                 const SizedBox(height: 8),
-                                                Text(
-                                                  vmhandler
-                                                      .curUser.value.nickName,
-                                                  style: const TextStyle(
-                                                      fontSize: 25,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(
-                                                  vmhandler.curUser.value.eMail,
-                                                  style: const TextStyle(
-                                                      fontSize: 16),
-                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(horizontal: 5),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        vmhandler.curUser.value
+                                                            .nickName,
+                                                        style: const TextStyle(
+                                                            fontSize: 25,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text(
+                                                        '이메일 :  ${vmhandler.curUser.value.eMail}',
+                                                        style: const TextStyle(
+                                                            fontSize: 16),
+                                                      ),
+                                                      Text(
+                                                        '번호 : ${vmhandler.curUser.value.phone}',
+                                                        style: const TextStyle(
+                                                          fontSize: 16,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
                                               ],
                                             ),
                                           ),

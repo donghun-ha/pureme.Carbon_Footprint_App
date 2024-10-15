@@ -234,7 +234,7 @@ class SignUp extends StatelessWidget {
                                       TextButton(
                                         style: TextButton.styleFrom(
                                           backgroundColor: const Color.fromARGB(
-                                              255, 255, 50, 50),
+                                              255, 147, 167, 32),
                                           side: const BorderSide(
                                               color: Colors.black),
                                           shape: RoundedRectangleBorder(

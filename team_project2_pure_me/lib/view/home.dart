@@ -255,7 +255,7 @@ class Home extends StatelessWidget {
 
   Widget _buildStepCounter() {
     return SizedBox(
-      height: 340,
+      height: 320,
       child: Card(
         elevation: 8,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
