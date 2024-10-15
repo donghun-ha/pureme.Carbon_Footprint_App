@@ -57,7 +57,6 @@ class FeedHome extends StatelessWidget {
                             Feed feed = feedHandler.feedList[index];
                             return GestureDetector(
                               onTap: () {
-                                feedHandler.detailFeed(feed.feedName!);
                                 Get.to(
                                   () => FeedDetail(),
                                   arguments: feed,
