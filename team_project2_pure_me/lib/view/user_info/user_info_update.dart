@@ -103,9 +103,10 @@ class UserInfoUpdate extends StatelessWidget {
                                             vmhandler.imageFile == null
                                                 ? CircleAvatar(
                                                     radius: 50,
-                                                    backgroundImage: vmhandler.curUser
-                                                                .value.profileImage ==
-                                                            null
+                                                    backgroundImage: 
+                                                    (vmhandler.userProfileImageChanged)
+                                                    ?const AssetImage('images/co2.png')
+                                                      :(vmhandler.curUser.value.profileImage == null)
                                                         ? const AssetImage(
                                                             'images/co2.png')
                                                         : NetworkImage(
@@ -134,7 +135,7 @@ class UserInfoUpdate extends StatelessWidget {
                                                 ),
                                                 TextButton(
                                                   onPressed: () {
-                                                    vmhandler.userImageDelete();
+                                                    vmhandler.userImageNull();
                                                   },
                                                   child: const Text(
                                                     '기본이미지',
@@ -217,13 +218,17 @@ class UserInfoUpdate extends StatelessWidget {
                               padding: const EdgeInsets.all(16.0),
                               child: ElevatedButton(
                                 onPressed: () {
-                                  if (vmhandler.imageFile != null) {
-                                    vmhandler.userImageInsert();
+                                  if (vmhandler.imageFile != null
+                                  || (vmhandler.curUser.value.profileImage != null && vmhandler.imageFile == null)
+                                  ) {
+                                    if(vmhandler.imageFile != null){
+                                      vmhandler.userImageInsert();
+                                    }
                                     vmhandler.userUpdateAll(
                                         vmhandler.curUser.value.eMail,
                                         nicknameController.text.trim(),
                                         phoneController.text.trim(),
-                                        vmhandler.profileImageName!);
+                                        vmhandler.userProfileImageChanged ?'null' :vmhandler.profileImageName!);
                                   } else {
                                     vmhandler.userUpdate(
                                       vmhandler.curUser.value.eMail,

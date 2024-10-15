@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/view/login_signin/login.dart';
 import 'package:team_project2_pure_me/view/user_info/user_carbon_chart.dart';
+import 'package:team_project2_pure_me/view/user_info/user_donation.dart'; // UserDonation import
 import 'user_info_update.dart';
 import 'user_info_password.dart';
 
@@ -81,10 +82,18 @@ class UserInfoConfig extends StatelessWidget {
                           ),
                           const Divider(),
                           ListTile(
-                            leading:
-                                Icon(Icons.insert_chart, color: Colors.blue),
+                            leading: const Icon(Icons.insert_chart,
+                                color: Colors.blue),
                             title: const Text('나의 차트'),
                             onTap: () => Get.to(() => UserCarbonChart()),
+                          ),
+                          const Divider(),
+                          ListTile(
+                            leading:
+                                const Icon(Icons.favorite, color: Colors.red),
+                            title: const Text('기부하기'), // 기부하기 항목 추가
+                            onTap: () => Get.to(() =>
+                                const UserDonation()), // UserDonation으로 이동
                           ),
                           const Divider(),
                           ListTile(
@@ -113,10 +122,14 @@ class UserInfoConfig extends StatelessWidget {
   _showDialog() {
     Get.defaultDialog(
       title: '로그아웃',
-      middleText: '로그아웃이 완료되었습니다.',
+      middleText: '로그아웃을 하시겠습니까?',
       backgroundColor: Colors.white,
       barrierDismissible: false,
       actions: [
+        TextButton(
+          onPressed: () => Get.back(),
+          child: const Text('아니오'),
+        ),
         TextButton(
           onPressed: () {
             box.remove('pureme_id');
@@ -124,7 +137,7 @@ class UserInfoConfig extends StatelessWidget {
               () => Login(),
             );
           },
-          child: const Text('OK'),
+          child: const Text('예'),
         ),
       ],
     );

@@ -6,6 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/vm/calc/calc_handler.dart';
 import 'package:http/http.dart' as http;
 
+// ignore: must_be_immutable
 class CalcRecycle extends StatelessWidget {
   CalcRecycle({super.key});
   final TextEditingController paperController = TextEditingController();
@@ -238,7 +239,7 @@ class CalcRecycle extends StatelessWidget {
   giveData(
       CalcHandler vmHandler, String kind, String amount, String email) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/footprint/insert?category_kind=$kind&amount=$amount&user_eMail=$email&createDate=${DateTime.now()}');
+        'http://10.0.2.2:8000/footprint/insert?category_kind=$kind&amount=$amount&user_eMail=$email&createDate=${DateTime.now()}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     result = dataConvertedJSON['message'];

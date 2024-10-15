@@ -368,8 +368,8 @@ async def calculate_with_reduction(user_eMail: str):
         summary = {
             'total_carbon_footprint': round(total_carbon_footprint, 2),
             'total_carbon_reduction': round(total_carbon_reduction, 2),
-            'total_energy_reduction': round(total_energy_reduction, 2),  # 리터 단위
-            'total_trees_planted': round(total_trees_planted, 2),
+            'total_energy_reduction': round(total_energy_reduction, 1),  # 리터 단위
+            'total_trees_planted': round(total_trees_planted, 1),
             'average_comparison': average_comparison
         }
 

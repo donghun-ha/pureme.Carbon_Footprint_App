@@ -23,47 +23,48 @@ class ManageApp extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
               title: const Text(
-                'APP 관리',
+                'APP 통계',
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               backgroundColor: Colors.transparent,
             ),
 
             /// update 추적을 위한 겟빌더
-            body: GetBuilder<ManageHandler>(
-              builder: (controller) {
-                //// async를 위한 퓨처빌더
-                return FutureBuilder(
-                  ///signInUserList, madeFeedList 를 가져오는 함수
-                  future: vmhandler.fetchAppManage(),
-                  builder: (ccc, snapshot) {
-                    //// if문: 예외처리들
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text("Error : ${snapshot.error}"),
-                      );
-                    } else {
-                      return Column(
-                        children: [
-                          /// List observing을 위한 Obx, Listview당 하나.
-                          Obx(() {
-                            return 
-                            _buildUserComparisonChart(vmhandler);
-                          }),
-                          Obx(() {
-                            return 
-                              _buildFeedComparisonChart(vmhandler);
-                          }),
-                        ],
-                      );
-                    }
-                  },
-                );
-              },
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GetBuilder<ManageHandler>(
+                builder: (controller) {
+                  //// async를 위한 퓨처빌더
+                  return FutureBuilder(
+                    ///signInUserList, madeFeedList 를 가져오는 함수
+                    future: vmhandler.fetchAppManage(),
+                    builder: (ccc, snapshot) {
+                      //// if문: 예외처리들
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text("Error : ${snapshot.error}"),
+                        );
+                      } else {
+                        return Column(
+                          children: [
+                            /// List observing을 위한 Obx, Listview당 하나.
+                            Obx(() {
+                              return _buildUserComparisonChart(vmhandler);
+                            }),
+                            Obx(() {
+                              return _buildFeedComparisonChart(vmhandler);
+                            }),
+                          ],
+                        );
+                      }
+                    },
+                  );
+                },
+              ),
             ),
             backgroundColor: Colors.transparent,
           ),
@@ -73,14 +74,39 @@ class ManageApp extends StatelessWidget {
   }
 
 
-
-
-  Widget _buildFeedComparisonChart(ManageHandler manageHandler) {
+  Widget _buildUserComparisonChart(ManageHandler manageHandler) {
     return Container(
       height: 300,
       child: SfCartesianChart(
         primaryXAxis: CategoryAxis(),
-        title: ChartTitle(text: '카테고리별 탄소 발자국 비교'),
+        title: ChartTitle(text: '회원가입하는 유저 수'),
+        legend: Legend(isVisible: true),
+        series: <CartesianSeries>[
+          ColumnSeries<MapEntry<String, int>, String>(
+            dataSource: manageHandler.acountGen(),
+            xValueMapper: (MapEntry<String, int> data, _) => data.key,
+            yValueMapper: (MapEntry<String, int> data, _) => data.value,
+            name: '유저 생성수',
+          ),
+          ColumnSeries<MapEntry<String, double>, String>(
+            dataSource: manageHandler.acountGenAverage(),
+            xValueMapper: (MapEntry<String, double> data, _) => data.key,
+            yValueMapper: (MapEntry<String, double> data, _) => data.value,
+            name: '유저 생성수 평균',
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+  Widget _buildFeedComparisonChart(ManageHandler manageHandler) {
+    return SizedBox(
+      height: 300,
+      child: SfCartesianChart(
+        primaryXAxis: CategoryAxis(),
+        title: ChartTitle(text: '피드 생성수'),
         legend: Legend(isVisible: true),
         series: <CartesianSeries>[
           ColumnSeries<MapEntry<String, int>, String>(
@@ -91,31 +117,6 @@ class ManageApp extends StatelessWidget {
           ),
           ColumnSeries<MapEntry<String, double>, String>(
             dataSource: manageHandler.feedGenAverage(),
-            xValueMapper: (MapEntry<String, double> data, _) => data.key,
-            yValueMapper: (MapEntry<String, double> data, _) => data.value,
-            name: '피드 생성수 평균',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUserComparisonChart(ManageHandler manageHandler) {
-    return Container(
-      height: 300,
-      child: SfCartesianChart(
-        primaryXAxis: CategoryAxis(),
-        title: ChartTitle(text: '카테고리별 탄소 발자국 비교'),
-        legend: Legend(isVisible: true),
-        series: <CartesianSeries>[
-          ColumnSeries<MapEntry<String, int>, String>(
-            dataSource: manageHandler.acountGen(),
-            xValueMapper: (MapEntry<String, int> data, _) => data.key,
-            yValueMapper: (MapEntry<String, int> data, _) => data.value,
-            name: '피드 생성수',
-          ),
-          ColumnSeries<MapEntry<String, double>, String>(
-            dataSource: manageHandler.acountGenAverage(),
             xValueMapper: (MapEntry<String, double> data, _) => data.key,
             yValueMapper: (MapEntry<String, double> data, _) => data.value,
             name: '피드 생성수 평균',

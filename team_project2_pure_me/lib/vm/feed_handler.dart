@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/model/feed.dart';
@@ -23,21 +24,7 @@ class FeedHandler extends ImageHandler {
   final feedList = <Feed>[].obs;
 
   /// detailFeed
-  final curFeed = <Feed>[
-    Feed(
-        authorEMail: '',
-        content: '',
-        feedImagePath: '',
-        imageName: '',
-        writeTime: DateTime.now(),
-        reply: [
-          {
-            'writer': '',
-            'content': '',
-          },
-        ],
-        feedState: '')
-  ].obs;
+  final curFeed = <Feed>[].obs;
 
   /// feedDetail화면에서 쓸 replyList
   final replyList = <Reply>[].obs;
@@ -89,6 +76,7 @@ class FeedHandler extends ImageHandler {
 
     var url = Uri.parse(
         "$baseUrl/feed/updateLike?feedId=${curFeed[0].feedName}&userEmail=${box.read('pureme_id')}&heart=$changeLike");
+    // ignore: unused_local_variable
     final response = await http.get(url); // GET 요청
     getFeedLike();
     return !isLiked;
@@ -182,17 +170,14 @@ class FeedHandler extends ImageHandler {
   }
 
   //// 박상범 추가, Feed를 Report함
-  reportFeed(String eMail, String docId, String reportReason)async{
+  reportFeed(String eMail, String docId, String reportReason) async {
     var url = Uri.parse(
         "$baseUrl/feed/updateReport?feedId=$docId&userEmail=$eMail&reportReason=$reportReason");
     final response = await http.get(url); // GET 요청
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
     return result;
-
-    
   }
-
 
   /// 댓글 추가
   /// argument = docId 댓글 작성위치

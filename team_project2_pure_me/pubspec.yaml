@@ -60,6 +60,19 @@ dependencies:
   # Charts
   syncfusion_flutter_charts: ^27.1.52
 
+  # Web View
+  webview_flutter: ^4.8.0 
+  
+  # Health
+  health: ^11.1.0
+  permission_handler: ^10.0.0
+  # pedometer: ^4.0.2
+
+  sensors_plus: ^6.0.1
+
+  # Auto_Size_Text
+  auto_size_text: ^3.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
