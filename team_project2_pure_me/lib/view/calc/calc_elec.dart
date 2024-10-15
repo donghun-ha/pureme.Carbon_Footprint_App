@@ -1,17 +1,13 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/calc/calc_handler.dart';
 
-// ignore: must_be_immutable
 class CalcElec extends StatelessWidget {
   CalcElec({super.key});
   final TextEditingController electricController = TextEditingController();
   final TextEditingController gasController = TextEditingController();
-  late String? result = '__';
   final box = GetStorage();
 
   @override
@@ -170,9 +166,7 @@ class CalcElec extends StatelessWidget {
       CalcHandler vmHandler, String kind, String amount, String email) async {
     var url = Uri.parse(
         'http://10.0.2.2:8000/footprint/insert?category_kind=$kind&user_eMail=$email&createDate=${DateTime.now()}&amount=$amount');
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    result = dataConvertedJSON['message'];
+    await http.get(url);
     Get.back();
   }
 }

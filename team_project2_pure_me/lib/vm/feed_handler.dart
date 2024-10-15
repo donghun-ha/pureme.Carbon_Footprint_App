@@ -87,7 +87,7 @@ class FeedHandler extends ImageHandler {
 
   /// 좋아요 정보 가져오기
   ///
-  Future getFeedLike() async {
+  Future<void> getFeedLike() async {
     var url = Uri.parse(
         "$baseUrl/feed/getFeedLike?feedId=${curFeed[0].feedName}&userEmail=${box.read('pureme_id')}");
     final response = await http.get(url); // GET 요청

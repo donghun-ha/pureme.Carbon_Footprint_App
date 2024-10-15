@@ -1,10 +1,8 @@
-class Report{
+class Report {
   String user_eMail;
   String feedId;
   DateTime reportTime;
   String reportReason;
-
-  
 
   Report({
     required this.user_eMail,
@@ -15,11 +13,10 @@ class Report{
 
   factory Report.fromMap(Map<String, dynamic> res) {
     return Report(
-        user_eMail: res['user_eMail'],
-        feedId: res['feedId'],
-        reportTime: DateTime.parse(res['reportTime']) ,
-        reportReason: res['reportReason'],);
+      user_eMail: res['user_eMail'],
+      feedId: res['feedId'],
+      reportTime: DateTime.parse(res['reportTime']),
+      reportReason: res['reportReason'],
+    );
   }
-
-
 }

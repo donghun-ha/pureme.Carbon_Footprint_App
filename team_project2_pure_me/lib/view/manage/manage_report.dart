@@ -61,22 +61,22 @@ class ManageReport extends StatelessWidget {
                                     Radio(
                                       value: 1,
                                       groupValue: vmhandler.rptCountAmount,
-                                      onChanged: (value) =>
-                                          vmhandler.rptCountAmountChanged(value!),
+                                      onChanged: (value) => vmhandler
+                                          .rptCountAmountChanged(value!),
                                     ),
                                     const Text('신고수 : 1'),
                                     Radio(
                                       value: 10,
                                       groupValue: vmhandler.rptCountAmount,
-                                      onChanged: (value) =>
-                                          vmhandler.rptCountAmountChanged(value!),
+                                      onChanged: (value) => vmhandler
+                                          .rptCountAmountChanged(value!),
                                     ),
                                     const Text('신고수 : 10'),
                                     Radio(
                                       value: 50,
                                       groupValue: vmhandler.rptCountAmount,
-                                      onChanged: (value) =>
-                                          vmhandler.rptCountAmountChanged(value!),
+                                      onChanged: (value) => vmhandler
+                                          .rptCountAmountChanged(value!),
                                     ),
                                     const Text('신고수 : 50'),
                                   ],
@@ -91,16 +91,24 @@ class ManageReport extends StatelessWidget {
                                       return Column(
                                         children: [
                                           Container(
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                  color: vmhandler.reportFeedIndex == index ? Colors.blue : Colors.transparent, 
-                                                  width: 2.0,
-                                                ),
-                                                borderRadius: BorderRadius.circular(8.0),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color:
+                                                    vmhandler.reportFeedIndex ==
+                                                            index
+                                                        ? Colors.blue
+                                                        : Colors.transparent,
+                                                width: 2.0,
                                               ),
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                            ),
                                             child: ListTile(
-                                              onTap: () => vmhandler.reportFeedIndexChanged(index),
-                                              title: Text("feed Id :${ vmhandler.reportFeedCountList[index].feedId}, 신고 횟수: ${vmhandler.reportFeedCountList[index].feed_count}"),
+                                              onTap: () => vmhandler
+                                                  .reportFeedIndexChanged(
+                                                      index),
+                                              title: Text(
+                                                  "feed Id :${vmhandler.reportFeedCountList[index].feedId}, 신고 횟수: ${vmhandler.reportFeedCountList[index].feed_count}"),
                                             ),
                                           ),
                                         ],
@@ -123,7 +131,7 @@ class ManageReport extends StatelessWidget {
                                   ),
                                 ),
                                 Visibility(
-                                  visible: vmhandler.reportFeedIndex !=null,
+                                  visible: vmhandler.reportFeedIndex != null,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -131,15 +139,17 @@ class ManageReport extends StatelessWidget {
                                           onPressed: () async {
                                             // String email =
                                             //     await box.read('manager');
-                                            if (vmhandler.reportFeedIndex != null) {
-                                              Feed feed = await vmhandler.fetchSelectedFeed();
+                                            if (vmhandler.reportFeedIndex !=
+                                                null) {
+                                              Feed feed = await vmhandler
+                                                  .fetchSelectedFeed();
                                               Get.to(() => ManageFeedDetail(),
                                                   arguments: feed);
                                             }
                                           },
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.amber[50]
-                                          ),
+                                              backgroundColor:
+                                                  Colors.amber[50]),
                                           child: const Text("게시글 보러 가기")),
                                       const SizedBox(
                                         width: 20,
@@ -148,26 +158,32 @@ class ManageReport extends StatelessWidget {
                                           onPressed: () async {
                                             String email =
                                                 await box.read('manager');
-                                            if (vmhandler.reportFeedIndex != null) {
+                                            if (vmhandler.reportFeedIndex !=
+                                                null) {
                                               vmhandler.reportFeed(
                                                   vmhandler
-                                                      .reportFeedCountList[vmhandler
-                                                          .reportFeedIndex!]
+                                                      .reportFeedCountList[
+                                                          vmhandler
+                                                              .reportFeedIndex!]
                                                       .feedId,
                                                   email,
                                                   '숨김');
-                                            Get.defaultDialog(
-                                              title: '숨김',
-                                              middleText: '숨김처리가 완료되었습니다.',
-                                              actions: [
-                                                ElevatedButton(onPressed: () {Get.back(); vmhandler.update();}, child: const  Text("확인"))
-                                              ]
-                                            );
+                                              Get.defaultDialog(
+                                                  title: '숨김',
+                                                  middleText: '숨김처리가 완료되었습니다.',
+                                                  actions: [
+                                                    ElevatedButton(
+                                                        onPressed: () {
+                                                          Get.back();
+                                                          vmhandler.update();
+                                                        },
+                                                        child: const Text("확인"))
+                                                  ]);
                                             }
                                           },
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.amber[50]
-                                          ),
+                                              backgroundColor:
+                                                  Colors.amber[50]),
                                           child: const Text("게시글 숨김 처리")),
                                     ],
                                   ),

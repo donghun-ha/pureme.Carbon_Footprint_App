@@ -73,14 +73,13 @@ class ManageApp extends StatelessWidget {
     );
   }
 
-
   Widget _buildUserComparisonChart(ManageHandler manageHandler) {
-    return Container(
+    return SizedBox(
       height: 300,
       child: SfCartesianChart(
-        primaryXAxis: CategoryAxis(),
-        title: ChartTitle(text: '회원가입하는 유저 수'),
-        legend: Legend(isVisible: true),
+        primaryXAxis: const CategoryAxis(),
+        title: const ChartTitle(text: '회원가입하는 유저 수'),
+        legend: const Legend(isVisible: true),
         series: <CartesianSeries>[
           ColumnSeries<MapEntry<String, int>, String>(
             dataSource: manageHandler.acountGen(),
@@ -99,15 +98,13 @@ class ManageApp extends StatelessWidget {
     );
   }
 
-
-
   Widget _buildFeedComparisonChart(ManageHandler manageHandler) {
     return SizedBox(
       height: 300,
       child: SfCartesianChart(
-        primaryXAxis: CategoryAxis(),
-        title: ChartTitle(text: '피드 생성수'),
-        legend: Legend(isVisible: true),
+        primaryXAxis: const CategoryAxis(),
+        title: const ChartTitle(text: '피드 생성수'),
+        legend: const Legend(isVisible: true),
         series: <CartesianSeries>[
           ColumnSeries<MapEntry<String, int>, String>(
             dataSource: manageHandler.feedGen(),
@@ -125,15 +122,4 @@ class ManageApp extends StatelessWidget {
       ),
     );
   }
-
-
-
-
-
-
-
-
-
-
-
 }//End
