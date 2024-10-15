@@ -47,6 +47,7 @@ class UserHandler extends FeedHandler {
   Future<void> requestHealthPermission() async {
     // 권한 상태 확인
     var status = await Permission.sensors.status;
+    print(status);
 
     if (status.isDenied) {
       // 권한 요청
@@ -56,7 +57,7 @@ class UserHandler extends FeedHandler {
       } else {
         print("Health permission denied");
       }
-    } else {
+    } else if (status.isGranted) {
       healthStep();
     }
   }
@@ -65,8 +66,8 @@ class UserHandler extends FeedHandler {
   // Health()
   healthStep() async {
     Health().configure();
-    // var types = [HealthDataType.STEPS];
-    // bool requested = await Health().requestAuthorization(types);
+    var types = [HealthDataType.STEPS];
+    bool requested = await Health().requestAuthorization(types);
     var now = DateTime.now();
 
     // // fetch health data from the last 24 hours
@@ -80,7 +81,7 @@ class UserHandler extends FeedHandler {
     // var permissions = [
     //   HealthDataAccess.READ_WRITE,
     // ];
-    // print(healthData[0].value);
+    // // print(healthData[0].value);
     // await Health().requestAuthorization(types, permissions: permissions);
 
     // bool success = await Health().writeHealthData(
