@@ -30,7 +30,7 @@ class UserHandler extends FeedHandler {
 
   bool eMailUnique = false; // 회원가입시 이메일 확인을 위한 변수
 
-  String? profileImageName;
+  String? profileImageName; /// 
 
   RxBool profileImageChanged = false.obs;
 
@@ -150,7 +150,7 @@ class UserHandler extends FeedHandler {
       List preFileName = imageFile!.path.split('/');
       String fileExtention =
           preFileName[preFileName.length - 1].toString().split('.')[1];
-      profileImageName = curUser.value.eMail + '.' + fileExtention;
+      profileImageName ='${curUser.value.eMail}.$fileExtention';
 
       update();
     }
@@ -259,5 +259,4 @@ class UserHandler extends FeedHandler {
     print(result);
     return (result[0]['diff'] as int?, result[0]['ceaseReason'] as String?);
   }
-  // return result[0]['seq'] as bool ;
 }

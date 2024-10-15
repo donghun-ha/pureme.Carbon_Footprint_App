@@ -130,8 +130,7 @@ class ManageReport extends StatelessWidget {
                                           // String email =
                                           //     await box.read('manager');
                                           if (vmhandler.reportFeedIndex != null) {
-                                            Feed feed = await vmhandler.test();
-                                            print(feed.authorEMail);
+                                            Feed feed = await vmhandler.fetchSelectedFeed();
                                             Get.to(() => ManageFeedDetail(),
                                                 arguments: feed);
                                           }
