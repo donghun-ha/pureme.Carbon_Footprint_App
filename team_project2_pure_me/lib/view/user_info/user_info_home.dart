@@ -23,6 +23,7 @@ class UserInfoHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    vmhandler.fetchFeed();
     return GetBuilder<RankHandler>(builder: (con) {
       return Scaffold(
           backgroundColor: Colors.transparent,
@@ -189,8 +190,6 @@ class UserInfoHome extends StatelessWidget {
                                             vmhandler.userFeedList[index];
                                         return GestureDetector(
                                           onTap: () {
-                                            vmhandler
-                                                .detailFeed(feed.feedName!);
                                             Get.to(
                                               () => FeedDetail(),
                                               arguments: feed,

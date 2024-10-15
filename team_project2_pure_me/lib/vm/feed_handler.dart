@@ -17,7 +17,7 @@ class FeedHandler extends ImageHandler {
   final GetStorage box = GetStorage();
   final ConvertEmailToName convertEmailToName = ConvertEmailToName();
 
-  final CollectionReference _feed =
+  final CollectionReference feed =
       FirebaseFirestore.instance.collection('post');
 
   /// feedHome화면에서 쓸 feedList
@@ -46,7 +46,11 @@ class FeedHandler extends ImageHandler {
   @override
   void onInit() {
     super.onInit();
-    _feed
+    fetchFeed();
+  }
+
+  fetchFeed() {
+    feed
         .where('state', isEqualTo: '게시')
         .orderBy('writetime', descending: true)
         .snapshots()
@@ -130,10 +134,10 @@ class FeedHandler extends ImageHandler {
 
   /// 피드 상새내용
   /// argument = docId
-  detailFeed(String docId) {
-    convertEmailToName.getUserName();
+  detailFeed(String docId) async {
+    await convertEmailToName.getUserName();
 
-    _feed.doc(docId).snapshots().listen(
+    feed.doc(docId).snapshots().listen(
       (event) {
         // print(event);
         // 피드 객체 생성
@@ -166,7 +170,7 @@ class FeedHandler extends ImageHandler {
   /// state를 삭제로 변경
 
   deleteFeed(String docId) {
-    _feed.doc(docId).update({'state': '삭제'});
+    feed.doc(docId).update({'state': '삭제'});
   }
 
   //// 박상범 추가, Feed를 Report함
@@ -191,7 +195,7 @@ class FeedHandler extends ImageHandler {
       'writetime':
           DateTime.now().toString().substring(0, 19).replaceFirst(' ', 'T'),
     };
-    _feed.doc(docId).update({
+    feed.doc(docId).update({
       'reply': FieldValue.arrayUnion([newData]) // 리스트에 Map 추가
     });
   }
@@ -200,7 +204,7 @@ class FeedHandler extends ImageHandler {
   /// state변경
   deleteReply(String docId, int index) {
     curFeed[0].reply![index]['state'] = '삭제';
-    _feed.doc(docId).update({'reply': curFeed[0].reply});
+    feed.doc(docId).update({'reply': curFeed[0].reply});
   }
 
   /// 대댓글
@@ -217,7 +221,7 @@ class FeedHandler extends ImageHandler {
     print(curFeed[0].reply![replyIndex.value]['reply']);
     curFeed[0].reply![replyIndex.value]['reply'].add(newData);
 
-    _feed.doc(docId).update({
+    feed.doc(docId).update({
       'reply': curFeed[0].reply! // 리스트에 Map 추가
     });
   }
@@ -225,6 +229,6 @@ class FeedHandler extends ImageHandler {
   /// 대댓글 삭제
   deleteRereply(String docId, int reIndex, int rereIndex) {
     curFeed[0].reply![reIndex]['reply'].removeAt(rereIndex);
-    _feed.doc(docId).update({'reply': curFeed[0].reply});
+    feed.doc(docId).update({'reply': curFeed[0].reply});
   }
 }

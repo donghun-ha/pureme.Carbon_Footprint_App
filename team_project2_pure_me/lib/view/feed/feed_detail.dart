@@ -23,9 +23,12 @@ class FeedDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // feedHandler.detailFeed(feedValue.feedName!);
+    // 초기 값을 위한 기본 피드 데이터
+    feedHandler.curFeed.value = [feedValue];
+    // 자세한 피드 데이터를 위한 검색 기능
+    feedHandler.detailFeed(feedValue.feedName!);
+    // 피드의 좋아요 정보 가져오기
     feedHandler.getFeedLike();
-    convertEmailToName.getUserName();
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -154,6 +157,7 @@ class FeedDetail extends StatelessWidget {
   }
 
   // --- Functions ---
+  /// 피드의 댓글 시트
   replyBottomSheet(context, FeedHandler feedHandler) {
     Get.bottomSheet(
       Container(
