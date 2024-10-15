@@ -23,7 +23,7 @@ class FeedDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    feedHandler.detailFeed(feedValue.feedName!);
+    // feedHandler.detailFeed(feedValue.feedName!);
     feedHandler.getFeedLike();
     convertEmailToName.getUserName();
     return Container(
@@ -35,112 +35,119 @@ class FeedDetail extends StatelessWidget {
       ),
       child: Obx(
         () => Center(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(25, 100, 25, 25),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.65,
-              child: Card(
-                elevation: 20,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Card(
-                        elevation: 5,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  IconButton(
-                                    onPressed: () => Get.back(),
-                                    icon: const Icon(Icons.arrow_back_ios_new),
-                                  ),
-                                  Text("${feedHandler.curFeed[0].userName}님"),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  // 로그인한 이용자와 게시글의 작성자가 같을경우 보이게
-                                  box.read("pureme_id") == feedValue.authorEMail
-                                      ? IconButton(
-                                          onPressed: () {
-                                            // 삭제로직
-                                            deleteAlert();
-                                          },
+          child: feedHandler.curFeed.isEmpty
+              ? const CircularProgressIndicator()
+              : Padding(
+                  padding: const EdgeInsets.fromLTRB(25, 100, 25, 25),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.65,
+                    child: Card(
+                      elevation: 20,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Card(
+                              elevation: 5,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          onPressed: () => Get.back(),
                                           icon: const Icon(
-                                            Icons.delete_outline,
-                                            color: Colors.red,
-                                          ),
-                                        )
-                                      : IconButton(
-                                          onPressed: () {
-                                            ///박상범 수정
-                                            reportAlart();
-                                          },
-                                          icon: const Icon(
-                                            Icons.report_problem,
-                                            color: Color.fromARGB(
-                                                255, 220, 184, 23),
-                                          ),
+                                              Icons.arrow_back_ios_new),
                                         ),
-                                ],
+                                        Text(
+                                            "${feedHandler.curFeed[0].userName}님"),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        // 로그인한 이용자와 게시글의 작성자가 같을경우 보이게
+                                        box.read("pureme_id") ==
+                                                feedValue.authorEMail
+                                            ? IconButton(
+                                                onPressed: () {
+                                                  // 삭제로직
+                                                  deleteAlert();
+                                                },
+                                                icon: const Icon(
+                                                  Icons.delete_outline,
+                                                  color: Colors.red,
+                                                ),
+                                              )
+                                            : IconButton(
+                                                onPressed: () {
+                                                  ///박상범 수정
+                                                  reportAlart();
+                                                },
+                                                icon: const Icon(
+                                                  Icons.report_problem,
+                                                  color: Color.fromARGB(
+                                                      255, 220, 184, 23),
+                                                ),
+                                              ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: double.infinity,
+                            height: MediaQuery.of(context).size.height * 0.21,
+                            color: Colors.grey[300],
+                            child: Image.network(
+                                feedHandler.curFeed[0].feedImagePath),
+                          ),
+                          Text(
+                            '${feedHandler.curFeed[0].writeTime.year}-${feedHandler.curFeed[0].writeTime.month.toString().padLeft(2, '0')}-${feedHandler.curFeed[0].writeTime.day.toString().padLeft(2, '0')} ${feedHandler.curFeed[0].writeTime.hour.toString().padLeft(2, '0')}:${feedHandler.curFeed[0].writeTime.minute.toString().padLeft(2, '0')}',
+                            style: const TextStyle(
+                              color: Color(0xFF808080),
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            '게시물 작성 내용 : ${feedHandler.curFeed[0].content}',
+                            softWrap: true, // 자동 줄바꿈 활성화 (기본값이 true)
+                            overflow: TextOverflow.visible, // 텍스트가 잘리지 않도록 설정
+                          ),
+                          Row(
+                            // 하트랑 댓글 들어갈 자리
+                            children: [
+                              LikeButton(
+                                likeCount:
+                                    feedHandler.likeCount.value, // 값을 받아와야함
+                                isLiked: feedHandler.isLike.value, // 값을 받아와야함
+                                onTap: feedHandler.onLikeButtonTapped,
+                              ),
+                              IconButton(
+                                onPressed: () =>
+                                    replyBottomSheet(context, feedHandler),
+                                icon: const Icon(Icons.mode_comment_rounded),
                               ),
                             ],
                           ),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            child: feedHandler.showReplyList.isEmpty
+                                ? const Text("첫 댓글을 작성해보세요!")
+                                : Text(
+                                    '${feedHandler.showReplyList[feedHandler.showReplyList.length - 1].userName}\n${feedHandler.showReplyList[feedHandler.showReplyList.length - 1].content}'),
+                          ),
+                        ],
                       ),
                     ),
-                    Container(
-                      width: double.infinity,
-                      height: MediaQuery.of(context).size.height * 0.21,
-                      color: Colors.grey[300],
-                      child:
-                          Image.network(feedHandler.curFeed[0].feedImagePath),
-                    ),
-                    Text(
-                      '${feedHandler.curFeed[0].writeTime.year}-${feedHandler.curFeed[0].writeTime.month.toString().padLeft(2, '0')}-${feedHandler.curFeed[0].writeTime.day.toString().padLeft(2, '0')} ${feedHandler.curFeed[0].writeTime.hour.toString().padLeft(2, '0')}:${feedHandler.curFeed[0].writeTime.minute.toString().padLeft(2, '0')}',
-                      style: const TextStyle(
-                        color: Color(0xFF808080),
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      '게시물 작성 내용 : ${feedHandler.curFeed[0].content}',
-                      softWrap: true, // 자동 줄바꿈 활성화 (기본값이 true)
-                      overflow: TextOverflow.visible, // 텍스트가 잘리지 않도록 설정
-                    ),
-                    Row(
-                      // 하트랑 댓글 들어갈 자리
-                      children: [
-                        LikeButton(
-                          likeCount: feedHandler.likeCount.value, // 값을 받아와야함
-                          isLiked: feedHandler.isLike.value, // 값을 받아와야함
-                          onTap: feedHandler.onLikeButtonTapped,
-                        ),
-                        IconButton(
-                          onPressed: () =>
-                              replyBottomSheet(context, feedHandler),
-                          icon: const Icon(Icons.mode_comment_rounded),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      child: feedHandler.showReplyList.isEmpty
-                          ? const Text("첫 댓글을 작성해보세요!")
-                          : Text(
-                              '${feedHandler.showReplyList[feedHandler.showReplyList.length - 1].userName}\n${feedHandler.showReplyList[feedHandler.showReplyList.length - 1].content}'),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ),
         ),
       ),
     );
