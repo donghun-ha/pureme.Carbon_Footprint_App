@@ -202,6 +202,8 @@ async def login(cureMail:str, eMail: str = None, nickname: str =None, phone:str 
 
     conn = connect()
     curs = conn.cursor()
+    if profileImage == 'null':
+        profileImage = None
     try:
         sql = """
         UPDATE user 
@@ -220,6 +222,7 @@ async def login(cureMail:str, eMail: str = None, nickname: str =None, phone:str 
         return {"results": "Error"}
     finally:
         conn.close()
+
 
 
 @router.get("/updatePW")

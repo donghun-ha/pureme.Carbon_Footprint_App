@@ -60,7 +60,6 @@ class Home extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const Text('비기너'),
                     ],
                   ),
                 ),
@@ -163,7 +162,7 @@ class Home extends StatelessWidget {
 
   Widget _buildCarbonFootprintCalculator(RankHandler controller) {
     return SizedBox(
-      height: 340,
+      height: 320,
       child: Card(
         elevation: 25,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -194,61 +193,58 @@ class Home extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xFFFFEF9D).withOpacity(0.3),
-                        ),
-                        child: Center(
-                          child: Material(
-                            elevation: 8,
-                            shape: const CircleBorder(),
-                            color: const Color(0xFFFFEF9D),
-                            child: InkWell(
-                              customBorder: const CircleBorder(),
-                              onTap: () {
-                                Get.to(() => const CalcHome())!.then(
-                                    (value) => controller.fetchTotalCarbon());
-                              },
-                              child: Container(
-                                width: 160,
-                                height: 160,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.asset('images/footprint.png',
-                                        width: 60),
-                                    const SizedBox(height: 8),
-                                    const Text(
-                                      '탄소 발자국\n계산하기',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Colors.black87,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFFFFEF9D).withOpacity(0.3),
+                      ),
+                      child: Center(
+                        child: Material(
+                          elevation: 8,
+                          shape: const CircleBorder(),
+                          color: const Color(0xFFFFEF9D),
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: () {
+                              Get.to(() => const CalcHome())!.then(
+                                  (value) => controller.fetchTotalCarbon());
+                            },
+                            child: Container(
+                              width: 150,
+                              height: 150,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset('images/footprint.png',
+                                      width: 50),
+                                  const SizedBox(height: 4),
+                                  const Text(
+                                    '탄소 발자국\n계산하기',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -283,10 +279,6 @@ class Home extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-            IconButton(
-              onPressed: () => handler.healthStep(),
-              icon: const Icon(Icons.refresh),
             ),
             Expanded(
               child: Padding(
