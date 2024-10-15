@@ -46,24 +46,32 @@
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
 
-    <!-- Camera Microphone PhotoLibrary -->
+    <!-- HealthKit 사용 설명 -->
+    <key>NSHealthShareUsageDescription</key>
+    <string>This app requires access to your health data to track your steps.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>This app needs permission to update health data.</string>
+
+    <!-- Motion 데이터 사용 설명 -->
+    <key>NSMotionUsageDescription</key>
+    <string>This app requires access to motion data to track your steps.</string>    
+
+    <!-- Camera, Microphone, PhotoLibrary -->
     <key>NSCameraUsageDescription</key>
     <string>Used to demonstrate image picker plugin</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Used to capture audio for image picker plugin</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Used to demonstrate image picker plugin</string>
-    
-    <!-- Permisson_handler -->
+
+    <!-- Siri -->
     <key>com.apple.developer.siri</key>
     <true/>
 
-    <!-- pedometer -->
-    <key>NSMotionUsageDescription</key>
-    <string>This application tracks your steps</string>
+    <!-- Background Modes -->
     <key>UIBackgroundModes</key>
     <array>
-        <string>processing</string>
+        <string>processing</string> 
     </array>
 
     <!-- WebView -->

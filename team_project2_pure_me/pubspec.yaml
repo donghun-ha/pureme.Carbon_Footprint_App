@@ -62,9 +62,13 @@ dependencies:
 
   # Web View
   webview_flutter: ^4.8.0 
+  
   # Health
+  health: ^11.1.0
   permission_handler: ^10.0.0
   pedometer: ^4.0.2
+
+  sensors_plus: ^6.0.1
 
 dev_dependencies:
   flutter_test:

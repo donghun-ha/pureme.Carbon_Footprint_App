@@ -126,7 +126,6 @@ class UserCarbonChart extends StatelessWidget {
             yValueMapper: (MapEntry<String, double> data, _) => data.value,
             name: '사용자 배출량',
           ),
-
           ColumnSeries<MapEntry<String, double>, String>(
             dataSource: chartHandler.getAverageCarbonData(),
             xValueMapper: (MapEntry<String, double> data, _) => data.key,
@@ -145,7 +144,7 @@ class UserCarbonChart extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-              '에너지 절감량: ${chartHandler.getFormattedValue(chartHandler.chartTtotalEnergyReduction.value)} MWh',
+              '에너지 절감량: ${chartHandler.getFormattedValue(chartHandler.chartTtotalEnergyReduction.value)} L',
               style: const TextStyle(fontWeight: FontWeight.bold)),
           Text(
               '심은 나무 수: ${chartHandler.getFormattedValue(chartHandler.treesPlanted.value)} 그루',

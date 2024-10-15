@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/chart_handler.dart';
 import 'package:team_project2_pure_me/vm/convert/convert_email_to_name.dart';
 
-
 /* **RankHandler 클래스**
 
 • 이 클래스는 사용자들의 탄소 절감 랭킹을 관리하는 역할을 합니다.
@@ -76,6 +75,7 @@ class RankHandler extends ChartHandler {
         // 'curUser'가 null이 아닌 경우에만 'fetchRank'를 호출하여 랭킹 데이터를 가져옵니다.
         // 이는 사용자가 로그인한 상태임을 의미합니다.
         fetchRank();
+        fetchUserCarbonData();
       }
     });
   }
