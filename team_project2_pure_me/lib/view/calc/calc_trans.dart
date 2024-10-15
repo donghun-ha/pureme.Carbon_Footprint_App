@@ -6,12 +6,10 @@ import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/vm/calc/calc_handler.dart';
 import 'package:http/http.dart' as http;
 
-// ignore: must_be_immutable
 class CalcTrans extends StatelessWidget {
   CalcTrans({super.key});
   final TextEditingController transController = TextEditingController();
   final GetStorage box = GetStorage();
-  late String? result = '__';
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +18,6 @@ class CalcTrans extends StatelessWidget {
         vmHandler.transDropdown.isNotEmpty) {
       vmHandler.curtransDropValue = vmHandler.transDropdown[0];
     }
-
-    // final curtransDropValue = vmHandler.transDropdown[0];
 
     return Container(
         decoration: const BoxDecoration(
@@ -213,9 +209,7 @@ class CalcTrans extends StatelessWidget {
   giveData(CalcHandler vmHandler) async {
     var url = Uri.parse(
         'http://10.0.2.2:8000/footprint/insert?category_kind=${vmHandler.transDropdownEn[vmHandler.currentTranIndex]}&user_eMail=${box.read('pureme_id')}&createDate=${DateTime.now()}&amount=${transController.text.trim()}');
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    result = dataConvertedJSON['message'];
+    await http.get(url);
     Get.back();
   }
 } // End

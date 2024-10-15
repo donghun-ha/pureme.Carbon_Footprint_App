@@ -14,7 +14,6 @@ class CalcRecycle extends StatelessWidget {
   final TextEditingController glassController = TextEditingController();
   final TextEditingController goldController = TextEditingController();
   final TextEditingController somethingelseController = TextEditingController();
-  late String? result = '__';
   final box = GetStorage();
 
   @override
@@ -240,9 +239,8 @@ class CalcRecycle extends StatelessWidget {
       CalcHandler vmHandler, String kind, String amount, String email) async {
     var url = Uri.parse(
         'http://10.0.2.2:8000/footprint/insert?category_kind=$kind&amount=$amount&user_eMail=$email&createDate=${DateTime.now()}');
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    result = dataConvertedJSON['message'];
+    await http.get(url);
+
     Get.back();
   }
 }

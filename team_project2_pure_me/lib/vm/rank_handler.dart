@@ -188,11 +188,11 @@ class RankHandler extends ChartHandler {
 
   void fetchMyRank() {
     // 현재 사용자의 이메일을 가져옵니다.
-    String currentUserEmail = curUser.value.eMail.trim().toLowerCase();
+    String currentUserEmail = curUser.value.eMail;
 
     // 랭킹 리스트에서 사용자의 이메일을 찾아서 랭킹을 설정합니다.
     int rankIndex = rankList.indexWhere(
-      (user) => user.eMail.trim().toLowerCase() == currentUserEmail,
+      (user) => user.eMail == currentUserEmail,
     );
 
     // 사용자가 랭킹 리스트에 있는 경우, 랭킹을 설정합니다.

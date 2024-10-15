@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 // import 'package:team_project2_pure_me/vm/rank_handler.dart';
 // import 'dart:io' show Platform;
 import 'package:team_project2_pure_me/vm/user_handler.dart';
-import 'package:team_project2_pure_me/vm/convert/convert_email_to_name.dart';
 
 /// **ChartHandler 클래스**
 ///
@@ -15,9 +14,6 @@ import 'package:team_project2_pure_me/vm/convert/convert_email_to_name.dart';
 /// **Author**: 하동훈
 /// **Date**: 2024-10-14
 class ChartHandler extends UserHandler {
-  /// 이메일을 닉네임으로 변환하는 도우미 클래스 인스턴스
-  ConvertEmailToName convertEmailToName = ConvertEmailToName();
-
   /// 전체 탄소 발자국 데이터를 저장하는 반응형 맵
   RxMap<String, double> carbonData = <String, double>{}.obs;
 
@@ -44,7 +40,7 @@ class ChartHandler extends UserHandler {
   Future<void> fetchUserCarbonData() async {
     // 현재 사용자의 이메일을 가져옴
     String userEmail = curUser.value.eMail;
-    print("Fetching carbon data for: $userEmail");
+    // print("Fetching carbon data for: $userEmail");
 
     // 백엔드 API의 URL 구성
     var url = Uri.parse(
@@ -56,8 +52,8 @@ class ChartHandler extends UserHandler {
     if (response.statusCode == 200) {
       // 성공적으로 응답을 받았을 때
       final data = json.decode(utf8.decode(response.bodyBytes));
-      print("서버 응답: $data");
-      print(data['summary']['total_energy_reduction']);
+      // print("서버 응답: $data");
+      // print(data['summary']['total_energy_reduction']);
 
       // 'summary'가 존재하는지 확인
       if (data['summary'] != null) {
@@ -69,7 +65,7 @@ class ChartHandler extends UserHandler {
             data['summary']['total_carbon_footprint'] ?? 0.0;
         totalCarbonReduction.value =
             data['summary']['total_carbon_reduction'] ?? 0.0;
-        print('데이터 성공적으로 가져옴');
+        // print('데이터 성공적으로 가져옴');
 
         // 평균 비교 데이터 가져오기
         Map<String, dynamic> averageComparisonData =
@@ -112,7 +108,7 @@ class ChartHandler extends UserHandler {
       }
     } else {
       // 에러 발생 시 에러 메시지 출력
-      print("탄소 발자국 데이터를 불러오는 데 실패했습니다: ${response.statusCode}");
+      // print("탄소 발자국 데이터를 불러오는 데 실패했습니다: ${response.statusCode}");
     }
   }
 

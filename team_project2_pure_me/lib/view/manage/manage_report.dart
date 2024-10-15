@@ -108,7 +108,7 @@ class ManageReport extends StatelessWidget {
                                                   .reportFeedIndexChanged(
                                                       index),
                                               title: Text(
-                                                  "feed Id :${vmhandler.reportFeedCountList[index].feedId}, 신고 횟수: ${vmhandler.reportFeedCountList[index].feed_count}"),
+                                                  "feed Id :${vmhandler.reportFeedCountList[index].feedId}, 신고 횟수: ${vmhandler.reportFeedCountList[index].feedCount}"),
                                             ),
                                           ),
                                         ],
@@ -125,7 +125,7 @@ class ManageReport extends StatelessWidget {
                                     itemBuilder: (context, index) {
                                       return Card(
                                         child: Text(
-                                            '신고 내용:  ${vmhandler.reportFeedListById[index].reportReason}      신고자 : ${vmhandler.reportFeedListById[index].user_eMail}'),
+                                            '신고 내용:  ${vmhandler.reportFeedListById[index].reportReason}      신고자 : ${vmhandler.reportFeedListById[index].userEMail}'),
                                       );
                                     },
                                   ),
