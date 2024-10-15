@@ -1323,11 +1323,7 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - pedometer (0.0.1):
-    - Flutter
   - permission_handler_apple (9.1.1):
-    - Flutter
-  - sensors_plus (0.0.1):
     - Flutter
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
@@ -1341,9 +1337,7 @@ DEPENDENCIES:
   - health (from `.symlinks/plugins/health/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
-  - pedometer (from `.symlinks/plugins/pedometer/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
-  - sensors_plus (from `.symlinks/plugins/sensors_plus/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
 
 SPEC REPOS:
@@ -1384,12 +1378,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
-  pedometer:
-    :path: ".symlinks/plugins/pedometer/ios"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
-  sensors_plus:
-    :path: ".symlinks/plugins/sensors_plus/ios"
   webview_flutter_wkwebview:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
 
@@ -1420,11 +1410,9 @@ SPEC CHECKSUMS:
   leveldb-library: e8eadf9008a61f9e1dde3978c086d2b6d9b9dc28
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
-  pedometer: 381969883680ade42559782cc41a3bbd453d8234
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
-  sensors_plus: 4b7c4bd9c9be2efbd575649368fe77ef09b429ad
   webview_flutter_wkwebview: 2a23822e9039b7b1bc52e5add778e5d89ad488d1
 
-PODFILE CHECKSUM: 590498d5e4ab7cc371b2a0c22da0703504ab3954
+PODFILE CHECKSUM: 3988fa11da299021b4381347a50cd0f69c25369e
 
 COCOAPODS: 1.15.2

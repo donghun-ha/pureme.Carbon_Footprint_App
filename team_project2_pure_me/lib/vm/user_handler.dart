@@ -3,7 +3,9 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
+import 'package:health/health.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:team_project2_pure_me/model/lev.dart';
 import 'package:team_project2_pure_me/model/user.dart';
 import 'package:http/http.dart' as http;
@@ -37,6 +39,63 @@ class UserHandler extends FeedHandler {
   /// 이미지가 바뀌었음을 확인시키는 변수
   /// 매니저 로그인 radioButton 을 위한 변수
   int manageLogin = 0;
+
+  // 걸음수
+  var step = 0.obs;
+
+  /// 권한
+  Future<void> requestHealthPermission() async {
+    // 권한 상태 확인
+    var status = await Permission.sensors.status;
+
+    if (status.isDenied) {
+      // 권한 요청
+      if (await Permission.sensors.request().isGranted) {
+        print("Health permission granted");
+        healthStep();
+      } else {
+        print("Health permission denied");
+      }
+    } else {
+      healthStep();
+    }
+  }
+
+  ///
+  // Health()
+  healthStep() async {
+    Health().configure();
+    // var types = [HealthDataType.STEPS];
+    // bool requested = await Health().requestAuthorization(types);
+    var now = DateTime.now();
+
+    // // fetch health data from the last 24 hours
+    // List<HealthDataPoint> healthData = await Health().getHealthDataFromTypes(
+    //   types: types,
+    //   startTime: now.subtract(const Duration(days: 7)),
+    //   endTime: now,
+    // );
+
+    // print(healthData);
+    // var permissions = [
+    //   HealthDataAccess.READ_WRITE,
+    // ];
+    // print(healthData[0].value);
+    // await Health().requestAuthorization(types, permissions: permissions);
+
+    // bool success = await Health().writeHealthData(
+    //   value: 10,
+    //   type: HealthDataType.STEPS,
+    //   startTime: now.subtract(const Duration(days: 7)),
+    //   endTime: now,
+    // );
+
+    var midnight = DateTime(now.year, now.month, now.day);
+    // start, end // date
+    int? steps = await Health().getTotalStepsInInterval(midnight, now);
+    step.value = steps ?? 0;
+    print(steps);
+  }
 
   Future<bool> loginVerify(String eMail, String password) async {
     var url =

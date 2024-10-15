@@ -78,6 +78,7 @@ class RankHandler extends ChartHandler {
         fetchUserCarbonData();
       }
     });
+    requestHealthPermission();
   }
 
   /* 
