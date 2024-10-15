@@ -42,38 +42,78 @@ class ChartHandler extends UserHandler {
 
   /// 사용자 탄소 발자국 데이터를 가져오는 비동기 메소드
   Future<void> fetchUserCarbonData() async {
+    // 현재 사용자의 이메일을 가져옴
     String userEmail = curUser.value.eMail;
+    print("Fetching carbon data for: $userEmail");
 
+    // 백엔드 API의 URL 구성
     var url = Uri.parse(
-    "$baseUrl/footprint/calculate_with_reduction?user_eMail=$userEmail");
+        "$baseUrl/footprint/calculate_with_reduction?user_eMail=$userEmail");
+
+    // GET 요청 수행
     var response = await http.get(url);
 
+    if (response.statusCode == 200) {
+      // 성공적으로 응답을 받았을 때
       final data = json.decode(utf8.decode(response.bodyBytes));
+      print("서버 응답: $data");
+      print(data['summary']['total_energy_reduction']);
 
+      // 'summary'가 존재하는지 확인
+      if (data['summary'] != null) {
+        // 각 항목을 추출하여 반응형 변수에 저장
+        chartTtotalEnergyReduction.value =
+            data['summary']['total_energy_reduction'] ?? 0.0;
+        treesPlanted.value = data['summary']['total_trees_planted'] ?? 0.0;
+        chartTotalCarbonFootprint.value =
+            data['summary']['total_carbon_footprint'] ?? 0.0;
+        totalCarbonReduction.value =
+            data['summary']['total_carbon_reduction'] ?? 0.0;
+        print('데이터 성공적으로 가져옴');
 
+        // 평균 비교 데이터 가져오기
+        Map<String, dynamic> averageComparisonData =
+            data['summary']['average_comparison'] ?? {};
 
-      if (data['summary']['average_comparison'] != null) {
-        chartTtotalEnergyReduction.value = data['summary']['total_energy_reduction'];
-        treesPlanted.value = data['summary']['total_trees_planted'];
-        chartTotalCarbonFootprint.value = data['summary']['total_carbon_footprint'];
-        totalCarbonReduction.value = data['summary']['total_carbon_reduction'];
-
-      }
-
+        // 사용자 배출량 데이터
         carbonData.value = {
-          '교통': data['summary']['average_comparison']['trafic']['사용자 배출량'] ?? 0.0,
-          '고기': data['summary']['average_comparison']['meat']['사용자 배출량'] ?? 0.0,
-          '전기': data['summary']['average_comparison']['electricity']['사용자 배출량'] ?? 0.0,
-          '가스': data['summary']['average_comparison']['gas']['사용자 배출량'] ?? 0.0,
+          '교통': averageComparisonData.containsKey('trafic')
+              ? (averageComparisonData['trafic']['사용자 배출량'] ?? 0.0).toDouble()
+              : 0.0,
+          '고기': averageComparisonData.containsKey('meat')
+              ? (averageComparisonData['meat']['사용자 배출량'] ?? 0.0).toDouble()
+              : 0.0,
+          '전기': averageComparisonData.containsKey('electricity')
+              ? (averageComparisonData['electricity']['사용자 배출량'] ?? 0.0)
+                  .toDouble()
+              : 0.0,
+          '가스': averageComparisonData.containsKey('gas')
+              ? (averageComparisonData['gas']['사용자 배출량'] ?? 0.0).toDouble()
+              : 0.0,
         };
 
+        // 평균 탄소 발자국 데이터
         averageCarbonData.value = {
-          '교통': data['summary']['average_comparison']['trafic']['전세계 평균 배출량'] ?? 0.0,
-          '고기': data['summary']['average_comparison']['meat']['전세계 평균 배출량'] ?? 0.0,
-          '전기': data['summary']['average_comparison']['electricity']['전세계 평균 배출량'] ?? 0.0,
-          '가스': data['summary']['average_comparison']['gas']['전세계 평균 배출량'] ?? 0.0,
+          '교통': averageComparisonData.containsKey('trafic')
+              ? (averageComparisonData['trafic']['전세계 평균 배출량'] ?? 0.0)
+                  .toDouble()
+              : 0.0,
+          '고기': averageComparisonData.containsKey('meat')
+              ? (averageComparisonData['meat']['전세계 평균 배출량'] ?? 0.0).toDouble()
+              : 0.0,
+          '전기': averageComparisonData.containsKey('electricity')
+              ? (averageComparisonData['electricity']['전세계 평균 배출량'] ?? 0.0)
+                  .toDouble()
+              : 0.0,
+          '가스': averageComparisonData.containsKey('gas')
+              ? (averageComparisonData['gas']['전세계 평균 배출량'] ?? 0.0).toDouble()
+              : 0.0,
         };
-
+      }
+    } else {
+      // 에러 발생 시 에러 메시지 출력
+      print("탄소 발자국 데이터를 불러오는 데 실패했습니다: ${response.statusCode}");
+    }
   }
 
   /// 탄소 데이터를 가져와 Firestore에 저장하는 비동기 메소드
