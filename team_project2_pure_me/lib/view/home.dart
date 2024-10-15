@@ -69,7 +69,7 @@ class Home extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    const Text('지금까지', style: const TextStyle(fontSize: 25)),
+                    const Text('지금까지', style: TextStyle(fontSize: 25)),
                     const SizedBox(height: 5),
                     Text(
                       "[ ${controller.totalReducedCarbonFootprint.value} KG ]",
@@ -77,7 +77,7 @@ class Home extends StatelessWidget {
                           fontSize: 25, fontWeight: FontWeight.bold),
                     ),
                     const Text('탄소량을 줄이는 활동을 하셨습니다!',
-                        style: const TextStyle(fontSize: 20)),
+                        style: TextStyle(fontSize: 20)),
                     const SizedBox(height: 10),
                   ],
                 ),
@@ -311,7 +311,7 @@ class Home extends StatelessWidget {
                                 color: Colors.green.withOpacity(0.3),
                                 spreadRadius: 5,
                                 blurRadius: 10,
-                                offset: Offset(0, 3),
+                                offset: const Offset(0, 3),
                               ),
                             ],
                           ),
