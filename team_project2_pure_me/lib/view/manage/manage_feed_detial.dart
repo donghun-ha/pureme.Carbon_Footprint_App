@@ -66,34 +66,6 @@ class ManageFeedDetail extends StatelessWidget {
                                     Text("${feedHandler.curFeed[0].userName}님"),
                                   ],
                                 ),
-                                Row(
-                                  children: [
-                                    // 로그인한 이용자와 게시글의 작성자가 같을경우 보이게
-                                    box.read("pureme_id") ==
-                                            feedValue.authorEMail
-                                        ? IconButton(
-                                            onPressed: () {
-                                              // 삭제로직
-                                              deleteAlert();
-                                            },
-                                            icon: const Icon(
-                                              Icons.delete_outline,
-                                              color: Colors.red,
-                                            ),
-                                          )
-                                        : IconButton(
-                                            onPressed: () {
-                                              ///박상범 수정
-                                              reportAlart();
-                                            },
-                                            icon: const Icon(
-                                              Icons.report_problem,
-                                              color: Color.fromARGB(
-                                                  255, 220, 184, 23),
-                                            ),
-                                          ),
-                                  ],
-                                ),
                               ],
                             ),
                           ),

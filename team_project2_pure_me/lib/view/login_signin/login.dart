@@ -135,11 +135,13 @@ class Login extends StatelessWidget {
                                   _showalibaba();
                                   return;
                                 }
-                                var cease = await vmHandler.ceaseAccountVerify(
-                                    idController.text.trim());
-                                if (cease.$1 != null) {
-                                  showCease(cease.$2!, cease.$1!);
-                                  return;
+                                if (vmHandler.manageLogin == 0){
+                                  var cease = await vmHandler.ceaseAccountVerify(
+                                      idController.text.trim());
+                                  if (cease.$1 != null) {
+                                    showCease(cease.$2!, cease.$1!);
+                                    return;
+                                  }
                                 }
                                 // 로그인 로직
                                 bool checkLogin = vmHandler.manageLogin == 0
@@ -222,10 +224,15 @@ class Login extends StatelessWidget {
 
   showCease(String ceaseReason, int ceaseDate) {
     Get.defaultDialog(
-      title: '귀하의 계정은 정지되었습니다.',
+      title: '계정 정지됨',
+
       content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const Text('귀하의 계정은 정지되었습니다.', style: TextStyle(fontWeight: FontWeight.bold),),
+          const SizedBox(height: 5,),
           Text('정지 사유: $ceaseReason'),
+          const SizedBox(height: 5,),
           Text('남은 정지일: $ceaseDate'),
         ],
       ),

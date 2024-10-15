@@ -122,45 +122,55 @@ class ManageReport extends StatelessWidget {
                                     },
                                   ),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    ElevatedButton(
-                                        onPressed: () async {
-                                          // String email =
-                                          //     await box.read('manager');
-                                          if (vmhandler.reportFeedIndex != null) {
-                                            Feed feed = await vmhandler.fetchSelectedFeed();
-                                            Get.to(() => ManageFeedDetail(),
-                                                arguments: feed);
-                                          }
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.amber[50]
-                                        ),
-                                        child: const Text("게시글 보러 가기")),
-                                    const SizedBox(
-                                      width: 20,
-                                    ),
-                                    ElevatedButton(
-                                        onPressed: () async {
-                                          String email =
-                                              await box.read('manager');
-                                          if (vmhandler.reportFeedIndex != null) {
-                                            vmhandler.reportFeed(
-                                                vmhandler
-                                                    .reportFeedCountList[vmhandler
-                                                        .reportFeedIndex!]
-                                                    .feedId,
-                                                email,
-                                                '숨김');
-                                          }
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.amber[50]
-                                        ),
-                                        child: const Text("게시글 숨김 처리")),
-                                  ],
+                                Visibility(
+                                  visible: vmhandler.reportFeedIndex !=null,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      ElevatedButton(
+                                          onPressed: () async {
+                                            // String email =
+                                            //     await box.read('manager');
+                                            if (vmhandler.reportFeedIndex != null) {
+                                              Feed feed = await vmhandler.fetchSelectedFeed();
+                                              Get.to(() => ManageFeedDetail(),
+                                                  arguments: feed);
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.amber[50]
+                                          ),
+                                          child: const Text("게시글 보러 가기")),
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                      ElevatedButton(
+                                          onPressed: () async {
+                                            String email =
+                                                await box.read('manager');
+                                            if (vmhandler.reportFeedIndex != null) {
+                                              vmhandler.reportFeed(
+                                                  vmhandler
+                                                      .reportFeedCountList[vmhandler
+                                                          .reportFeedIndex!]
+                                                      .feedId,
+                                                  email,
+                                                  '숨김');
+                                            Get.defaultDialog(
+                                              title: '숨김',
+                                              middleText: '숨김처리가 완료되었습니다.',
+                                              actions: [
+                                                ElevatedButton(onPressed: () {Get.back(); vmhandler.update();}, child: const  Text("확인"))
+                                              ]
+                                            );
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.amber[50]
+                                          ),
+                                          child: const Text("게시글 숨김 처리")),
+                                    ],
+                                  ),
                                 ),
                               ],
                             );
