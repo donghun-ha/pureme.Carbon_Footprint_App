@@ -330,7 +330,7 @@ class Home extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  '_steps.',
+                                  handler.step.toString(),
                                   style: TextStyle(
                                     fontSize: 40,
                                     fontWeight: FontWeight.bold,

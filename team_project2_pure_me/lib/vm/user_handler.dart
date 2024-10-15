@@ -40,6 +40,9 @@ class UserHandler extends FeedHandler {
   /// 매니저 로그인 radioButton 을 위한 변수
   int manageLogin = 0;
 
+  // 걸음수
+  var step = 0.obs;
+
   /// 권한
   Future<void> requestHealthPermission() async {
     // 권한 상태 확인
@@ -62,23 +65,23 @@ class UserHandler extends FeedHandler {
   // Health()
   healthStep() async {
     Health().configure();
-    var types = [HealthDataType.STEPS];
-    bool requested = await Health().requestAuthorization(types);
+    // var types = [HealthDataType.STEPS];
+    // bool requested = await Health().requestAuthorization(types);
     var now = DateTime.now();
 
-    // fetch health data from the last 24 hours
-    List<HealthDataPoint> healthData = await Health().getHealthDataFromTypes(
-      types: types,
-      startTime: now.subtract(const Duration(days: 7)),
-      endTime: now,
-    );
+    // // fetch health data from the last 24 hours
+    // List<HealthDataPoint> healthData = await Health().getHealthDataFromTypes(
+    //   types: types,
+    //   startTime: now.subtract(const Duration(days: 7)),
+    //   endTime: now,
+    // );
 
-    print(healthData);
-    var permissions = [
-      HealthDataAccess.READ_WRITE,
-    ];
-    print(healthData[0].value);
-    await Health().requestAuthorization(types, permissions: permissions);
+    // print(healthData);
+    // var permissions = [
+    //   HealthDataAccess.READ_WRITE,
+    // ];
+    // print(healthData[0].value);
+    // await Health().requestAuthorization(types, permissions: permissions);
 
     // bool success = await Health().writeHealthData(
     //   value: 10,
@@ -88,7 +91,9 @@ class UserHandler extends FeedHandler {
     // );
 
     var midnight = DateTime(now.year, now.month, now.day);
+    // start, end // date
     int? steps = await Health().getTotalStepsInInterval(midnight, now);
+    step.value = steps ?? 0;
     print(steps);
   }
 
