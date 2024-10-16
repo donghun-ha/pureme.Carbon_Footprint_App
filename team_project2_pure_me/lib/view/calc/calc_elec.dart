@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -10,7 +8,6 @@ class CalcElec extends StatelessWidget {
   CalcElec({super.key});
   final TextEditingController electricController = TextEditingController();
   final TextEditingController gasController = TextEditingController();
-  late String? result = '__';
   final box = GetStorage();
 
   @override

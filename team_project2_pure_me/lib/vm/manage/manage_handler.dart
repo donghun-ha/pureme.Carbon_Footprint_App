@@ -23,10 +23,6 @@ class ManageHandler extends GetxController {
   final CollectionReference _manageFeed =
       FirebaseFirestore.instance.collection('post');
 
-
-
-
-
   // ------------------------------------------appManage------------------------------------------
 
   // 데이터를 각각 저장할 List
@@ -65,13 +61,12 @@ class ManageHandler extends GetxController {
     ];
   }
 
-
   ///처음에 피드쪽에 쓸 차트 데이터를 끌어올 함수
   fetchFeedAmount() async {
     //// 각각 구한 Feed들의 갯수를 저장하는 List
     List tempList = [];
 
-    /// 어제 
+    /// 어제
     String yesterday = DateTime.now()
         .subtract(const Duration(days: 1))
         .toString()
@@ -92,46 +87,44 @@ class ManageHandler extends GetxController {
         .substring(0, 19)
         .replaceFirst(' ', 'T');
 
-
     /// 어제까지 생성된 피드
-    dynamic yesterdaysnp = await _manageFeed
-        .where('writetime', isGreaterThan: yesterday)
-        .get();
+    dynamic yesterdaysnp =
+        await _manageFeed.where('writetime', isGreaterThan: yesterday).get();
     tempList.add(yesterdaysnp.size);
 
     /// 지난주까지 생성된피드
-    dynamic lastweeksnp = await _manageFeed
-        .where('writetime', isGreaterThan: lastweek)
-        .get();
+    dynamic lastweeksnp =
+        await _manageFeed.where('writetime', isGreaterThan: lastweek).get();
     tempList.add(lastweeksnp.size);
 
     /// 지난달까지 생성된피드
-    dynamic lastmonthsnp = await _manageFeed
-        .where('writetime', isGreaterThan: lastmonth)
-        .get();
+    dynamic lastmonthsnp =
+        await _manageFeed.where('writetime', isGreaterThan: lastmonth).get();
     tempList.add(lastmonthsnp.size);
 
     /// 모든 피드
-    dynamic allsnp = await _manageFeed
-        .orderBy('writetime', descending: true)
-        .get();
+    dynamic allsnp =
+        await _manageFeed.orderBy('writetime', descending: true).get();
     tempList.add(allsnp.size);
-    
-    
+
     // 생성일이 가장 빠른날부터 가장 늦은날까지의 차이를 구하는 함수
     List alldocs = allsnp.docs as List;
-    List alltimes = alldocs.map((e) {return DateTime.parse((e).data()['writetime']);},).toList();
-      
-    Duration difference = alltimes[0].difference(alltimes[alltimes.length-1]);
+    List alltimes = alldocs.map(
+      (e) {
+        return DateTime.parse((e).data()['writetime']);
+      },
+    ).toList();
+
+    Duration difference = alltimes[0].difference(alltimes[alltimes.length - 1]);
     int daysDifference = difference.inDays;
 
     //// 평균값을 구하기 위해 tempList[3]에서 나눠줄 값들
-    List meanTempList =[
-      daysDifference +1,
-      daysDifference~/7 +1,
-      daysDifference~/30 +1,
+    List meanTempList = [
+      daysDifference + 1,
+      daysDifference ~/ 7 + 1,
+      daysDifference ~/ 30 + 1,
       1,
-    ] ;
+    ];
 
     /// 사실상 tempList와 같음
     madeFeedList.value = [
@@ -148,7 +141,6 @@ class ManageHandler extends GetxController {
       tempList[3] / meanTempList[2],
       tempList[3] / meanTempList[3],
     ];
-
   }
 
   /// 데이터를 List<MapEntry>타입으로 바꿔주는 함수
@@ -218,7 +210,6 @@ class ManageHandler extends GetxController {
   //   });
   // }
 
-
   // ---------------------------- FeedManage에서 쓸 변수들--------------------------------
   /// 나오는 리스트
   var searchFeedList = <Feed>[].obs;
@@ -235,55 +226,53 @@ class ManageHandler extends GetxController {
   int? radioChangeFeedIndex = 0;
 
 //////FeedManage쪽에서 쓰는 함수들
-///
+  ///
 
-
-
-  searchWriterChanged(String value){
+  searchWriterChanged(String value) {
     searchWriter = value;
     searchFeedIndex = null;
     update();
   }
-  
+
   fetchFeeds() async {
-  if (searchWriter == null || searchWriter!.isEmpty){
-    String state = ['게시','숨김', '삭제'][radioFeedIndex!];
-    _manageFeed
-        .where('state', isEqualTo: state)
-        .orderBy('writetime', descending: true)
-        .snapshots()
-        .listen(
-      (event) {
-        searchFeedList.value = event.docs
-            .map(
-              (doc) =>
-                  Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
-            )
-            .toList();
-      },
-    );
-  } else{
-    String state = ['게시','숨김', '삭제'][radioFeedIndex!];
-    _manageFeed
-        .where('state', isEqualTo: state)
-        .where('writer', isEqualTo: searchWriter)
-        .orderBy('writetime', descending: true)
-        .snapshots()
-        .listen(
-      (event) {
-        searchFeedList.value = event.docs
-            .map(
-              (doc) => Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
-            )
-            .toList();
-      },
-    );
+    if (searchWriter == null || searchWriter!.isEmpty) {
+      String state = ['게시', '숨김', '삭제'][radioFeedIndex!];
+      _manageFeed
+          .where('state', isEqualTo: state)
+          .orderBy('writetime', descending: true)
+          .snapshots()
+          .listen(
+        (event) {
+          searchFeedList.value = event.docs
+              .map(
+                (doc) =>
+                    Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
+              )
+              .toList();
+        },
+      );
+    } else {
+      String state = ['게시', '숨김', '삭제'][radioFeedIndex!];
+      _manageFeed
+          .where('state', isEqualTo: state)
+          .where('writer', isEqualTo: searchWriter)
+          .orderBy('writetime', descending: true)
+          .snapshots()
+          .listen(
+        (event) {
+          searchFeedList.value = event.docs
+              .map(
+                (doc) =>
+                    Feed.fromMap(doc.data() as Map<String, dynamic>, doc.id),
+              )
+              .toList();
+        },
+      );
+    }
   }
 
-
-  }
   //// 피드페이지 위쪽 라디오버튼을 바꾸기위한 함수
-  feedRadioChanged(value){
+  feedRadioChanged(value) {
     radioFeedIndex = value;
     // 선택한걸 없애기, 선택상태였어도 라디오버튼이 왔다갔다하면 선택된걸 취소해야 함.
     searchFeedIndex = null;
@@ -291,7 +280,7 @@ class ManageHandler extends GetxController {
   }
 
   /// 피드를 바꾸는걸 선택할때 뭘로바꿀지 선택하는 함수
-  dailogFeedRadioChanged(value){
+  dailogFeedRadioChanged(value) {
     radioChangeFeedIndex = value;
     update();
   }
@@ -308,30 +297,31 @@ class ManageHandler extends GetxController {
 
   /// 피드의 상태를 바꾸고 각각 저장해주는 함수
   changeFeedState(
-    String docId, String manager_manageEMail, String changeKind) async {
-
+      String docId, String manager_manageEMail, String changeKind) async {
     await _manageFeed.doc(docId).update({'state': changeKind});
     var url = Uri.parse(
         "$manageUrl/reportFeed?manager_manageEMail=$manager_manageEMail&feedId=$docId&changeKind=$changeKind");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
-
   }
 
   // ////////////////////////////////////////// searchUser에서 쓸 변수들
   /// 나오는 유저들
   var searchUserList = <User>[].obs;
+
   /// 검색어
   String serachUserWord = '';
+
   /// 선택한 유저
   int? searchUserIndex;
+
   /// 정지 일수(기본 7일)을 정하기위한 radio버튼
   int searchUserRadio = 7;
 
 ///////////////////saerchUser에서 쓸 함수들
 
-/// 유저를 검색어에 따라 가져오는 함수
+  /// 유저를 검색어에 따라 가져오는 함수
   searchUser() async {
     if (serachUserWord.isNotEmpty) {
       var url =
@@ -358,7 +348,7 @@ class ManageHandler extends GetxController {
     update();
   }
 
-/// 선택한 유저를 바꿔주는함수
+  /// 선택한 유저를 바꿔주는함수
   searchUserIndexChanged(int idx) {
     if (idx == searchUserIndex) {
       searchUserIndex = null;
@@ -374,7 +364,7 @@ class ManageHandler extends GetxController {
     update();
   }
 
-/// 유저를 정지시키는 함수
+  /// 유저를 정지시키는 함수
   ceaseUser(String managerEMail, String ceaseReason) async {
     // ignore: invalid_use_of_protected_member
     String user_eMail = searchUserList.value[searchUserIndex!].eMail;
@@ -393,24 +383,18 @@ class ManageHandler extends GetxController {
 
     if (response.statusCode == 200) {
       return response.bodyBytes; // 바이트 배열로 반환
-      
     }
     return null; // 에러 발생 시 null 반환
   }
 
-
-/// ------------------------------------------------------ reportFeed ------------------------------------------------------
+  /// ------------------------------------------------------ reportFeed ------------------------------------------------------
 
   int rptCountAmount = 1;
   var reportFeedCountList = <RptCount>[].obs;
 
-
-
   var reportFeedListById = <Report>[].obs;
 
   int? reportFeedIndex;
-
-
 
 ///////////////////reportFeed에서 쓸 함수들
   rptCountAmountChanged(int value) {
@@ -473,11 +457,11 @@ class ManageHandler extends GetxController {
   }
 
   fetchSelectedFeed() async {
-    var rawData =
-        await _manageFeed.doc(reportFeedCountList[reportFeedIndex!].feedId).get();
+    var rawData = await _manageFeed
+        .doc(reportFeedCountList[reportFeedIndex!].feedId)
+        .get();
     var data = Feed.fromMap(rawData.data() as Map<String, dynamic>,
         reportFeedCountList[reportFeedIndex!].feedId);
     return data;
   }
-  
-}//End
+} //End
