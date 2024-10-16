@@ -35,6 +35,8 @@ class FeedHandler extends ImageHandler {
   /// 대댓글과 댓글의 구분을 위함
   final isReply = true.obs;
 
+  final reReplyText = '댓글을 입력해주세요'.obs;
+
   /// user 화면에 보일 FeedList
   final userFeedList = <Feed>[].obs;
 
@@ -72,9 +74,6 @@ class FeedHandler extends ImageHandler {
   Future<bool> onLikeButtonTapped(bool isLiked) async {
     // !isLiked 가 true 일때 1추가
     // !isLiked 가 false 일때 -1추가
-    // print(!isLiked);
-    // print(curFeed[0].feedName);
-    // print(box.read('pureme_id'));
     int changeLike = isLiked ? -1 : 1;
 
     var url = Uri.parse(
