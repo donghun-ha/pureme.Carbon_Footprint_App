@@ -199,7 +199,7 @@ class SignUp extends StatelessWidget {
                                             await vmHandler.eMailVerify(
                                                 idController.text.trim());
                                             print(vmHandler.eMailUnique);
-                                            if (vmHandler.eMailUnique) {
+                                            if (vmHandler.eMailUnique) { // 이메일이 중복되지 않았다면
                                               bool pwCheck =
                                                   await vmHandler.signIn(
                                                 // if (password != passwordVerify) { return false; 이게 왔다.
