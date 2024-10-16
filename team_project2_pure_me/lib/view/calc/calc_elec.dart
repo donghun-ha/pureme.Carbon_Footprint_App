@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/calc/calc_handler.dart';
 
 class CalcElec extends StatelessWidget {
@@ -131,8 +130,9 @@ class CalcElec extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.all(20.0),
                                   child: ElevatedButton(
-                                      onPressed: () {
-                                        insertCarbonGen(vmHandler);
+                                      onPressed: () async {
+                                        await insertCarbonGen(vmHandler);
+                                        Get.back();
                                       },
                                       child: const Text('전기 사용량 입력')),
                                 )
@@ -153,22 +153,22 @@ class CalcElec extends StatelessWidget {
     double? gas = double.tryParse(gasController.text.trim());
 
     if (electricity != null || gas != null) {
-      giveData(vmHandler, vmHandler.electricitylist[0],
+      vmHandler.giveData(vmHandler, vmHandler.electricitylist[0],
           electricController.text.trim(), box.read('pureme_id'));
-      giveData(vmHandler, vmHandler.electricitylist[1],
+      vmHandler.giveData(vmHandler, vmHandler.electricitylist[1],
           gasController.text.trim(), box.read('pureme_id'));
     } else {
       Get.snackbar('경고', '숫자를 모두 입력해주세요.');
     }
   }
 
-  giveData(
-      CalcHandler vmHandler, String kind, String amount, String email) async {
-    var url = Uri.parse(
-        'http://10.0.2.2:8000/footprint/insert?category_kind=$kind&user_eMail=$email&createDate=${DateTime.now()}&amount=$amount');
-    await http.get(url);
-    // var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    // result = dataConvertedJSON['message'];
-    Get.back();
-  }
+  // giveData(
+  //     CalcHandler vmHandler, String kind, String amount, String email) async {
+  //   var url = Uri.parse(
+  //       'http://10.0.2.2:8000/footprint/insert?category_kind=$kind&user_eMail=$email&createDate=${DateTime.now()}&amount=$amount');
+  //   await http.get(url);
+  //   // var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+  //   // result = dataConvertedJSON['message'];
+  //   Get.back();
+  // }
 }

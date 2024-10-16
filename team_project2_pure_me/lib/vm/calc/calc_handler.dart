@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class CalcHandler extends GetxController {
   double curTotalCarbon = 0; // 현재 TotalCarborn의 양을 나타내는 변수
@@ -30,5 +31,14 @@ class CalcHandler extends GetxController {
     curtransDropValue = value;
     update();
     // 수정 불필요
+  }
+
+  giveData(
+      CalcHandler vmHandler, String kind, String amount, String email) async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/footprint/insert?category_kind=$kind&user_eMail=$email&createDate=${DateTime.now()}&amount=$amount');
+    await http.get(url);
+    // var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    // result = dataConvertedJSON['message'];
   }
 }

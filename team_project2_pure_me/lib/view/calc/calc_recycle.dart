@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/vm/calc/calc_handler.dart';
-import 'package:http/http.dart' as http;
 
 // ignore: must_be_immutable
 class CalcRecycle extends StatelessWidget {
@@ -215,33 +212,26 @@ class CalcRecycle extends StatelessWidget {
     double? metal = double.tryParse(goldController.text);
     double? other = double.tryParse(somethingelseController.text);
 
-    if (paper != null ||
-        plastic != null ||
-        glass != null ||
-        metal != null ||
-        other != null) {
-      giveData(vmHandler, vmHandler.recylist[0], paperController.text.trim(),
-          box.read('pureme_id'));
-      giveData(vmHandler, vmHandler.recylist[1], plasticController.text.trim(),
-          box.read('pureme_id'));
-      giveData(vmHandler, vmHandler.recylist[2], glassController.text.trim(),
-          box.read('pureme_id'));
-      giveData(vmHandler, vmHandler.recylist[3], goldController.text.trim(),
-          box.read('pureme_id'));
-      giveData(vmHandler, vmHandler.recylist[4],
-          somethingelseController.text.trim(), box.read('pureme_id'));
-    } else {
-      Get.snackbar('경고', '숫자를 모두 입력해주세요.');
+    if (paper != null) {
+      vmHandler.giveData(vmHandler, vmHandler.recylist[0],
+          paperController.text.trim(), box.read('pureme_id'));
     }
-  }
-
-  giveData(
-      CalcHandler vmHandler, String kind, String amount, String email) async {
-    var url = Uri.parse(
-        'http://10.0.2.2:8000/footprint/insert?category_kind=$kind&amount=$amount&user_eMail=$email&createDate=${DateTime.now()}');
-    await http.get(url);
-
-    Get.back();
+    if (plastic != null) {
+      vmHandler.giveData(vmHandler, vmHandler.recylist[1],
+          paperController.text.trim(), box.read('pureme_id'));
+    }
+    if (glass != null) {
+      vmHandler.giveData(vmHandler, vmHandler.recylist[2],
+          paperController.text.trim(), box.read('pureme_id'));
+    }
+    if (metal != null) {
+      vmHandler.giveData(vmHandler, vmHandler.recylist[4],
+          paperController.text.trim(), box.read('pureme_id'));
+    }
+    if (other != null) {
+      vmHandler.giveData(vmHandler, vmHandler.recylist[5],
+          paperController.text.trim(), box.read('pureme_id'));
+    }
   }
 }
 
