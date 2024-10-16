@@ -17,7 +17,7 @@ class Home extends StatelessWidget {
         return Obx(
           () {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(25, 80, 25, 0),
+              padding: const EdgeInsets.fromLTRB(25, 70, 25, 0),
               child: SingleChildScrollView(
                 child: Center(
                   child: Column(
@@ -48,20 +48,21 @@ class Home extends StatelessWidget {
             children: [
               Card(
                 elevation: 1.5,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        controller.curUser.value.nickName,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      controller.curUser.value.nickName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
+                    ),
+                    Image.asset(
+                      'images/logo.png',
+                      width: MediaQuery.of(context).size.width * 0.1,
+                    ),
+                  ],
                 ),
               ),
               Padding(

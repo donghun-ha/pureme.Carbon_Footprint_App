@@ -48,8 +48,8 @@ class CalcFood extends StatelessWidget {
                                           children: [
                                             IconButton(
                                                 onPressed: () => Get.back(),
-                                                icon:
-                                                    Icon(Icons.arrow_back_ios))
+                                                icon: const Icon(
+                                                    Icons.arrow_back_ios))
                                           ],
                                         ),
                                         const Padding(
@@ -182,13 +182,30 @@ class CalcFood extends StatelessWidget {
                                                 Padding(
                                                   padding: const EdgeInsets.all(
                                                       20.0),
-                                                  child: ElevatedButton(
-                                                      onPressed: () {
-                                                        insertCarbonGen(
-                                                            vmHandler);
-                                                      },
-                                                      child: const Text(
-                                                          '식습관 정보 입력')),
+                                                  child: TextButton(
+                                                    style: TextButton.styleFrom(
+                                                      backgroundColor:
+                                                          const Color(
+                                                              0xFF4BAF4B),
+                                                      side: const BorderSide(
+                                                          color: Colors.black),
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                      ),
+                                                    ),
+                                                    onPressed: () {
+                                                      insertCarbonGen(
+                                                          vmHandler);
+                                                    },
+                                                    child: const Text(
+                                                      '식습관 정보 입력',
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    ),
+                                                  ),
                                                 )
                                               ],
                                             ),
@@ -214,19 +231,6 @@ class CalcFood extends StatelessWidget {
     double? dairy = double.tryParse(milkController.text);
     double? plant = double.tryParse(plantController.text);
 
-    // if (meat != null || vegetarian != null || dairy != null || plant != null) {
-    //   vmHandler.giveData(vmHandler, vmHandler.foodlist[0],
-    //       meatController.text.trim(), box.read('pureme_id'));
-    //   vmHandler.giveData(vmHandler, vmHandler.foodlist[1],
-    //       vegetableController.text.trim(), box.read('pureme_id'));
-    //   vmHandler.giveData(vmHandler, vmHandler.foodlist[2],
-    //       milkController.text.trim(), box.read('pureme_id'));
-    //   vmHandler.giveData(vmHandler, vmHandler.foodlist[3],
-    //       plantController.text.trim(), box.read('pureme_id'));
-    //   Get.back();
-    // } else {
-    //   Get.snackbar('경고', '숫자를 모두 입력해주세요.');
-    // }
     if (meat != null || vegetarian != null || dairy != null || plant != null) {
       if (meat != null) {
         vmHandler.giveData(vmHandler, vmHandler.foodlist[0],

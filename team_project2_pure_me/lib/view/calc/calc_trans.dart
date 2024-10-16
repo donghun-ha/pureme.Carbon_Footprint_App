@@ -156,19 +156,36 @@ class CalcTrans extends StatelessWidget {
                                                 Padding(
                                                   padding: const EdgeInsets.all(
                                                       20.0),
-                                                  child: ElevatedButton(
-                                                      onPressed: () async {
-                                                        if (transController.text
-                                                            .trim()
-                                                            .isEmpty) {
-                                                          _errorSnackBar();
-                                                        } else {
-                                                          await insertCarbonGen(
-                                                              vmHandler);
-                                                        }
-                                                      },
-                                                      child: const Text(
-                                                          '교통 정보 입력')),
+                                                  child: TextButton(
+                                                    style: TextButton.styleFrom(
+                                                      backgroundColor:
+                                                          const Color(
+                                                              0xFF91C1F5),
+                                                      side: const BorderSide(
+                                                          color: Colors.black),
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                      ),
+                                                    ),
+                                                    onPressed: () async {
+                                                      if (transController.text
+                                                          .trim()
+                                                          .isEmpty) {
+                                                        _errorSnackBar();
+                                                      } else {
+                                                        await insertCarbonGen(
+                                                            vmHandler);
+                                                      }
+                                                    },
+                                                    child: const Text(
+                                                      '교통 정보 입력',
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    ),
+                                                  ),
                                                 )
                                               ],
                                             ),

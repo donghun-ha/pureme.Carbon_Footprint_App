@@ -43,8 +43,8 @@ class Login extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
-                            'images/logo9.png',
-                            width: 300,
+                            'images/logo.png',
+                            width: 270,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

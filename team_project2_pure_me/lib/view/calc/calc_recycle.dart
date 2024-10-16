@@ -49,7 +49,8 @@ class CalcRecycle extends StatelessWidget {
                                         children: [
                                           IconButton(
                                               onPressed: () => Get.back(),
-                                              icon: Icon(Icons.arrow_back_ios))
+                                              icon: const Icon(
+                                                  Icons.arrow_back_ios))
                                         ],
                                       ),
                                       const Padding(
@@ -204,13 +205,28 @@ class CalcRecycle extends StatelessWidget {
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.all(20.0),
-                                                child: ElevatedButton(
-                                                    onPressed: () {
-                                                      insertCarbonGen(
-                                                          vmHandler);
-                                                    },
-                                                    child: const Text(
-                                                        '재활용 소비량 입력')),
+                                                child: TextButton(
+                                                  style: TextButton.styleFrom(
+                                                    backgroundColor:
+                                                        const Color(0xFFFFEF9D),
+                                                    side: const BorderSide(
+                                                        color: Colors.black),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    insertCarbonGen(vmHandler);
+                                                  },
+                                                  child: const Text(
+                                                    '재활용 소비량 입력',
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                  ),
+                                                ),
                                               )
                                             ],
                                           ),
