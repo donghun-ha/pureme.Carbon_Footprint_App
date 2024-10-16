@@ -6,11 +6,11 @@
 
   - **IDE**: Visual Studio Code
   - **언어 및 프레임워크**:
-  - Flutter: Dart
-	-	Python: FastAPI
+  	- Flutter: Dart
+  	- Python: FastAPI
   - **데이터베이스**: MySQL
-	-	**클라우드 서비스**: Firebase
-	-	**운영체제**: Windows, macOS, Linux
+  - **클라우드 서비스**: Firebase
+  - **운영체제**: Windows, macOS, Linux
 ## 📈 주요 기능
 
 ### 사용자 기능
