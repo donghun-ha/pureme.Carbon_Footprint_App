@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/view/manage/manage_feed_detail.dart';
-// import 'package:team_project2_pure_me/view/manage/manage_feed_detial.dart';
 import 'package:team_project2_pure_me/vm/manage/manage_handler.dart';
 
 class ManageFeed extends StatelessWidget {
@@ -12,7 +11,7 @@ class ManageFeed extends StatelessWidget {
   Widget build(BuildContext context) {
     final vmhandler = Get.put(ManageHandler());
 
-    TextEditingController _searchController = TextEditingController();
+    final TextEditingController _searchController = TextEditingController();
 
     return Stack(
       children: [
@@ -49,7 +48,7 @@ class ManageFeed extends StatelessWidget {
                                   vmhandler.searchWriterChanged(
                                       _searchController.text.trim());
                                 },
-                                icon: Icon(Icons.search)),
+                                icon: const Icon(Icons.search)),
                           ),
                           SizedBox(
                             width: Get.width * 0.8 - 8,
@@ -139,7 +138,8 @@ class ManageFeed extends StatelessWidget {
                                                   vmhandler
                                                       .changeFeedIndex(index);
                                                 },
-                                                leading: Icon(Icons.person),
+                                                leading:
+                                                    const Icon(Icons.person),
                                                 title: Text(
                                                     '작성자: ${vmhandler.searchFeedList[index].authorEMail}'),
                                               ),
@@ -147,6 +147,7 @@ class ManageFeed extends StatelessWidget {
                                           },
                                         ),
                                       ),
+                                      // 작성자 선택시 선택한 피드의 내용 보기
                                       SizedBox(
                                           height: Get.height * 0.34,
                                           child: vmhandler.searchFeedIndex !=
@@ -181,7 +182,7 @@ class ManageFeed extends StatelessWidget {
                                                               CrossAxisAlignment
                                                                   .start,
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 8,
                                                             ),
                                                             Row(
@@ -362,13 +363,13 @@ class ManageFeed extends StatelessWidget {
         TextButton(
           onPressed: () async {
             final box = GetStorage();
-            String manager_manageEMail = await box.read('manager');
+            String managerManageEMail = await box.read('manager');
             String chengeKind =
                 ['게시', '숨김', '삭제'][vmhandler.radioChangeFeedIndex!];
 
             vmhandler.changeFeedState(
                 vmhandler.searchFeedList[vmhandler.searchFeedIndex!].feedName!,
-                manager_manageEMail,
+                managerManageEMail,
                 chengeKind);
 
             Get.back();
