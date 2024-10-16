@@ -91,8 +91,8 @@
 ### 1. 저장소 클론하기
 
 ```bash
-git clone https://github.com/사용자이름/pureme-Carbon-Footprint-Calculation-App-.git
-cd pureme-Carbon-Footprint-Calculation-App-
+git clone https://github.com/사용자이름/pureme.Carbon_Footprint_App.git
+cd pureme.Carbon_Footprint_Calculation-App
 ```
 
 ### 2. 프론트엔드 설정
