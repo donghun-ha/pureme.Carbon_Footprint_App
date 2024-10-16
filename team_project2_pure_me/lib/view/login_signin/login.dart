@@ -43,7 +43,7 @@ class Login extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
-                            'images/logo.png',
+                            'images/logo9.png',
                             width: 300,
                           ),
                           Row(
@@ -134,33 +134,10 @@ class Login extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                              ),
-                              onPressed: () async {
-                                print('');
-                                if (nullcheck()) {
-                                  _showalibaba();
-                                  return;
-                                }
-                                var cease = await vmHandler.ceaseAccountVerify(
-                                    idController.text.trim());
-                                if (cease.$1 != null) {
-                                  showCease(cease.$2!, cease.$1!);
-                                  return;
-                                }
-                                // 로그인 로직
-                                bool checkLogin = vmHandler.manageLogin == 0
-                                    ? await vmHandler.loginVerify(
-                                        idController.text.trim(),
-                                        pwController.text.trim())
-                                    : await vmHandler.manageLoginVerify(
-                                        idController.text.trim(),
-                                        pwController.text.trim(),
-                                      );
-                                if (checkLogin) {
-                                  if (vmHandler.manageLogin == 0) {
-                                    box.write('pureme_id', idController.text);
-                                  } else {
-                                    box.write('manager', idController.text);
+                                onPressed: () async {
+                                  if (nullcheck()) {
+                                    _showalibaba();
+                                    return;
                                   }
                                   if (vmHandler.manageLogin == 0) {
                                     var cease =
