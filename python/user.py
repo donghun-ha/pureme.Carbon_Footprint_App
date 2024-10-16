@@ -328,9 +328,7 @@ async def get_file(file_name: str):
         return FileResponse(path=file_path, filename=file_name)
     return {'result' : 'Error'}
 
-
-
-
+# 전체 유저의 닉네임과 이메일을 반환
 @router.get("/userNames")
 async def userName():
     conn = connect()

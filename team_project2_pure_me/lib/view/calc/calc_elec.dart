@@ -19,24 +19,10 @@ class CalcElec extends StatelessWidget {
           image: AssetImage('images/background_id.png'),
         )),
         child: GestureDetector(
-           onTap: () => FocusScope.of(context).unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
           child: Scaffold(
               backgroundColor: Colors.transparent,
               body: GetBuilder<CalcHandler>(builder: (controller) {
-                // FutureBuilder(
-                //   future: controller.,
-                //   builder: (context, snapshot) {
-                //     if (snapshot.connectionState == ConnectionState.waiting) {
-                //       return const Center(
-                //         child: CircularProgressIndicator(),
-                //       );
-                //     } else if (snapshot.hasError) {
-                //       return Center(
-                //         child: Text('Error : ${snapshot.error}'),
-                //       );
-                //     } else {
-                //       return
-          
                 return SingleChildScrollView(
                   child: Center(
                     child: Column(
@@ -45,7 +31,7 @@ class CalcElec extends StatelessWidget {
                           padding: const EdgeInsets.fromLTRB(25, 70, 25, 50),
                           child: Container(
                               decoration: const BoxDecoration(
-                                  color: const Color(0xFFB8F2B4),
+                                  color: Color(0xFFB8F2B4),
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(30),
                                   )),
@@ -58,7 +44,8 @@ class CalcElec extends StatelessWidget {
                                         children: [
                                           IconButton(
                                               onPressed: () => Get.back(),
-                                              icon: Icon(Icons.arrow_back_ios))
+                                              icon: const Icon(
+                                                  Icons.arrow_back_ios))
                                         ],
                                       ),
                                       const Padding(
@@ -80,9 +67,11 @@ class CalcElec extends StatelessWidget {
                                       color: Colors.white,
                                       child: Center(
                                         child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
-                                            const Text('Tip: 전기 사용량 입력 하는 법\n\n'),
+                                            const Text(
+                                                'Tip: 전기 사용량 입력 하는 법\n\n'),
                                             const Text(
                                                 '전기 사용량 : 전기 청구서를 확인하여 월간 kWh 사용량을 \n입력하세요. 청구서가 없다면, 에어컨이나 가전 제품 사용\n시간을 추정할 수 있습니다.\n\n'),
                                             const Text(
@@ -94,12 +83,15 @@ class CalcElec extends StatelessWidget {
                                             ),
                                             const Text('예) 300kWh'),
                                             Padding(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               child: TextField(
                                                 controller: electricController,
-                                                decoration: const InputDecoration(
+                                                decoration:
+                                                    const InputDecoration(
                                                   hintText: '월간 전기 사용량(kWh)',
-                                                  hintStyle: TextStyle(color: Colors.grey),
+                                                  hintStyle: TextStyle(
+                                                      color: Colors.grey),
                                                   border: OutlineInputBorder(),
                                                 ),
                                               ),
@@ -113,31 +105,29 @@ class CalcElec extends StatelessWidget {
                                             ),
                                             const Text('예) 50m3'),
                                             Padding(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               child: TextField(
                                                 controller: gasController,
-                                                decoration: const InputDecoration(
+                                                decoration:
+                                                    const InputDecoration(
                                                   hintText: '월간 가스 사용량(m3)',
-                                                  hintStyle: TextStyle(color: Colors.grey),
+                                                  hintStyle: TextStyle(
+                                                      color: Colors.grey),
                                                   border: OutlineInputBorder(),
                                                 ),
                                               ),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(20.0),
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
                                               child: ElevatedButton(
                                                   onPressed: () async {
-                                                    if (electricController.text
-                                                            .trim()
-                                                            .isEmpty ||
-                                                        gasController.text.trim().isEmpty) {
-                                                      _errorSnackBar();
-                                                    } else {
-                                                      await insertCarbonGen(vmHandler);
-                                                      _showDialog();
-                                                    }
+                                                    await insertCarbonGen(
+                                                        vmHandler);
                                                   },
-                                                  child: const Text('전기 사용량 입력')),
+                                                  child:
+                                                      const Text('전기 사용량 입력')),
                                             )
                                           ],
                                         ),
@@ -160,12 +150,19 @@ class CalcElec extends StatelessWidget {
     double? gas = double.tryParse(gasController.text.trim());
 
     if (electricity != null || gas != null) {
-      vmHandler.giveData(vmHandler, vmHandler.electricitylist[0],
-          electricController.text.trim(), box.read('pureme_id'));
-      vmHandler.giveData(vmHandler, vmHandler.electricitylist[1],
-          gasController.text.trim(), box.read('pureme_id'));
+      if (electricity != null) {
+        vmHandler.giveData(vmHandler, vmHandler.electricitylist[0],
+            electricController.text.trim(), box.read('pureme_id'));
+      }
+
+      if (gas != null) {
+        vmHandler.giveData(vmHandler, vmHandler.electricitylist[1],
+            gasController.text.trim(), box.read('pureme_id'));
+      }
+
+      _showDialog();
     } else {
-      Get.snackbar('경고', '숫자를 모두 입력해주세요.');
+      _errorSnackBar();
     }
   }
 

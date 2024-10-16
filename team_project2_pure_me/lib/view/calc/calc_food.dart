@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:http/http.dart' as http;
 import 'package:team_project2_pure_me/vm/calc/calc_handler.dart';
 
 class CalcFood extends StatelessWidget {
@@ -51,7 +48,8 @@ class CalcFood extends StatelessWidget {
                                           children: [
                                             IconButton(
                                                 onPressed: () => Get.back(),
-                                                icon: Icon(Icons.arrow_back_ios))
+                                                icon:
+                                                    Icon(Icons.arrow_back_ios))
                                           ],
                                         ),
                                         const Padding(
@@ -66,11 +64,14 @@ class CalcFood extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-                                    const Text('당신의 식습관 정보를 통해 절감된 탄소량을 계산합니다.'),
+                                    const Text(
+                                        '당신의 식습관 정보를 통해 절감된 탄소량을 계산합니다.'),
                                     Padding(
                                       padding: const EdgeInsets.all(30.0),
                                       child: Container(
-                                        height: MediaQuery.of(context).size.height * 0.7,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.7,
                                         color: Colors.white,
                                         child: Center(
                                           child: SingleChildScrollView(
@@ -79,7 +80,8 @@ class CalcFood extends StatelessWidget {
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
                                               children: [
-                                                const Text('Tip: 식습관 정보 입력 방법\n\n'),
+                                                const Text(
+                                                    'Tip: 식습관 정보 입력 방법\n\n'),
                                                 const Text(
                                                     '최근 식물성 대체 식품의 구매 내역을 확인하세요. 이 정보\n를 통해 소비량을 더 정확하게 입력할 수 있습니다. 예를 \n들어, 슈퍼마켓 영수증이나 온라인 쇼핑 기록을 참고합니다.\n'),
                                                 const Text(
@@ -100,7 +102,8 @@ class CalcFood extends StatelessWidget {
                                                       hintText: '주간 육류 소비량(kg)',
                                                       hintStyle: TextStyle(
                                                           color: Colors.grey),
-                                                      border: OutlineInputBorder(),
+                                                      border:
+                                                          OutlineInputBorder(),
                                                     ),
                                                   ),
                                                 ),
@@ -116,13 +119,15 @@ class CalcFood extends StatelessWidget {
                                                   padding:
                                                       const EdgeInsets.all(8.0),
                                                   child: TextField(
-                                                    controller: vegetableController,
+                                                    controller:
+                                                        vegetableController,
                                                     decoration:
                                                         const InputDecoration(
                                                       hintText: '주간 채식 소비량',
                                                       hintStyle: TextStyle(
                                                           color: Colors.grey),
-                                                      border: OutlineInputBorder(),
+                                                      border:
+                                                          OutlineInputBorder(),
                                                     ),
                                                   ),
                                                 ),
@@ -141,10 +146,12 @@ class CalcFood extends StatelessWidget {
                                                     controller: milkController,
                                                     decoration:
                                                         const InputDecoration(
-                                                      hintText: '주간 유제품 소비량 (kg)',
+                                                      hintText:
+                                                          '주간 유제품 소비량 (kg)',
                                                       hintStyle: TextStyle(
                                                           color: Colors.grey),
-                                                      border: OutlineInputBorder(),
+                                                      border:
+                                                          OutlineInputBorder(),
                                                     ),
                                                   ),
                                                 ),
@@ -163,22 +170,25 @@ class CalcFood extends StatelessWidget {
                                                     controller: plantController,
                                                     decoration:
                                                         const InputDecoration(
-                                                      hintText: '주간 식물성 대체 식품 소비량',
+                                                      hintText:
+                                                          '주간 식물성 대체 식품 소비량',
                                                       hintStyle: TextStyle(
                                                           color: Colors.grey),
-                                                      border: OutlineInputBorder(),
+                                                      border:
+                                                          OutlineInputBorder(),
                                                     ),
                                                   ),
                                                 ),
                                                 Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(20.0),
+                                                  padding: const EdgeInsets.all(
+                                                      20.0),
                                                   child: ElevatedButton(
                                                       onPressed: () {
-                                                        insertCarbonGen(vmHandler);
+                                                        insertCarbonGen(
+                                                            vmHandler);
                                                       },
-                                                      child:
-                                                          const Text('식습관 정보 입력')),
+                                                      child: const Text(
+                                                          '식습관 정보 입력')),
                                                 )
                                               ],
                                             ),
@@ -204,18 +214,43 @@ class CalcFood extends StatelessWidget {
     double? dairy = double.tryParse(milkController.text);
     double? plant = double.tryParse(plantController.text);
 
+    // if (meat != null || vegetarian != null || dairy != null || plant != null) {
+    //   vmHandler.giveData(vmHandler, vmHandler.foodlist[0],
+    //       meatController.text.trim(), box.read('pureme_id'));
+    //   vmHandler.giveData(vmHandler, vmHandler.foodlist[1],
+    //       vegetableController.text.trim(), box.read('pureme_id'));
+    //   vmHandler.giveData(vmHandler, vmHandler.foodlist[2],
+    //       milkController.text.trim(), box.read('pureme_id'));
+    //   vmHandler.giveData(vmHandler, vmHandler.foodlist[3],
+    //       plantController.text.trim(), box.read('pureme_id'));
+    //   Get.back();
+    // } else {
+    //   Get.snackbar('경고', '숫자를 모두 입력해주세요.');
+    // }
     if (meat != null || vegetarian != null || dairy != null || plant != null) {
-      vmHandler.giveData(vmHandler, vmHandler.foodlist[0],
-          meatController.text.trim(), box.read('pureme_id'));
-      vmHandler.giveData(vmHandler, vmHandler.foodlist[1],
-          vegetableController.text.trim(), box.read('pureme_id'));
-      vmHandler.giveData(vmHandler, vmHandler.foodlist[2],
-          milkController.text.trim(), box.read('pureme_id'));
-      vmHandler.giveData(vmHandler, vmHandler.foodlist[3],
-          plantController.text.trim(), box.read('pureme_id'));
-      Get.back();
+      if (meat != null) {
+        vmHandler.giveData(vmHandler, vmHandler.foodlist[0],
+            meatController.text.trim(), box.read('pureme_id'));
+      }
+
+      if (vegetarian != null) {
+        vmHandler.giveData(vmHandler, vmHandler.foodlist[1],
+            vegetableController.text.trim(), box.read('pureme_id'));
+      }
+
+      if (dairy != null) {
+        vmHandler.giveData(vmHandler, vmHandler.foodlist[1],
+            milkController.text.trim(), box.read('pureme_id'));
+      }
+
+      if (plant != null) {
+        vmHandler.giveData(vmHandler, vmHandler.foodlist[1],
+            plantController.text.trim(), box.read('pureme_id'));
+      }
+
+      _showDialog();
     } else {
-      Get.snackbar('경고', '숫자를 모두 입력해주세요.');
+      _errorSnackBar();
     }
   }
 

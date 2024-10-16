@@ -1,12 +1,10 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:team_project2_pure_me/vm/rank_handler.dart';
-import 'package:http/http.dart' as http;
 
 class UserInfoUpdate extends StatelessWidget {
   UserInfoUpdate({super.key});

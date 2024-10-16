@@ -10,6 +10,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     handler.fetchTotalCarbon();
+    handler.healthStep();
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: GetBuilder<RankHandler>(builder: (controller) {

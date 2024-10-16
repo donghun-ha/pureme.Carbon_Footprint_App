@@ -33,7 +33,6 @@ class SignUp extends StatelessWidget {
             /// SQL에서 이메일 중복을 확인하는 함수 : eMailVerify(String eMail)
             /// SQL에서 이메일 중복을 확인하는 변수 : eMailUnique
             /// 회원가입 시켜주는 함수 : signIn
-            ///
             body: GetBuilder<UserHandler>(
               builder: (controller) {
                 return SingleChildScrollView(
@@ -167,42 +166,47 @@ class SignUp extends StatelessWidget {
                                           ),
                                         ),
                                         onPressed: () async {
+                                          // 빈값이 있을 경우
                                           if (nullcheck()) {
-                                            _showalibaba();
+                                            _errorSnackBar("빈칸을 채워주세요.");
                                             return;
                                           }
-
                                           String email =
                                               idController.text.trim();
-
+                                          // 이메일이 형식이 아닐경우
                                           if (email.isNotEmpty) {
                                             if (!validText.hasMatch(email)) {
-                                              ___eshowali();
+                                              _errorSnackBar(
+                                                  "이메일 형식이 올바르지 않습니다.");
                                               return;
                                             }
                                           }
-
                                           String number =
                                               phoneController.text.trim();
-
+                                          // 전화번호 형식이 아닐경우
                                           if (number.isNotEmpty) {
                                             if (!validNum.hasMatch(number)) {
-                                              ___showali();
+                                              _errorSnackBar(
+                                                  "전화번호 형식이 올바르지 않습니다.");
                                               return;
                                             }
                                           }
-
                                           // 아이디 중복 체크
                                           if (idController.text
                                               .trim()
                                               .isNotEmpty) {
+                                            // 아이디 중복 확인을 호출하는 함수
                                             await vmHandler.eMailVerify(
                                                 idController.text.trim());
-                                            print(vmHandler.eMailUnique);
-                                            if (vmHandler.eMailUnique) { // 이메일이 중복되지 않았다면
+                                            // vm의 eMailUnique가 true일때 중복 X
+                                            if (vmHandler.eMailUnique) {
+                                              // 이메일이 중복되지 않았다면
+                                              // 회원가입 시도
                                               bool pwCheck =
+                                                  // signIn 함수에서 비밀번호 중복 확인
+                                                  // 중복일 경우 false
+                                                  // 중복이 아닐경우 true 및 회원가입
                                                   await vmHandler.signIn(
-                                                // if (password != passwordVerify) { return false; 이게 왔다.
                                                 idController.text.trim(),
                                                 pwController.text.trim(),
                                                 pwVerifyController.text.trim(),
@@ -212,18 +216,18 @@ class SignUp extends StatelessWidget {
 
                                               // 패스워드 중복체크
                                               if (pwCheck) {
+                                                // 중복이 아니면 회원가입 완료 alert
                                                 _showDialog();
                                               } else {
-                                                ErrorSnackBar();
+                                                _errorSnackBar(
+                                                    '비밀번호가 일치하지 않습니다.');
                                               }
                                             } else {
-                                              _ErrorSnackBar();
+                                              _errorSnackBar(
+                                                  '이미 사용중인 이메일이 존재합니다!');
                                             }
                                           }
                                         },
-
-                                        // 회원가입 로직 후 뒤로가기
-
                                         child: const Text(
                                           '회원가입',
                                           style: TextStyle(
@@ -287,26 +291,10 @@ class SignUp extends StatelessWidget {
     );
   }
 
-  _ErrorSnackBar() {
+  _errorSnackBar(String message) {
     Get.snackbar(
       "경고",
-      "이미 사용중인 이메일이 존재합니다!",
-      snackPosition: SnackPosition.TOP,
-    );
-  }
-
-  ErrorSnackBar() {
-    Get.snackbar(
-      "경고",
-      "비밀번호가 일치하지 않습니다.",
-      snackPosition: SnackPosition.TOP,
-    );
-  }
-
-  ___showali() {
-    Get.snackbar(
-      "경고",
-      "전화번호 형식이 올바르지 않습니다.",
+      message,
       snackPosition: SnackPosition.TOP,
     );
   }
@@ -321,17 +309,5 @@ class SignUp extends StatelessWidget {
     } else {
       return false;
     }
-  }
-
-  _showalibaba() {
-    Get.snackbar("경고", "빈칸을 채워주세요.");
-  }
-
-  ___eshowali() {
-    Get.snackbar(
-      "경고",
-      "이메일 형식이 올바르지 않습니다.",
-      snackPosition: SnackPosition.TOP,
-    );
   }
 }   // End

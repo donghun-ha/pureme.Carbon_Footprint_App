@@ -297,10 +297,10 @@ class ManageHandler extends GetxController {
 
   /// 피드의 상태를 바꾸고 각각 저장해주는 함수
   changeFeedState(
-      String docId, String manager_manageEMail, String changeKind) async {
+      String docId, String managerManageEMail, String changeKind) async {
     await _manageFeed.doc(docId).update({'state': changeKind});
     var url = Uri.parse(
-        "$manageUrl/reportFeed?manager_manageEMail=$manager_manageEMail&feedId=$docId&changeKind=$changeKind");
+        "$manageUrl/reportFeed?manager_manageEMail=$managerManageEMail&feedId=$docId&changeKind=$changeKind");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -367,9 +367,9 @@ class ManageHandler extends GetxController {
   /// 유저를 정지시키는 함수
   ceaseUser(String managerEMail, String ceaseReason) async {
     // ignore: invalid_use_of_protected_member
-    String user_eMail = searchUserList.value[searchUserIndex!].eMail;
+    String userEmail = searchUserList.value[searchUserIndex!].eMail;
     var url = Uri.parse(
-        "$manageUrl/accountCeaseInsert?user_eMail=$user_eMail&manager_manageEMail=$managerEMail&ceaseReason=$ceaseReason&ceasePeroid=$searchUserRadio");
+        "$manageUrl/accountCeaseInsert?user_eMail=$userEmail&manager_manageEMail=$managerEMail&ceaseReason=$ceaseReason&ceasePeroid=$searchUserRadio");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -446,11 +446,10 @@ class ManageHandler extends GetxController {
     }
   }
 
-  reportFeed(
-      String docId, String manager_manageEMail, String changeKind) async {
+  reportFeed(String docId, String managerManageEMail, String changeKind) async {
     await _manageFeed.doc(docId).update({'state': '숨김'});
     var url = Uri.parse(
-        "$manageUrl/reportFeed?manager_manageEMail=$manager_manageEMail&feedId=$docId&changeKind=$changeKind");
+        "$manageUrl/reportFeed?manager_manageEMail=$managerManageEMail&feedId=$docId&changeKind=$changeKind");
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];

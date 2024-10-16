@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:team_project2_pure_me/vm/calc/calc_handler.dart';
-import 'package:http/http.dart' as http;
 
 class CalcTrans extends StatelessWidget {
   CalcTrans({super.key});
@@ -31,28 +28,15 @@ class CalcTrans extends StatelessWidget {
             backgroundColor: Colors.transparent,
             body: GetBuilder<CalcHandler>(
               builder: (controller) {
-                return
-                    // FutureBuilder(
-                    //   future: controller.,
-                    //   builder: (context, snapshot) {
-                    //     if (snapshot.connectionState == ConnectionState.waiting) {
-                    //       return const Center(
-                    //         child: CircularProgressIndicator(),
-                    //       );
-                    //     } else if (snapshot.hasError) {
-                    //       return Center(
-                    //         child: Text('Error : ${snapshot.error}'),
-                    //       );
-                    //     } else {
-                    //       return
-                    Obx(
+                return Obx(
                   () {
                     return SingleChildScrollView(
                       child: Center(
                         child: Column(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(25, 70, 25, 50),
+                              padding:
+                                  const EdgeInsets.fromLTRB(25, 70, 25, 50),
                               child: Container(
                                   decoration: const BoxDecoration(
                                       color: Color(0xFFB8F2B4),
@@ -60,7 +44,8 @@ class CalcTrans extends StatelessWidget {
                                         Radius.circular(30),
                                       )),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Row(
                                         children: [
@@ -68,7 +53,8 @@ class CalcTrans extends StatelessWidget {
                                             children: [
                                               IconButton(
                                                   onPressed: () => Get.back(),
-                                                  icon: Icon(Icons.arrow_back_ios))
+                                                  icon: const Icon(
+                                                      Icons.arrow_back_ios))
                                             ],
                                           ),
                                           const Padding(
@@ -95,46 +81,52 @@ class CalcTrans extends StatelessWidget {
                                                   MainAxisAlignment.center,
                                               children: [
                                                 DropdownButton(
-                                                  dropdownColor: Theme.of(context)
-                                                      .colorScheme
-                                                      .primaryContainer,
+                                                  dropdownColor:
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .primaryContainer,
                                                   iconEnabledColor:
                                                       Theme.of(context)
                                                           .colorScheme
                                                           .secondary,
                                                   value: controller
                                                           .curtransDropValue ??
-                                                      vmHandler.transDropdown[0],
-                                                  icon: const Icon(
-                                                      Icons.keyboard_arrow_down),
-                                                  items: controller.transDropdown
+                                                      vmHandler
+                                                          .transDropdown[0],
+                                                  icon: const Icon(Icons
+                                                      .keyboard_arrow_down),
+                                                  items: controller
+                                                      .transDropdown
                                                       .map((String items) {
                                                     return DropdownMenuItem(
                                                       value: items,
                                                       child: Text(
                                                         items,
                                                         style: TextStyle(
-                                                            color: Theme.of(context)
+                                                            color: Theme.of(
+                                                                    context)
                                                                 .colorScheme
                                                                 .tertiary),
                                                       ),
                                                     );
                                                   }).toList(),
                                                   onChanged: (value) {
-                                                    controller.currentTranIndex =
+                                                    controller
+                                                            .currentTranIndex =
                                                         controller.transDropdown
                                                             .indexOf(value);
-                      
+
                                                     if (value != null) {
                                                       controller
-                                                          .transDropChange(value);
+                                                          .transDropChange(
+                                                              value);
                                                     }
                                                   },
                                                 ),
                                                 const Text(
                                                   '사용한 교통수단을 선택하세요.\n\n',
-                                                  style:
-                                                      TextStyle(color: Colors.grey),
+                                                  style: TextStyle(
+                                                      color: Colors.grey),
                                                 ),
                                                 const Text(
                                                     'Tip: 당신의 이동 방식이 환경에 미치는 영향\n\n'),
@@ -152,16 +144,18 @@ class CalcTrans extends StatelessWidget {
                                                     controller: transController,
                                                     decoration:
                                                         const InputDecoration(
-                                                      hintText: '이용 시 평균 거리(KM)',
+                                                      hintText:
+                                                          '이용 시 평균 거리(KM)',
                                                       hintStyle: TextStyle(
                                                           color: Colors.grey),
-                                                      border: OutlineInputBorder(),
+                                                      border:
+                                                          OutlineInputBorder(),
                                                     ),
                                                   ),
                                                 ),
                                                 Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(20.0),
+                                                  padding: const EdgeInsets.all(
+                                                      20.0),
                                                   child: ElevatedButton(
                                                       onPressed: () async {
                                                         if (transController.text
@@ -171,11 +165,10 @@ class CalcTrans extends StatelessWidget {
                                                         } else {
                                                           await insertCarbonGen(
                                                               vmHandler);
-                                                          _showDialog();
                                                         }
                                                       },
-                                                      child:
-                                                          const Text('교통 정보 입력')),
+                                                      child: const Text(
+                                                          '교통 정보 입력')),
                                                 )
                                               ],
                                             ),
@@ -191,9 +184,6 @@ class CalcTrans extends StatelessWidget {
                     );
                   },
                 );
-                //   }
-                // },
-                // );
               },
             ),
           ),
@@ -210,13 +200,13 @@ class CalcTrans extends StatelessWidget {
   insertCarbonGen(CalcHandler vmHandler) {
     if (vmHandler.curtransDropValue != null) {
       double? amount = double.tryParse(transController.text);
-      vmHandler.giveData(
-          vmHandler,
-          vmHandler.transDropdownEn[vmHandler.currentTranIndex],
-          transController.text,
-          box.read('pureme_id'));
       if (amount != null) {
-        vmHandler.insertCarbonGen(vmHandler.curtransDropValue!, amount);
+        vmHandler.giveData(
+            vmHandler,
+            vmHandler.transDropdownEn[vmHandler.currentTranIndex],
+            transController.text,
+            box.read('pureme_id'));
+        _showDialog();
       } else {
         // 숫자가 아닌 입력에 대한 오류 처리
         Get.snackbar('오류', '올바른 숫자를 입력해주세요.');
