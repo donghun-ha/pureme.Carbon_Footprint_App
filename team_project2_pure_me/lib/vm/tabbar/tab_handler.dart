@@ -38,6 +38,7 @@ class TabHandler extends GetxController with GetSingleTickerProviderStateMixin {
     });
   }
 
+  /// 로그아웃 할때 실행하여 로그인 후 초기화면을 탭바의 첫번째 화면으로 만들어줌.
   tabbarInit() {
     tabController.index = 0;
   }

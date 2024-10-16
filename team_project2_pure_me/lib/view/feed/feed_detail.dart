@@ -201,8 +201,9 @@ class FeedDetail extends StatelessWidget {
                       width: 340,
                       child: TextField(
                         controller: replyController,
-                        decoration: const InputDecoration(
-                          labelText: '댓글을 입력해주세요',
+                        decoration: InputDecoration(
+                          labelText: feedHandler.reReplyText.value,
+                          // labelText: '댓글을 입력해주세요',
                         ),
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.done,
@@ -226,6 +227,7 @@ class FeedDetail extends StatelessWidget {
       (value) {
         feedHandler.isReply.value = true;
         feedHandler.replyIndex.value = 0;
+        feedHandler.reReplyText.value = '댓글을 입력해주세요';
         replyController.clear();
       },
     );
@@ -243,6 +245,7 @@ class FeedDetail extends StatelessWidget {
           onTap: () {
             feedHandler.isReply.value = false;
             feedHandler.replyIndex.value = reply.index;
+            feedHandler.reReplyText.value = "${reply.userName!}님에게 댓글 작성";
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

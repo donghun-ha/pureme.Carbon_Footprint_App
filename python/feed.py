@@ -17,6 +17,7 @@ def connect():
     return conn
 
 
+# Feed의 좋아요 정보를 [유저 아이디, 유저의 좋아요 상태 (0, 1), 전체 좋아요 수] 형태로 반환
 @router.get("/getFeedLike")
 async def getFeedLike(feedId: str = None, userEmail : str = None):
     conn = connect()
@@ -55,7 +56,7 @@ async def getFeedLike(feedId: str = None, userEmail : str = None):
         """
         curs.execute(sql, (feedId, feedId, userEmail, feedId, feedId, userEmail))
         row = curs.fetchone()
-        print(row)
+        # print(row)
         # result = [{'result': row[0]==1} for row in rows]
         conn.commit()
         return {'result': row}

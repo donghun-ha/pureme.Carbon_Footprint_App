@@ -10,6 +10,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     handler.fetchTotalCarbon();
+    handler.healthStep();
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: GetBuilder<RankHandler>(builder: (controller) {
@@ -112,7 +113,7 @@ class Home extends StatelessWidget {
                         Text(
                           "${controller.totalEnergyReduction.value} L",
                           style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -130,7 +131,7 @@ class Home extends StatelessWidget {
                           Text(
                             '${controller.treesFootprint.value} 그루',
                             style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                                fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),

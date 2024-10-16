@@ -103,7 +103,7 @@ async def login(eMail: str = None):
     curs = conn.cursor()
     try:
         sql = """
-        SELECT eMail,nickName,password,phone,createDate,etc,point,profileImage
+        SELECT eMail,nickName,password,phone,createDate,point,profileImage
         FROM user
         WHERE eMail=%s
         """
@@ -115,9 +115,8 @@ async def login(eMail: str = None):
             'password': row[2],
             'phone': row[3],
             'createDate': row[4],
-            'etc': row[5],
-            'point': row[6],
-            'profileImage' : row[7]
+            'point': row[5],
+            'profileImage' : row[6]
             } for row in rows]
         return {'result': result}
     except Exception as e:
@@ -161,9 +160,9 @@ async def login(eMail: str = None, nickname: str =None, password: str = None,pho
         sql = """
         INSERT 
         INTO user(
-        eMail,nickname,password,phone,createDate,etc,point
+        eMail,nickname,password,phone,createDate,point
         )
-        values(%s,%s,%s,%s,%s,0,0)
+        values(%s,%s,%s,%s,%s,0)
         """
         curs.execute(sql, (eMail,nickname, password, phone,aa))
         conn.commit()
@@ -329,9 +328,7 @@ async def get_file(file_name: str):
         return FileResponse(path=file_path, filename=file_name)
     return {'result' : 'Error'}
 
-
-
-
+# 전체 유저의 닉네임과 이메일을 반환
 @router.get("/userNames")
 async def userName():
     conn = connect()

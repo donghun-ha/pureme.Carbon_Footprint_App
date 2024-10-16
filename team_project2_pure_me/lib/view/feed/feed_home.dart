@@ -12,10 +12,8 @@ class FeedHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // 배경 설정을 투명
       backgroundColor: Colors.transparent,
-      // 사용되는 변수 : feedList -> GridView에 들어갈 imageName들
-      // 사용되는 함수 : fetchFeedList() -> build 함수의 return Scafold 전에 시행하여
-      // feedList를 바꿔줘야 함.
       body: Obx(
         () {
           return Padding(
@@ -29,6 +27,7 @@ class FeedHome extends StatelessWidget {
                   offset: const Offset(0, 3),
                 )
               ]),
+              // 피드가 보여질 공간
               child: Card(
                 elevation: 3,
                 child: Column(
@@ -52,10 +51,11 @@ class FeedHome extends StatelessWidget {
                             crossAxisCount: 2, // 한줄당 갯수
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 10,
-                          ), // 화면 구성
+                          ),
                           itemBuilder: (context, index) {
                             Feed feed = feedHandler.feedList[index];
                             return GestureDetector(
+                              // 클릭시 클릭한 피드의 정보를 argument로 보냄
                               onTap: () {
                                 Get.to(
                                   () => FeedDetail(),
@@ -68,6 +68,7 @@ class FeedHome extends StatelessWidget {
                                   },
                                 );
                               },
+                              // 화면 구성
                               child: Card(
                                 elevation: 2,
                                 color: const Color(0xFFB1B1B1),
