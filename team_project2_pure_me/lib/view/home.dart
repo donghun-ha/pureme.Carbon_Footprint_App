@@ -112,7 +112,7 @@ class Home extends StatelessWidget {
                         Text(
                           "${controller.totalEnergyReduction.value} L",
                           style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -130,7 +130,7 @@ class Home extends StatelessWidget {
                           Text(
                             '${controller.treesFootprint.value} 그루',
                             style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                                fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
