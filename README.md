@@ -95,7 +95,7 @@
 git clone https://github.com/사용자이름/pureme-Carbon-Footprint-Calculation-App-.git
 cd pureme-Carbon-Footprint-Calculation-App-
 
-### 2. 프론트엔드 설정
+###2. 프론트엔드 설정
 
 flutter pub get
 
