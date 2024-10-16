@@ -10,7 +10,7 @@
   	- Python: FastAPI
   - **데이터베이스**: MySQL
   - **클라우드 서비스**: Firebase
-  - **운영체제**: Windows, macOS, Linux
+  - **디바이스**: AOS,IOS
 ## 📈 주요 기능
 
 ### 사용자 기능
