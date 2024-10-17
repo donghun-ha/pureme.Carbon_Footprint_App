@@ -42,6 +42,10 @@ class Login extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Image.asset(
+                            'images/logo.png',
+                            width: 270,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -120,54 +124,57 @@ class Login extends StatelessWidget {
                           ),
                           SizedBox(
                             width: MediaQuery.of(context).size.width,
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                backgroundColor: const Color(0xFFFFEF9D),
-                                side: const BorderSide(color: Colors.black),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: TextButton(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: const Color(0xFFFFEF9D),
+                                  side: const BorderSide(color: Colors.black),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                 ),
-                              ),
-                              onPressed: () async {
-                                if (nullcheck()) {
-                                  _showalibaba();
-                                  return;
-                                }
-                                if (vmHandler.manageLogin == 0) {
-                                  var cease =
-                                      await vmHandler.ceaseAccountVerify(
-                                          idController.text.trim());
-                                  if (cease.$1 != null) {
-                                    showCease(cease.$2!, cease.$1!);
+                                onPressed: () async {
+                                  if (nullcheck()) {
+                                    _showalibaba();
                                     return;
                                   }
-                                }
-                                // 로그인 로직
-                                bool checkLogin = vmHandler.manageLogin == 0
-                                    ? await vmHandler.loginVerify(
-                                        idController.text.trim(),
-                                        pwController.text.trim())
-                                    : await vmHandler.manageLoginVerify(
-                                        idController.text.trim(),
-                                        pwController.text.trim(),
-                                      );
-                                if (checkLogin) {
                                   if (vmHandler.manageLogin == 0) {
-                                    box.write('pureme_id', idController.text);
-                                  } else {
-                                    box.write('manager', idController.text);
+                                    var cease =
+                                        await vmHandler.ceaseAccountVerify(
+                                            idController.text.trim());
+                                    if (cease.$1 != null) {
+                                      showCease(cease.$2!, cease.$1!);
+                                      return;
+                                    }
                                   }
+                                  // 로그인 로직
+                                  bool checkLogin = vmHandler.manageLogin == 0
+                                      ? await vmHandler.loginVerify(
+                                          idController.text.trim(),
+                                          pwController.text.trim())
+                                      : await vmHandler.manageLoginVerify(
+                                          idController.text.trim(),
+                                          pwController.text.trim(),
+                                        );
+                                  if (checkLogin) {
+                                    if (vmHandler.manageLogin == 0) {
+                                      box.write('pureme_id', idController.text);
+                                    } else {
+                                      box.write('manager', idController.text);
+                                    }
 
-                                  _showDialog(vmHandler.manageLogin == 0);
-                                } else {
-                                  errorSnackBar();
-                                }
-                                // 로그인 성공시 페이지 이동
-                              },
-                              child: const Text(
-                                '로그인',
-                                style: TextStyle(
-                                  color: Colors.black,
+                                    _showDialog(vmHandler.manageLogin == 0);
+                                  } else {
+                                    errorSnackBar();
+                                  }
+                                  // 로그인 성공시 페이지 이동
+                                },
+                                child: const Text(
+                                  '로그인',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
                             ),

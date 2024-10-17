@@ -23,9 +23,12 @@ class ManageFeedDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 초기 값을 위한 기본 피드 데이터
+    feedHandler.curFeed.value = [feedValue];
+    // 자세한 피드 데이터를 위한 검색 기능
     feedHandler.detailFeed(feedValue.feedName!);
+    // 피드의 좋아요 정보 가져오기
     feedHandler.getFeedLike();
-    convertEmailToName.getUserName();
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -105,7 +108,6 @@ class ManageFeedDetail extends StatelessWidget {
                           LikeButton(
                             likeCount: feedHandler.likeCount.value, // 값을 받아와야함
                             isLiked: feedHandler.isLike.value, // 값을 받아와야함
-                            onTap: feedHandler.onLikeButtonTapped,
                           ),
                           IconButton(
                             onPressed: () =>

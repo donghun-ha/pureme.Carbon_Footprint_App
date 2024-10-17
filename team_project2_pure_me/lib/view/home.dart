@@ -10,13 +10,14 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     handler.fetchTotalCarbon();
+    handler.healthStep();
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: GetBuilder<RankHandler>(builder: (controller) {
         return Obx(
           () {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(25, 80, 25, 0),
+              padding: const EdgeInsets.fromLTRB(25, 70, 25, 0),
               child: SingleChildScrollView(
                 child: Center(
                   child: Column(
@@ -47,20 +48,21 @@ class Home extends StatelessWidget {
             children: [
               Card(
                 elevation: 1.5,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        controller.curUser.value.nickName,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      controller.curUser.value.nickName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
+                    ),
+                    Image.asset(
+                      'images/logo.png',
+                      width: MediaQuery.of(context).size.width * 0.1,
+                    ),
+                  ],
                 ),
               ),
               Padding(
@@ -112,7 +114,7 @@ class Home extends StatelessWidget {
                         Text(
                           "${controller.totalEnergyReduction.value} L",
                           style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -130,7 +132,7 @@ class Home extends StatelessWidget {
                           Text(
                             '${controller.treesFootprint.value} 그루',
                             style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                                fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),

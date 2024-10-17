@@ -7,6 +7,8 @@ class ImageHandler extends GetxController {
   final ImagePicker picker = ImagePicker();
   File? imgFile;
 
+  /// 이미지를 갤러리에서 가져오는 함수
+  /// imageSource는 Camera와 Gallery가능
   getImageFromGallery(ImageSource imageSource) async {
     final XFile? pickedFile = await picker.pickImage(source: imageSource);
 

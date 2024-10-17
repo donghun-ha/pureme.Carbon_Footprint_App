@@ -147,6 +147,7 @@ class ManageFeed extends StatelessWidget {
                                           },
                                         ),
                                       ),
+                                      // 작성자 선택시 선택한 피드의 내용 보기
                                       SizedBox(
                                           height: Get.height * 0.34,
                                           child: vmhandler.searchFeedIndex !=
